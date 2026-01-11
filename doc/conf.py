@@ -9,14 +9,12 @@
 import os
 import sys
 
-from kafka_dae_diagnostics.version import version
-
 sys.path.insert(0, os.path.abspath("../src"))
 
 project = "kafka-dae-diagnostics"
 copyright = ""
 author = "ISIS Experiment Controls"
-release = version
+release = ""
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -88,5 +86,11 @@ spelling_suggestion_limit = 3
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
+    "pcaspy": ("https://pcaspy.readthedocs.io/en/latest/", None),
+    "p4p": ("https://epics-base.github.io/p4p/", None),
     "fastcs": ("https://diamondlightsource.github.io/FastCS/main/", None),
+    "genie": ("https://isiscomputinggroup.github.io/genie", None),
+    "ibex_bluesky_core": ("https://isiscomputinggroup.github.io/ibex_bluesky_core", None),
+    "ibex_developers_manual": ("https://isiscomputinggroup.github.io/ibex_developers_manual", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
 }

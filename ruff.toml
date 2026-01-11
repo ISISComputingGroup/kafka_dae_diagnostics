@@ -48,3 +48,6 @@ ignore = [
 "doc/conf.py" = [
     "D100"
 ]
+
+[lint.pep8-naming]
+extend-ignore-names = ["makeChannel", "testChannel"]  # Names required by upstream p4p

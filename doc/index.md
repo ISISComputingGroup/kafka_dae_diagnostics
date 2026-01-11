@@ -5,5 +5,6 @@
 :caption: Reference
 :glob:
 
+architectural_decision_records
 _api
 ```

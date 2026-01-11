@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools", "setuptools_scm>=8"]
-build-backend = "setuptools.build_meta"
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
 
 [project]
 name = "kafka-dae-diagnostics"  # REQUIRED, is the only field that cannot be marked as dynamic.
@@ -27,8 +27,8 @@ classifiers = [
 ]
 
 dependencies = [
-  # Pinned until https://github.com/DiamondLightSource/FastCS/pull/295 is merged and released
-  "fastcs @ git+https://github.com/Tom-Willemsen/FastCS@guard_methods_that_dont_work_on_windows",
+  "aiokafka",
+  "p4p",
 ]
 
 [project.optional-dependencies]
@@ -46,14 +46,12 @@ lint = [
   "ruff",
 ]
 test = [
-  "lewis",
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
 ]
 dev = [
   "kafka-dae-diagnostics[doc,lint,test]",
-  "fastcs[all]",
 ]
 
 [project.urls]
@@ -65,9 +63,6 @@ dev = [
 testpaths = "tests"
 asyncio_mode = "auto"
 addopts = "--cov --cov-report=html -vv"
-filterwarnings = [
-    'ignore::tango.PyTangoUserWarning',
-]
 
 [tool.coverage.run]
 branch = true
@@ -103,7 +98,10 @@ reportUntypedBaseClass = true
 reportUntypedClassDecorator = true
 reportUntypedFunctionDecorator = true
 
-[tool.setuptools_scm]
-version_file = "src/kafka_dae_diagnostics/version.py"
-
 [tool.build_sphinx]
+
+[project.scripts]
+kdaediag = "kafka_dae_diagnostics._cli:main"
+
+[tool.maturin]
+module-name = "kafka_dae_diagnostics._kdaediag_rs"
