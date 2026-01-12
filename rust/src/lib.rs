@@ -1,7 +1,7 @@
 use pyo3::prelude::*;
 use numpy::{PyReadonlyArray1, PyReadwriteArray2};
 
-fn tof_bin_event(tof: u32, bin_boundaries: &[u32]) -> Option<usize> {
+fn tof_bin_event(tof: i32, bin_boundaries: &[i32]) -> Option<usize> {
     if tof < *bin_boundaries.first()? || tof >= *bin_boundaries.last()? {
         return None
     }
@@ -19,7 +19,7 @@ fn tof_bin_event(tof: u32, bin_boundaries: &[u32]) -> Option<usize> {
     Some(lower_bound)
 }
 
-fn tof_bin_event_linear(tof: u32, start: u32, stop: u32, step: u32) -> Option<usize> {
+fn tof_bin_event_linear(tof: i32, start: i32, stop: i32, step: i32) -> Option<usize> {
     if tof < start || tof >= stop {
         return None
     }
@@ -29,9 +29,9 @@ fn tof_bin_event_linear(tof: u32, start: u32, stop: u32, step: u32) -> Option<us
 #[pyfunction]
 fn bin_events_into_spectrum(
     mut histogram: PyReadwriteArray2<u64>,
-    event_tofs: PyReadonlyArray1<u32>,
-    pixel_ids: PyReadonlyArray1<u32>,
-    tof_bin_boundaries: PyReadonlyArray1<u32>,
+    event_tofs: PyReadonlyArray1<i32>,
+    pixel_ids: PyReadonlyArray1<i32>,
+    tof_bin_boundaries: PyReadonlyArray1<i32>,
 ) -> PyResult<()> {
     let mut histogram = histogram.as_array_mut();
     let boundaries = tof_bin_boundaries.as_slice()?;
@@ -51,11 +51,11 @@ fn bin_events_into_spectrum(
 #[pyfunction]
 fn bin_events_into_spectrum_linear(
     mut histogram: PyReadwriteArray2<u64>,
-    event_tofs: PyReadonlyArray1<u32>,
-    pixel_ids: PyReadonlyArray1<u32>,
-    tof_bin_start: u32,
-    tof_bin_stop: u32,
-    tof_bin_step: u32,
+    event_tofs: PyReadonlyArray1<i32>,
+    pixel_ids: PyReadonlyArray1<i32>,
+    tof_bin_start: i32,
+    tof_bin_stop: i32,
+    tof_bin_step: i32,
 ) -> PyResult<()> {
     let mut histogram = histogram.as_array_mut();
 

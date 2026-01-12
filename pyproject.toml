@@ -27,7 +27,8 @@ classifiers = [
 ]
 
 dependencies = [
-  "aiokafka",
+  "confluent-kafka",
+  "ess-streaming-data-types",
   "p4p",
 ]
 
@@ -47,7 +48,6 @@ lint = [
 ]
 test = [
   "pytest",
-  "pytest-asyncio",
   "pytest-cov",
 ]
 dev = [

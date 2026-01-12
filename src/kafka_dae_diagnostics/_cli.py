@@ -1,156 +1,122 @@
 """Kafka DAE diagnostics."""
-
+import dataclasses
 import logging
 import time
+import uuid
 
 import numpy as np
-from p4p.nt import NTScalar
+import numpy.typing as npt
 from p4p.server import DynamicProvider, Server
-from p4p.server.thread import SharedPV
+from p4p.server.thread import SharedPV, Handler
+from confluent_kafka import Consumer
+from streaming_data_types.utils import get_schema
+from streaming_data_types import deserialise_ev44
 
 from kafka_dae_diagnostics._kdaediag_rs import (
     bin_events_into_spectrum,
     bin_events_into_spectrum_linear,
 )
 
+from p4p.nt import NTNDArray
+
+logger = logging.getLogger(__name__)
+
 logging.basicConfig(level=logging.DEBUG)
 
 
-class SpectrumPV(SharedPV):
-    pass
+@dataclasses.dataclass
+class Data:
+    spectra: npt.NDArray[np.uint64]
+    spectrum_updaters: list[tuple[int, int, SharedPV]]
 
 
-spectrum_updaters = {}
-
-
-class SpectrumHandler:
-    def __init__(self) -> None:
-        pass
+class SpectrumHandler(Handler):
+    def __init__(self, prefix: str, data: Data) -> None:
+        self._data = data
+        self._prefix = prefix
 
     def testChannel(self, name: str) -> bool:
-        print(f"Testing channel {name}")
-        return name.startswith("TE:NDW2922:KDAEDIAG:")
+        return name.startswith(self._prefix)
 
     def makeChannel(self, name: str, peer: str) -> SharedPV:
-        print(f"Making channel {name} {peer}")
+        logger.info(f"Making channel {name} {peer}")
 
-        pv = spectrum_updaters.get(name)
-        if pv is None:
-            pv = SharedPV(nt=NTScalar("d"), initial=123)
-            spectrum_updaters[name] = pv
+        name = name[len(self._prefix):]
+        period = 0
+        det = int(name)
+
+        data = self._data
+
+        class SpectrumSharedPVHandler:
+            def onLastDisconnect(self, pv):
+                data.spectrum_updaters.remove((period, det, pv))
+
+        pv = SharedPV(
+            nt=NTNDArray(),
+            initial=self._data.spectra[period, det].astype(np.double),
+            handler=SpectrumSharedPVHandler()
+        )
+
+        self._data.spectrum_updaters.append((period, det, pv))
         return pv
 
 
-RNG = np.random.default_rng()
+def handle_ev44(data: Data, msg: bytes):
+    ev44 = deserialise_ev44(msg)
+
+    bin_events_into_spectrum(
+        histogram=data.spectra[0],
+        event_tofs=ev44.time_of_flight,
+        pixel_ids=ev44.pixel_id,
+        tof_bin_boundaries=np.linspace(0, 20_000_000, 1_000, dtype=np.int32)
+    )
 
 
-def bin_events_into_spectrum_np(
-    histogram: npt.NDArray,
-    event_tofs,
-    pixel_ids,
-    tof_bin_boundaries,
-):
-    indices = np.searchsorted(tof_bin_boundaries, event_tofs, side="right") - 1
-    valid = np.logical_and(indices >= 0, indices < len(tof_bin_boundaries) - 1)
-    np.add.at(histogram, (pixel_ids[valid], indices[valid]), 1)
-
-
-def bin_events_into_spectrum_linear_np(
-    histogram,
-    event_tofs,
-    pixel_ids,
-    tof_bin_start,
-    tof_bin_stop,
-    tof_bin_step,
-):
-    indices = (event_tofs - tof_bin_start) // tof_bin_step
-    valid = np.logical_and(indices >= 0, indices < (tof_bin_stop - tof_bin_start) / tof_bin_step)
-    np.add.at(histogram, (pixel_ids[valid], indices[valid]), 1)
+def handle_msg(data: Data, msg: bytes):
+    schema = get_schema(msg)
+    if schema == "ev44":
+        handle_ev44(data, msg)
 
 
 def main() -> None:
-    detectors = 1000
-    time_channels = 1000
-    events_per_frame = 10_000
+    data = Data(
+        spectra=np.zeros(shape=(10, 1_000, 1_000), dtype=np.uint64),
+        spectrum_updaters=[],
+    )
 
-    arr = np.zeros((detectors, time_channels), dtype=np.uint64)
-    arr2 = np.zeros((detectors, time_channels), dtype=np.uint64)
-    arr3 = np.zeros((detectors, time_channels), dtype=np.uint64)
-    arr4 = np.zeros((detectors, time_channels), dtype=np.uint64)
-
-    detector_ids = RNG.integers(low=0, high=detectors, size=events_per_frame).astype(np.uint32)
-    tofs = RNG.integers(low=0, high=20_000_000, size=events_per_frame).astype(np.uint32)
-
-    boundaries = np.linspace(5_000_000, 15_000_000, num=time_channels + 1).astype(np.uint32)
-
-    start = time.time()
-    for _ in range(50_000):
-        bin_events_into_spectrum(
-            histogram=arr,
-            event_tofs=tofs,
-            pixel_ids=detector_ids,
-            tof_bin_boundaries=boundaries,
-        )
-    end = time.time()
-
-    print(f"rust/arbitrary bins sum = {np.sum(arr)}")
-    print(f"{(end - start) * 1000} ms")
-
-    start = time.time()
-    for _ in range(50_000):
-        bin_events_into_spectrum_np(
-            histogram=arr2,
-            event_tofs=tofs,
-            pixel_ids=detector_ids,
-            tof_bin_boundaries=boundaries,
-        )
-    end = time.time()
-
-    print(f"numpy/arbitrary bins sum = {np.sum(arr2)}")
-    print(f"{(end - start) * 1000} ms")
-
-    start = time.time()
-    for _ in range(50_000):
-        bin_events_into_spectrum_linear(
-            histogram=arr3,
-            event_tofs=tofs,
-            pixel_ids=detector_ids,
-            tof_bin_start=5_000_000,
-            tof_bin_stop=15_000_000,
-            tof_bin_step=10000,
-        )
-    end = time.time()
-
-    print(f"rust/linear bins sum = {np.sum(arr3)}")
-    print(f"{(end - start) * 1000} ms")
-
-    start = time.time()
-    for _ in range(50_000):
-        bin_events_into_spectrum_linear_np(
-            histogram=arr4,
-            event_tofs=tofs,
-            pixel_ids=detector_ids,
-            tof_bin_start=5_000_000,
-            tof_bin_stop=15_000_000,
-            tof_bin_step=10000,
-        )
-    end = time.time()
-
-    print(f"numpy/linear bins sum = {np.sum(arr4)}")
-    print(f"{(end - start) * 1000} ms")
-
-    np.testing.assert_array_equal(arr, arr2)
-    np.testing.assert_array_equal(arr2, arr3)
-    np.testing.assert_array_equal(arr3, arr4)
-    return
-
-    handler = SpectrumHandler()
+    handler = SpectrumHandler("TE:NDW2922:KDAEDIAG:", data)
     providers = [
         DynamicProvider("spectra", handler=handler),
     ]
     server = Server(providers=providers)
-
     with server:
-        while True:
-            time.sleep(1)
-            print(spectrum_updaters)
+        consume_from_kafka_forever(data)
+
+
+def consume_from_kafka_forever(data: Data) -> None:
+    consumer = Consumer(
+        {
+            "bootstrap.servers": "livedata.isis.cclrc.ac.uk:31092",
+            "group.id": f"kafka-dae-diagnostics-{uuid.uuid4()}",
+            "auto.offset.reset": "latest",
+            "enable.auto.commit": False,
+        }
+    )
+    consumer.subscribe(["NDW2922_events"])
+
+    while True:
+        messages = consumer.consume(num_messages=100, timeout=0.1)
+        for msg in messages:
+            if msg.error():
+                logger.warning("Kafka message error: %s", msg.error().code())
+                continue
+            handle_msg(data, msg.value())
+            data.spectra[(0, 0, 0)] += 1
+
+        if len(messages) > 0:
+            # If any messages arrived, spectra may have changed - update any PVs who
+            # are listening.
+            for period, detector, pv in data.spectrum_updaters:
+                pv.post(data.spectra[(0, detector)].astype(np.double), timestamp=time.time())
+
+        print(len(data.spectrum_updaters))
