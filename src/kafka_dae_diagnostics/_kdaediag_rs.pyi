@@ -1,6 +1,5 @@
 import numpy.typing as npt
 
-
 def bin_events_into_spectrum(
     histogram: npt.NDArray,
     event_tofs: npt.NDArray,

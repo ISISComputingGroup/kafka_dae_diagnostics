@@ -1,6 +1,5 @@
 use pyo3::prelude::*;
-use numpy::ndarray::Array3;
-use numpy::{PyArray3, PyReadonlyArray1, IntoPyArray, PyReadwriteArray2};
+use numpy::{PyReadonlyArray1, PyReadwriteArray2};
 
 fn tof_bin_event(tof: u32, bin_boundaries: &[u32]) -> Option<usize> {
     if tof < *bin_boundaries.first()? || tof >= *bin_boundaries.last()? {
@@ -18,6 +17,13 @@ fn tof_bin_event(tof: u32, bin_boundaries: &[u32]) -> Option<usize> {
         }
     }
     Some(lower_bound)
+}
+
+fn tof_bin_event_linear(tof: u32, start: u32, stop: u32, step: u32) -> Option<usize> {
+    if tof < start || tof >= stop {
+        return None
+    }
+    Some(((tof - start) / step) as usize)
 }
 
 #[pyfunction]
@@ -42,9 +48,33 @@ fn bin_events_into_spectrum(
     Ok(())
 }
 
+#[pyfunction]
+fn bin_events_into_spectrum_linear(
+    mut histogram: PyReadwriteArray2<u64>,
+    event_tofs: PyReadonlyArray1<u32>,
+    pixel_ids: PyReadonlyArray1<u32>,
+    tof_bin_start: u32,
+    tof_bin_stop: u32,
+    tof_bin_step: u32,
+) -> PyResult<()> {
+    let mut histogram = histogram.as_array_mut();
+
+    event_tofs.as_array()
+        .iter()
+        .zip(pixel_ids.as_array().iter())
+        .for_each(|(&tof, &pixel)| {
+            if let Some(tof_bin) = tof_bin_event_linear(tof, tof_bin_start, tof_bin_stop, tof_bin_step) {
+                histogram[(pixel as usize, tof_bin)] += 1;
+            }
+        });
+
+    Ok(())
+}
+
 #[pymodule]
 fn _kdaediag_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(bin_events_into_spectrum, m)?)?;
+    m.add_function(wrap_pyfunction!(bin_events_into_spectrum_linear, m)?)?;
 
     Ok(())
 }

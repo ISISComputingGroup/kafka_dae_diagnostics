@@ -1,4 +1,4 @@
-# 2. Approach to histogramming spectra
+# 2. Rust extension module
 
 ## Status
 
@@ -29,36 +29,54 @@ representative set of parameters):
 - Time-of-flights randomly distributed between {math}`0` and {math}`20000000` ns
 - Binning into {math}`1000` evenly-spaced bins between {math}`5000000` and {math}`15000000` ns
 
-In both approaches, a binary search algorithm is used to select the target bin. In the numpy case,
-this is {py:obj}`numpy.searchsorted`, in the native extension case it is a manually written binary
-search. Faster {math}`\small O(1)` algorithms are available if bins are _known_ to be linearly spaced in
-advance; either approach could be adjusted with this optimization, so it is ignored for benchmarking.
-
+For arbitrary bins, a binary search is used to find the target bin for an event. This is {math}`\small O(log(N))`.
+For numpy, the implementation is {py:obj}`numpy.searchsorted`.
+For linear bins, an {math}`\small O(1)` bin lookup is used.
 The implementations were verified to give identical results.
 
 Benchmark results:
-- **Native extension**: 10.4 seconds
+- **Native extension**, arbitrary bins: 10.4 seconds
   * Histogramming 47.9 MEvents/s
-  * Approximately 3.1 Gbit/s of `ev44`)
-- {py:obj}`numpy`: 33.6 seconds
+  * ~3.1 Gbit/s of `ev44`)
+- {py:obj}`numpy`, arbitrary bins: 33.6 seconds
   - Histogramming 14.9 MEvents/s
-  - Approximately 950 Mbit/s of `ev44`
+  - ~950 Mbit/s of `ev44`
+- **Native extension**, linear bins: 1.7 seconds
+  * Histogramming 294 MEvents/s
+  * ~19 Gbit/s of `ev44`)
+- {py:obj}`numpy`, linear bins: 16.4 seconds
+  - Histogramming 30.5 MEvents/s
+  - ~2 Gbit/s of `ev44`
 
 An analysis of count rates across all _existing_ instruments was done for MNeuData; many existing
 ISIS instruments {abbr}`regularly (99th percentile of runs recorded in journal)` have count rates
 between 1-5 MEvents/s, with higher peak count rates within a run and in exceptional setups.
 
+HRPD-X is expected to have multiple monitors counting at ~100s KHz, and a detector flux around 3x higher than
+HRPD due to WLSF detector efficiency upgrades.
+
 5 MEvents/s corresponds to approximately 320 Mbit/s of `ev44` messages.
+
+Discussion with DSG suggests that their side of the streaming setup (for example UDP to Kafka) has maximum
+throughput of around 8 Gbit/s per WLSF module - though this strongly depends on hardware specifications.
 
 ## Decision
 
-- Initially, implement histogramming using {py:obj}`numpy` as it is _reasonably_ performant and keeps this
-module pure-python.
-- If we later see inadequate performance using the {py:obj}`numpy` approach, we may reimplement histogramming
-using a PyO3 native extension to get a ~3x performance increase.
+Implement histogramming using a native PyO3 extension.
+
+Although this makes this project slightly more complicated to develop and deploy, the performance gains
+seem to be large enough in this case to justify the moderate increase in complexity.
+
+Writing the histogramming in native code allows more 'obvious' code to be written - while it is _reasonably_
+performant, the vectorized numpy code is not an obvious implementation and will be more difficult
+to extend in a performant way than equivalent native code, especially when adding filtering such as vetoes.
 
 ## Consequences
 
-- Some performance will be lost, relative to a native extension
-- `kafka_dae_diagnostics` will remain a pure-python project for now
-- We may revisit this decision in future if performance becomes an issue
+- This module will be primarily Python, with a Rust native extension library where performance is a
+concern (for example, histogramming spectra).
+- The code will be slightly more difficult to build than a pure-python library.
+  - `maturin` + `PyO3` make this relatively easy, but it is still _more_ difficult than pure-python.
+- Developers will need some awareness of Rust to modify the native extension.
+- Histogramming spectra will use fewer system resources compared to a {py:obj}`numpy` implementation. This aligns
+with ISIS computing sustainability/energy reduction goals.
