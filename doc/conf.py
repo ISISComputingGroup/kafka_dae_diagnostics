@@ -25,6 +25,7 @@ nitpick_ignore_regex = [
     ("py:obj", r"^.*\.T$"),
     ("py:class", r"^.*\.T.*_co$"),
     ("py:obj", r"^.*\.T.*_co$"),
+    ("py:class", r"^numpy.uint64$"),
 ]
 
 myst_enable_extensions = ["dollarmath", "strikethrough", "colon_fence", "attrs_block"]

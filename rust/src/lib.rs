@@ -40,8 +40,9 @@ fn bin_events_into_spectrum(
         .iter()
         .zip(pixel_ids.as_array().iter())
         .for_each(|(&tof, &pixel)| {
-            if let Some(tof_bin) = tof_bin_event(tof, boundaries) {
-                histogram[(pixel as usize, tof_bin)] += 1;
+            if let Some(tof_bin) = tof_bin_event(tof, boundaries)
+                && let Some(e) = histogram.get_mut((pixel as usize, tof_bin)) {
+                *e += 1;
             }
         });
 
@@ -63,8 +64,9 @@ fn bin_events_into_spectrum_linear(
         .iter()
         .zip(pixel_ids.as_array().iter())
         .for_each(|(&tof, &pixel)| {
-            if let Some(tof_bin) = tof_bin_event_linear(tof, tof_bin_start, tof_bin_stop, tof_bin_step) {
-                histogram[(pixel as usize, tof_bin)] += 1;
+            if let Some(tof_bin) = tof_bin_event_linear(tof, tof_bin_start, tof_bin_stop, tof_bin_step)
+                && let Some(e) = histogram.get_mut((pixel as usize, tof_bin)) {
+                *e += 1;
             }
         });
 

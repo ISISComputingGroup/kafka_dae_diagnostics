@@ -1,86 +1,27 @@
 """Kafka DAE diagnostics."""
-import dataclasses
 import logging
 import time
 import uuid
+from typing import Any
 
 import numpy as np
-import numpy.typing as npt
+from confluent_kafka.cimpl import TopicPartition
 from p4p.server import DynamicProvider, Server
-from p4p.server.thread import SharedPV, Handler
 from confluent_kafka import Consumer
-from streaming_data_types.utils import get_schema
-from streaming_data_types import deserialise_ev44
 
-from kafka_dae_diagnostics._kdaediag_rs import (
-    bin_events_into_spectrum,
-    bin_events_into_spectrum_linear,
-)
-
-from p4p.nt import NTNDArray
+from kafka_dae_diagnostics.data import Data
+from kafka_dae_diagnostics.kafka_handlers import handle_event_messages, \
+    handle_run_info_messages, handle_event_msg
+from kafka_dae_diagnostics.spectrum_handlers import SpectrumHandler
 
 logger = logging.getLogger(__name__)
 
 logging.basicConfig(level=logging.DEBUG)
 
 
-@dataclasses.dataclass
-class Data:
-    spectra: npt.NDArray[np.uint64]
-    spectrum_updaters: list[tuple[int, int, SharedPV]]
-
-
-class SpectrumHandler(Handler):
-    def __init__(self, prefix: str, data: Data) -> None:
-        self._data = data
-        self._prefix = prefix
-
-    def testChannel(self, name: str) -> bool:
-        return name.startswith(self._prefix)
-
-    def makeChannel(self, name: str, peer: str) -> SharedPV:
-        logger.info(f"Making channel {name} {peer}")
-
-        name = name[len(self._prefix):]
-        period = 0
-        det = int(name)
-
-        data = self._data
-
-        class SpectrumSharedPVHandler:
-            def onLastDisconnect(self, pv):
-                data.spectrum_updaters.remove((period, det, pv))
-
-        pv = SharedPV(
-            nt=NTNDArray(),
-            initial=self._data.spectra[period, det].astype(np.double),
-            handler=SpectrumSharedPVHandler()
-        )
-
-        self._data.spectrum_updaters.append((period, det, pv))
-        return pv
-
-
-def handle_ev44(data: Data, msg: bytes):
-    ev44 = deserialise_ev44(msg)
-
-    bin_events_into_spectrum(
-        histogram=data.spectra[0],
-        event_tofs=ev44.time_of_flight,
-        pixel_ids=ev44.pixel_id,
-        tof_bin_boundaries=np.linspace(0, 20_000_000, 1_000, dtype=np.int32)
-    )
-
-
-def handle_msg(data: Data, msg: bytes):
-    schema = get_schema(msg)
-    if schema == "ev44":
-        handle_ev44(data, msg)
-
-
 def main() -> None:
     data = Data(
-        spectra=np.zeros(shape=(10, 1_000, 1_000), dtype=np.uint64),
+        spectra=np.zeros(shape=(1, 1, 1), dtype=np.uint64),
         spectrum_updaters=[],
     )
 
@@ -93,30 +34,70 @@ def main() -> None:
         consume_from_kafka_forever(data)
 
 
-def consume_from_kafka_forever(data: Data) -> None:
-    consumer = Consumer(
-        {
-            "bootstrap.servers": "livedata.isis.cclrc.ac.uk:31092",
-            "group.id": f"kafka-dae-diagnostics-{uuid.uuid4()}",
-            "auto.offset.reset": "latest",
-            "enable.auto.commit": False,
-        }
+def update_spectra(data: Data) -> None:
+    num_updaters = len(data.spectrum_updaters)
+    if num_updaters == 0:
+        return
+
+    logger.debug("Updating %d spectra for connected clients", num_updaters)
+    for period, detector, pv in data.spectrum_updaters:
+        try:
+            pv.post(data.spectra[(0, detector)].astype(np.double), timestamp=time.time())
+        except Exception as e:
+            logger.warning("Failed to update dynamic spectrum PV for period %d, detector %d, error: %s %s", period,
+                           detector, e.__class__.__name__, e)
+
+
+def make_runinfo_consumer(settings: dict[str, Any]) -> Consumer:
+    """
+    Make a runInfo consumer.
+
+    This consumer will start reading from the 2 most recent messages on the
+    runInfo topic; one of these messages should include the most recent run start
+    (pl72) message, which will cause ``kafka_dae_diagnostics`` to correctly configure
+    itself for the current (perhaps in-progress) run on startup.
+    """
+    runinfo_consumer = Consumer(settings)
+
+    start_offset = (
+        runinfo_consumer.get_watermark_offsets(TopicPartition("NDW2922_runInfo", 0), cached=False)[1]
+        - 2
     )
-    consumer.subscribe(["NDW2922_events"])
+    runinfo_consumer.assign([TopicPartition("NDW2922_runInfo", 0, start_offset)])
+    return runinfo_consumer
+
+
+def make_event_consumer(settings: dict[str, Any]) -> Consumer:
+    """Make an event consumer."""
+    event_consumer = Consumer(settings)
+    event_consumer.assign([TopicPartition("NDW2922_events", 0)])
+    return event_consumer
+
+
+def consume_from_kafka_forever(data: Data) -> None:
+    group_id = f"kafka-dae-diagnostics-{uuid.uuid4()}"
+    logger.info("Kafka group ID: %s", group_id)
+
+    settings = {
+        "bootstrap.servers": "livedata.isis.cclrc.ac.uk:31092",
+        "group.id": group_id,
+        "auto.offset.reset": "latest",
+        "enable.auto.commit": False,
+        "fetch.max.bytes": 512 * 1024 ** 2,  # 512MB
+        "max.partition.fetch.bytes": 512 * 1024 ** 2,  # 512MB
+    }
+
+    runinfo_consumer = make_runinfo_consumer(settings)
+    event_consumer = make_event_consumer(settings)
 
     while True:
-        messages = consumer.consume(num_messages=100, timeout=0.1)
-        for msg in messages:
-            if msg.error():
-                logger.warning("Kafka message error: %s", msg.error().code())
-                continue
-            handle_msg(data, msg.value())
-            data.spectra[(0, 0, 0)] += 1
+        run_info_messages = runinfo_consumer.consume(num_messages=50, timeout=0.)
+        handle_run_info_messages(run_info_messages, data=data, event_consumer=event_consumer)
 
-        if len(messages) > 0:
-            # If any messages arrived, spectra may have changed - update any PVs who
-            # are listening.
-            for period, detector, pv in data.spectrum_updaters:
-                pv.post(data.spectra[(0, detector)].astype(np.double), timestamp=time.time())
+        event_messages = event_consumer.consume(num_messages=1000, timeout=0.1)
+        handle_event_messages(event_messages, data=data)
 
-        print(len(data.spectrum_updaters))
+        if len(event_messages) > 0 or len(run_info_messages) > 0:
+            # If any messages arrived, spectra may have changed - update any PVs which
+            # are connected.
+            update_spectra(data)
