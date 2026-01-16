@@ -2,15 +2,15 @@
 
 import logging
 import re
-import time
+import uuid
 
 import numpy as np
 from p4p.server.raw import Handler
 
-from p4p.nt import NTNDArray
-
 from kafka_dae_diagnostics.data import Data
 from p4p.server.thread import SharedPV
+
+from p4p.nt import NTScalar
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ class SpectrumHandler(Handler):
         """
         self._data = data
         self._prefix = prefix
-        self._channel_regex = re.compile(rf"^{re.escape(prefix)}SPEC:(\d+):(\d+):Y$")
+        self._channel_regex = re.compile(rf"^{re.escape(prefix)}SPEC:(\d+):(\d+):([XY])$")
 
     def testChannel(self, name: str) -> bool | str:
         """
@@ -39,8 +39,8 @@ class SpectrumHandler(Handler):
         """
         match = self._channel_regex.fullmatch(name)
         return match is not None \
-            and int(match.group(1)) < self._data.spectra.shape[0] \
-            and int(match.group(2)) < self._data.spectra.shape[1]
+            and int(match.group(1)) < self._data.num_periods \
+            and int(match.group(2)) < self._data.num_detectors
 
     def makeChannel(self, name: str, peer: str) -> SharedPV:
         """
@@ -55,20 +55,33 @@ class SpectrumHandler(Handler):
         match = self._channel_regex.fullmatch(name)
         period = int(match.group(1))
         det = int(match.group(2))
+        typ = match.group(3)
 
-        data = self._data
+        callback_id = f"{name}#{uuid.uuid4()}"
+
+        def extract_data(data: Data):
+            match typ:
+                case "Y":
+                    return self._data.spectra[period][det]
+                case "X":
+                    return ((self._data.bin_boundaries[1:] + self._data.bin_boundaries[:-1]) / 2).astype(np.float64)
+                case _:
+                    raise ValueError(f"Unknown channel type: {typ}")
 
         class ConnectionHandler:
-            def onLastDisconnect(self, pv):
+            @staticmethod
+            def onLastDisconnect(*_, **__):
                 logger.info(f"Closing channel {name} {peer}")
-                data.spectrum_updaters.remove((period, det, pv))
+                with self._data.callbacks_lock:
+                    del self._data.callbacks[callback_id]
 
         pv = SharedPV(
-            nt=NTNDArray(),
-            initial=data.spectra[period, det].astype(np.double),
+            nt=NTScalar("ad"),
+            initial=extract_data(self._data),
             handler=ConnectionHandler(),
-            timestamp=time.time(),
         )
 
-        data.spectrum_updaters.append((period, det, pv))
+        with self._data.callbacks_lock:
+            self._data.callbacks[callback_id] = lambda data: pv.post(extract_data(data))
+
         return pv

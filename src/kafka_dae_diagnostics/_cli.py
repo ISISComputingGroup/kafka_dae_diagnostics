@@ -6,13 +6,16 @@ from typing import Any
 
 import numpy as np
 from confluent_kafka.cimpl import TopicPartition
-from p4p.server import DynamicProvider, Server
+from p4p.server import DynamicProvider, Server, StaticProvider
 from confluent_kafka import Consumer
 
 from kafka_dae_diagnostics.data import Data
 from kafka_dae_diagnostics.kafka_handlers import handle_event_messages, \
-    handle_run_info_messages, handle_event_msg
+    handle_run_info_messages
 from kafka_dae_diagnostics.spectrum_handlers import SpectrumHandler
+import p4p
+
+from kafka_dae_diagnostics.static_pvs import StaticPVs
 
 logger = logging.getLogger(__name__)
 
@@ -21,31 +24,51 @@ logging.basicConfig(level=logging.DEBUG)
 
 def main() -> None:
     data = Data(
-        spectra=np.zeros(shape=(1, 1, 1), dtype=np.uint64),
-        spectrum_updaters=[],
+        spectra=np.zeros(shape=(1, 1, 1), dtype=np.float64),
+        callbacks={},
+        bin_boundaries=np.linspace(0, 20_000_000, num=1001, dtype=np.int32)
     )
 
-    handler = SpectrumHandler("TE:NDW2922:KDAEDIAG:", data)
+    prefix = "TE:NDW2922:KDAEDIAG:"
+
+    static_pvs = StaticPVs(data)
+    static_provider = StaticProvider()
+    static_provider.add(f"{prefix}EVENTS", static_pvs.total_events)
+    static_provider.add(f"{prefix}MEVENTS", static_pvs.total_mevents)
+    static_provider.add(f"{prefix}TOTALCOUNTS", static_pvs.total_events)
+    static_provider.add(f"{prefix}TOTAL_EVENT_MESSAGES", static_pvs.total_event_messages)
+    static_provider.add(f"{prefix}TOTAL_EVENT_MEGABYTES", static_pvs.total_event_megabytes)
+    static_provider.add(f"{prefix}COUNTRATE", static_pvs.count_rate)
+    static_provider.add(f"{prefix}HISTMEMORY", static_pvs.histogram_memory)
+
+    static_provider.add(f"{prefix}NUMPERIODS", static_pvs.num_periods)
+    static_provider.add(f"{prefix}NUMSPECTRA", static_pvs.num_spectra)
+    static_provider.add(f"{prefix}NUMTIMECHANNELS", static_pvs.num_time_channels)
+
+    static_provider.add(f"{prefix}STARTTIME", static_pvs.start_time)
+    static_provider.add(f"{prefix}RUNDURATION", static_pvs.run_duration)
+    static_provider.add(f"{prefix}DIAGNOSTICSLAG", static_pvs.processing_lag)
+
+    spectrum_handler = SpectrumHandler(prefix, data)
     providers = [
-        DynamicProvider("spectra", handler=handler),
+        DynamicProvider("spectra", handler=spectrum_handler),
+        static_provider,
     ]
+
+    data.callbacks["static-callbacks"] = static_pvs.update_all
+
     server = Server(providers=providers)
     with server:
         consume_from_kafka_forever(data)
 
 
-def update_spectra(data: Data) -> None:
-    num_updaters = len(data.spectrum_updaters)
-    if num_updaters == 0:
-        return
-
-    logger.debug("Updating %d spectra for connected clients", num_updaters)
-    for period, detector, pv in data.spectrum_updaters:
-        try:
-            pv.post(data.spectra[(0, detector)].astype(np.double), timestamp=time.time())
-        except Exception as e:
-            logger.warning("Failed to update dynamic spectrum PV for period %d, detector %d, error: %s %s", period,
-                           detector, e.__class__.__name__, e)
+def callbacks(data: Data) -> None:
+    with data.callbacks_lock:
+        for callback_id, cb in data.callbacks.items():
+            try:
+                cb(data)
+            except Exception as e:
+                logger.warning("Callback '%s' failed, error: %s %s", callback_id, e.__class__.__name__, e)
 
 
 def make_runinfo_consumer(settings: dict[str, Any]) -> Consumer:
@@ -59,10 +82,8 @@ def make_runinfo_consumer(settings: dict[str, Any]) -> Consumer:
     """
     runinfo_consumer = Consumer(settings)
 
-    start_offset = (
-        runinfo_consumer.get_watermark_offsets(TopicPartition("NDW2922_runInfo", 0), cached=False)[1]
-        - 2
-    )
+    low, high = runinfo_consumer.get_watermark_offsets(TopicPartition("NDW2922_runInfo", 0), cached=False)
+    start_offset = max(high - 2, low)
     runinfo_consumer.assign([TopicPartition("NDW2922_runInfo", 0, start_offset)])
     return runinfo_consumer
 
@@ -92,12 +113,15 @@ def consume_from_kafka_forever(data: Data) -> None:
 
     while True:
         run_info_messages = runinfo_consumer.consume(num_messages=50, timeout=0.)
-        handle_run_info_messages(run_info_messages, data=data, event_consumer=event_consumer)
+        if run_info_messages:
+            handle_run_info_messages(run_info_messages, data=data, event_consumer=event_consumer)
 
         event_messages = event_consumer.consume(num_messages=1000, timeout=0.1)
-        handle_event_messages(event_messages, data=data)
+        if event_messages:
+            start = time.time()
+            handle_event_messages(event_messages, data=data)
+            logger.debug("Handled %d event messages in %.3f ms", len(event_messages), ((time.time() - start) * 1000))
 
         if len(event_messages) > 0 or len(run_info_messages) > 0:
-            # If any messages arrived, spectra may have changed - update any PVs which
-            # are connected.
-            update_spectra(data)
+            # If any messages arrived, data may have changed - update all subscribed callbacks
+            callbacks(data)

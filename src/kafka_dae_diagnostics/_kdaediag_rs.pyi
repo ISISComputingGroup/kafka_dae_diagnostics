@@ -5,7 +5,7 @@ def bin_events_into_spectrum(
     event_tofs: npt.NDArray,
     pixel_ids: npt.NDArray,
     tof_bin_boundaries: npt.NDArray,
-) -> npt.NDArray:
+) -> None:
     pass
 
 
@@ -16,5 +16,5 @@ def bin_events_into_spectrum_linear(
     tof_bin_start: int,
     tof_bin_stop: int,
     tof_bin_step: int,
-) -> npt.NDArray:
+) -> None:
     pass

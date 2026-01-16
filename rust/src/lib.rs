@@ -28,7 +28,7 @@ fn tof_bin_event_linear(tof: i32, start: i32, stop: i32, step: i32) -> Option<us
 
 #[pyfunction]
 fn bin_events_into_spectrum(
-    mut histogram: PyReadwriteArray2<u64>,
+    mut histogram: PyReadwriteArray2<f64>,
     event_tofs: PyReadonlyArray1<i32>,
     pixel_ids: PyReadonlyArray1<i32>,
     tof_bin_boundaries: PyReadonlyArray1<i32>,
@@ -42,7 +42,7 @@ fn bin_events_into_spectrum(
         .for_each(|(&tof, &pixel)| {
             if let Some(tof_bin) = tof_bin_event(tof, boundaries)
                 && let Some(e) = histogram.get_mut((pixel as usize, tof_bin)) {
-                *e += 1;
+                *e += 1.0
             }
         });
 
@@ -51,7 +51,7 @@ fn bin_events_into_spectrum(
 
 #[pyfunction]
 fn bin_events_into_spectrum_linear(
-    mut histogram: PyReadwriteArray2<u64>,
+    mut histogram: PyReadwriteArray2<f64>,
     event_tofs: PyReadonlyArray1<i32>,
     pixel_ids: PyReadonlyArray1<i32>,
     tof_bin_start: i32,
@@ -66,7 +66,7 @@ fn bin_events_into_spectrum_linear(
         .for_each(|(&tof, &pixel)| {
             if let Some(tof_bin) = tof_bin_event_linear(tof, tof_bin_start, tof_bin_stop, tof_bin_step)
                 && let Some(e) = histogram.get_mut((pixel as usize, tof_bin)) {
-                *e += 1;
+                *e += 1.0
             }
         });
 
