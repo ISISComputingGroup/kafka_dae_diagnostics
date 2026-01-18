@@ -30,14 +30,14 @@ representative set of parameters):
 - Binning into {math}`1000` evenly-spaced bins between {math}`5000000` and {math}`15000000` ns
 
 For arbitrary bins, a binary search is used to find the target bin for an event. This is {math}`\small O(log(N))`.
-For numpy, the implementation is {py:obj}`numpy.searchsorted`.
+For numpy, the implementation is {py:obj}`numpy.searchsorted`. For Rust, the implementation is [`slice::partition_point`](https://doc.rust-lang.org/std/primitive.slice.html#method.partition_point).
 For linear bins, an {math}`\small O(1)` bin lookup is used.
 The implementations were verified to give identical results.
 
 Benchmark results:
-- **Native extension**, arbitrary bins: 10.4 seconds
-  * Histogramming 47.9 MEvents/s
-  * ~3.1 Gbit/s of `ev44`)
+- **Native extension**, arbitrary bins: 4.5 seconds
+  * Histogramming 111 MEvents/s
+  * ~7.2 Gbit/s of `ev44`)
 - {py:obj}`numpy`, arbitrary bins: 33.6 seconds
   - Histogramming 14.9 MEvents/s
   - ~950 Mbit/s of `ev44`
