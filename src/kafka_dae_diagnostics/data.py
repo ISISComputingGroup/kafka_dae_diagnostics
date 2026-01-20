@@ -2,6 +2,7 @@
 
 import dataclasses
 import threading
+import time
 from collections.abc import Callable
 from dataclasses import field
 
@@ -11,22 +12,25 @@ import numpy.typing as npt
 
 @dataclasses.dataclass
 class Data:
-    """A mutable object describing the data being served."""
+    """A mutable object describing the data being served by this IOC."""
 
-    spectra: npt.NDArray[np.float64]
+    spectra: npt.NDArray[np.float64] = field(
+        default_factory=lambda: np.zeros(shape=(1, 1, 1), dtype=np.float64)
+    )
     """
     An array describing counts since last run start.
 
-    Has shape ``(n_periods, n_detectors, n_timechannels)`` and
-    data-type :py:obj:`numpy.uint`.
+    Has shape ``(n_periods, n_detectors, n_timechannels)``.
     """
 
-    callbacks: dict[str, Callable[[], None]]
+    callbacks: dict[str, Callable[[], None]] = field(default_factory=dict)
     """
     A list of callbacks to notify when data is updated.
     """
 
-    bin_boundaries: npt.NDArray[np.int32]
+    bin_boundaries: npt.NDArray[np.int32] = field(
+        default_factory=lambda: np.linspace(0, 100_000_000, num=2, dtype=np.int32)
+    )
     """
     Time-bin boundaries (ns).
     """
@@ -90,7 +94,7 @@ class Data:
     @property
     def duration(self) -> float:
         """Run duration in seconds."""
-        return max(self.largest_kafka_timestamp - self.start_time, 0)
+        return max(time.time() - self.start_time, 0)
 
     @property
     def mev_per_hour(self) -> float:

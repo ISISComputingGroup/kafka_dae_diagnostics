@@ -5,7 +5,7 @@ import time
 
 import numpy as np
 from confluent_kafka import Consumer, Message, TopicPartition
-from streaming_data_types import deserialise_6s4t, deserialise_ev44, deserialise_pl72
+from streaming_data_types import deserialise_6s4t, deserialise_ev44, deserialise_pl72, serialise_ev44
 from streaming_data_types.utils import get_schema
 
 from kafka_dae_diagnostics._kdaediag_rs import bin_events_into_spectrum
@@ -22,14 +22,19 @@ def handle_event_messages(event_messages: list[Message], data: Data) -> None:
         data: Data served by ``kafka_dae_diagnostics``.
 
     """
+    t = time.time()
+    s = 0
     for msg in event_messages:
-        if error := msg.error():
+        if value := msg.value():
+            ti = time.time()
+            handle_event_msg(data, value)
+            s += time.time() - ti
+        elif error := msg.error():
             logger.warning("Kafka message error: %s", error.code())
             continue
-        elif value := msg.value():
-            handle_event_msg(data, value)
         else:
             logger.warning("Kafka event message neither error() nor value() available, ignoring.")
+    print(f"total: {time.time() - t} sum: {s}")
 
 
 def handle_event_msg(data: Data, msg: bytes) -> None:
@@ -141,7 +146,7 @@ def handle_pl72(data: Data, msg: bytes, event_consumer: Consumer) -> None:
     )
     periods = 1  # TODO
     detectors = n_spectra
-    time_channels = 10000  # TODO
+    time_channels = 1000  # TODO
 
     data.bin_boundaries = np.linspace(0, 20_000_000, time_channels + 1, dtype=np.int32)  # TODO
 
@@ -174,3 +179,56 @@ def handle_6s4t(data: Data, msg: bytes) -> None:
     """Handle a 6s4t (run stop) mesage from Kafka."""
     run_stop_6s4t = deserialise_6s4t(msg)
     data.stop_time = run_stop_6s4t.stop_time / 1000
+
+
+RNG = np.random.default_rng()
+
+
+def generate_fake_events(
+    msg_id: int,
+    events_per_frame: int,
+    tof_peak: float,
+    tof_sigma: float,
+    det_min: int,
+    det_max: int,
+) -> bytes:
+    detector_ids = RNG.integers(low=det_min, high=det_max, size=events_per_frame)
+    tofs = np.maximum(0.0, RNG.normal(loc=tof_peak, scale=tof_sigma, size=events_per_frame))
+
+    return serialise_ev44(
+        source_name="saluki",
+        reference_time=[time.time() * 1_000_000_000],
+        message_id=msg_id,
+        reference_time_index=[0],
+        time_of_flight=tofs,
+        pixel_id=detector_ids,
+    )
+
+
+if __name__ == "__main__":
+
+    num = 5000
+
+    n_events = 26_000
+    data = Data(
+        spectra=np.zeros((1, 50_000, 1000), dtype=np.float64),
+        bin_boundaries=np.linspace(0, 20_000_000, 1001, dtype=np.int32),
+    )
+    spec = data.spectra[0][:]
+    msgs = [
+        generate_fake_events(0, n_events, 10_000_000, 2_000_000, 0, 50_000)
+        for _ in range(num)
+    ]
+    len_bytes = sum(len(msg) for msg in msgs)
+
+    start = time.time()
+    for msg in msgs:
+        handle_ev44(data, msg)
+
+    t = (time.time() - start)
+
+    print(f"{t*1000:.3f} ms")
+    print(f"{t*1000/len(msgs):.6f} ms/msg")
+    print(f"{len_bytes / (1024 * 1024 * t):.3f} MiB/s")
+    print(f"{len_bytes * 8 / (1024 * 1024 * t):.3f} Mbit/s")
+    print(f"{n_events * num / (1_000_000 * t):.3f} Mev/s")

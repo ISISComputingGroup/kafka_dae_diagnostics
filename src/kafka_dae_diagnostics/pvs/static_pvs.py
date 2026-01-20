@@ -3,9 +3,44 @@
 import time
 
 from p4p.nt import NTScalar
+from p4p.server import StaticProvider
 from p4p.server.thread import SharedPV
 
 from kafka_dae_diagnostics.data import Data
+
+
+def static_pv_provider(prefix: str, data: Data) -> StaticProvider:
+    """:py:obj:`p4p` static pv provider.
+
+    Args:
+        prefix: PV prefix
+        data: The data to serve
+
+    """
+    static_pvs = StaticPVs(data)
+    static_provider = StaticProvider()
+    static_provider.add(f"{prefix}EVENTS", static_pvs.total_events)
+    static_provider.add(f"{prefix}MEVENTS", static_pvs.total_mevents)
+    static_provider.add(f"{prefix}TOTALCOUNTS", static_pvs.total_events)
+    static_provider.add(f"{prefix}EVENTMESSAGES", static_pvs.total_event_messages)
+    static_provider.add(f"{prefix}EVENTMODEFILEMB", static_pvs.total_event_megabytes)
+    static_provider.add(f"{prefix}COUNTRATE", static_pvs.count_rate)
+    static_provider.add(f"{prefix}EVENTMODEDATARATE", static_pvs.data_rate)
+    static_provider.add(f"{prefix}HISTMEMORY", static_pvs.histogram_memory)
+
+    static_provider.add(f"{prefix}NUMPERIODS", static_pvs.num_periods)
+    static_provider.add(f"{prefix}NUMSPECTRA", static_pvs.num_spectra)
+    static_provider.add(f"{prefix}NUMTIMECHANNELS", static_pvs.num_time_channels)
+
+    static_provider.add(f"{prefix}START_TIME", static_pvs.start_time)
+    static_provider.add(f"{prefix}STOP_TIME", static_pvs.stop_time)
+    static_provider.add(f"{prefix}RUNDURATION", static_pvs.run_duration)
+    static_provider.add(f"{prefix}PROCESSINGLAG", static_pvs.event_processing_lag)
+    static_provider.add(f"{prefix}DIAGNOSTICSLAG", static_pvs.diagnostics_update_lag)
+
+    data.callbacks["static-callbacks"] = lambda: static_pvs.update_all(data)
+
+    return static_provider
 
 
 class StaticPVs:
