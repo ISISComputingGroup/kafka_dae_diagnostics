@@ -12,7 +12,9 @@ from kafka_dae_diagnostics.pvs.spectrum_handlers import SpectrumHandler
 from kafka_dae_diagnostics.pvs.static_pvs import static_pv_provider
 
 
-def serve(prefix: str, broker: str, run_info_topic: str, event_topic: str) -> None:
+def serve(
+    prefix: str, broker: str, run_info_topic: str, event_topic: str, callback_frequency: float
+) -> None:
     """Serve PVs while consuming from Kafka (forever).
 
     Args:
@@ -20,6 +22,7 @@ def serve(prefix: str, broker: str, run_info_topic: str, event_topic: str) -> No
         broker: Kafka broker URL.
         run_info_topic: runInfo topic name.
         event_topic: event topic name.
+        callback_frequency: PV update callback frequency (s).
 
     """
     data = Data()
@@ -32,5 +35,9 @@ def serve(prefix: str, broker: str, run_info_topic: str, event_topic: str) -> No
     server = Server(providers=providers)
     with server:
         consume_from_kafka_forever(
-            broker=broker, run_info_topic=run_info_topic, event_topic=event_topic, data=data
+            broker=broker,
+            run_info_topic=run_info_topic,
+            event_topic=event_topic,
+            data=data,
+            callback_frequency=callback_frequency,
         )

@@ -2,7 +2,6 @@
 
 import dataclasses
 import threading
-import time
 from collections.abc import Callable
 from dataclasses import field
 
@@ -94,7 +93,7 @@ class Data:
     @property
     def duration(self) -> float:
         """Run duration in seconds."""
-        return max(time.time() - self.start_time, 0)
+        return max(self.largest_kafka_timestamp - self.start_time, 0)
 
     @property
     def mev_per_hour(self) -> float:

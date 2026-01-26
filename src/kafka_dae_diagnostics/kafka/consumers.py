@@ -44,12 +44,17 @@ def make_event_consumer(broker: str, topic: str) -> Consumer:
         "group.id": f"kafka-dae-diagnostics-{uuid.uuid4()}",
         "auto.offset.reset": "latest",
         "enable.auto.commit": False,
-        "fetch.max.bytes": 512 * 1024**2,  # 8MB
-        "max.partition.fetch.bytes": 512 * 1024**2,  # 8MB
+        "fetch.max.bytes": 512 * 1024**2,  # 512MB
+        "max.partition.fetch.bytes": 512 * 1024**2,  # 512MB
+        "fetch.min.bytes": 64 * 1024**2,  # 64MB
+        "fetch.wait.max.ms": 100,
+        "statistics.interval.ms": 30000,
+        "stats_cb": logger.debug,
     }
 
     event_consumer = Consumer(settings)
-    event_consumer.assign([TopicPartition(topic, 0)])
+    partitions = event_consumer.list_topics(topic).topics[topic].partitions.keys()
+    event_consumer.assign([TopicPartition(topic, partition) for partition in partitions])
     return event_consumer
 
 
@@ -73,7 +78,7 @@ def run_callbacks(data: Data) -> None:
 
 
 def consume_from_kafka_forever(
-    broker: str, run_info_topic: str, event_topic: str, data: Data
+    broker: str, run_info_topic: str, event_topic: str, data: Data, callback_frequency: float
 ) -> None:
     """Consume from Kafka forever.
 
@@ -82,21 +87,23 @@ def consume_from_kafka_forever(
         run_info_topic: Name of the runInfo topic.
         event_topic: Name of the event topic.
         data: The data to serve.
+        callback_frequency: How frequently to update PVs (s)
 
     """
     runinfo_consumer = make_runinfo_consumer(broker=broker, topic=run_info_topic)
     event_consumer = make_event_consumer(broker=broker, topic=event_topic)
+    last_callback_time = 0
 
     while True:
-        run_info_messages = runinfo_consumer.consume(num_messages=50, timeout=0.0)
+        run_info_messages = runinfo_consumer.consume(num_messages=100, timeout=0.0)
         if run_info_messages:
             handle_run_info_messages(run_info_messages, data=data, event_consumer=event_consumer)
 
-        event_messages = event_consumer.consume(num_messages=1_000_000, timeout=0.1)
+        event_messages = event_consumer.consume(num_messages=10_000, timeout=0.0)
         if event_messages:
-            start = time.time()
+            handle_events_start_time = time.time()
             handle_event_messages(event_messages, data=data)
-            time_ms = (time.time() - start) * 1000
+            time_ms = (time.time() - handle_events_start_time) * 1000
             logger.debug(
                 "Handled %d event messages in %.3f ms (%.3f ms per message).",
                 len(event_messages),
@@ -104,4 +111,10 @@ def consume_from_kafka_forever(
                 time_ms / len(event_messages),
             )
 
-        run_callbacks(data)
+        now = time.time()
+        if now - last_callback_time > callback_frequency:
+            run_callbacks(data)
+            last_callback_time = now
+
+        if len(event_messages) == 0:
+            time.sleep(0.01)
