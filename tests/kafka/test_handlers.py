@@ -33,6 +33,14 @@ RUN_START = serialise_pl72(
     detector_spectrum_map=DetectorSpectrumMap(detector_ids=[0], spectrum_numbers=[0], n_spectra=1),
 )
 
+RUN_START_NO_SPECMAP = serialise_pl72(
+    job_id="a job id",
+    filename="a file name",
+    start_time=1234 * 1_000,
+    run_name="a really nice run",
+    instrument_name="GREAT_INSTRUMENT",
+)
+
 RUN_STOP = serialise_6s4t(job_id="a job id", run_name="a really nice run", stop_time=1234 * 1_000)
 
 INVALID_MSG = b"\0\0\0\0\0\0\0\0"
@@ -91,7 +99,8 @@ def test_handle_runinfo_msg():
     assert data.stop_time == 1234
 
 
-def test_handle_pl72():
+@pytest.mark.parametrize("run_start", [RUN_START, RUN_START_NO_SPECMAP])
+def test_handle_pl72(run_start: bytes):
     data = Data(
         total_events=5,
         total_event_messages=5,
@@ -102,7 +111,9 @@ def test_handle_pl72():
     )
     event_consumer = MagicMock()
 
-    handle_pl72(data, RUN_START, event_consumer)
+    # Check we handle multiple runstarts in a row...
+    handle_pl72(data, run_start, event_consumer)
+    handle_pl72(data, run_start, event_consumer)
 
     assert data.total_events == 0
     assert data.total_event_messages == 0

@@ -63,7 +63,9 @@ class SpectrumHandler(Handler):
 
         callback_id = f"{name}#{uuid.uuid4()}"
 
-        def extract_data() -> npt.NDArray[np.float64]:
+        def extract_data(
+            typ: str = typ, period: int = period, det: int = det
+        ) -> npt.NDArray[np.float64]:
             match typ:
                 case "Y":
                     return self._data.spectra[period][det]
@@ -71,7 +73,7 @@ class SpectrumHandler(Handler):
                     return (
                         (self._data.bin_boundaries[1:] + self._data.bin_boundaries[:-1]) / 2
                     ).astype(np.float64)
-                case _:
+                case _:  # pragma: no cover (unreachable)
                     raise ValueError(f"Unknown channel type: {typ}")
 
         class ConnectionHandler:
