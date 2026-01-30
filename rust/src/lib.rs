@@ -2,16 +2,6 @@ use numpy::{PyReadonlyArray1, PyReadwriteArray2, ndarray::ArrayViewMut2};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
-fn tof_bin_event(tof: i32, bin_boundaries: &[i32]) -> Option<usize> {
-    let partition_point = bin_boundaries.partition_point(|&t| tof >= t);
-    if partition_point == 0 || partition_point >= bin_boundaries.len() {
-        None
-    } else {
-        Some(partition_point - 1)
-    }
-}
-
-
 #[inline]
 fn tof_bin_event_linear(tof: i32, start: i32, stop: i32, step: i32) -> Option<usize> {
     if tof < start || tof >= stop {
@@ -30,18 +20,29 @@ fn tof_bin_event_linear(tof: i32, start: i32, stop: i32, step: i32) -> Option<us
 /// is therefore more efficient than a binary search on bin
 /// boundaries for each event - and throughput of this algorithm
 /// increases as the number of events in an ev44 increases.
-fn accumulate_sorted_events(event_tofs: &[i32], pixel_ids: &[i32], boundaries: &[i32], hist: &mut ArrayViewMut2<f64>) {
+fn accumulate_sorted_events(
+    event_tofs: &[i32],
+    pixel_ids: &[i32],
+    boundaries: &[i32],
+    hist: &mut ArrayViewMut2<f64>,
+) {
     let mut bin_idx = 0;
 
     for (&tof, &pixel) in event_tofs.iter().zip(pixel_ids) {
-        while boundaries.get(bin_idx).map(|&boundary| tof >= boundary).unwrap_or(false) {
+        while boundaries
+            .get(bin_idx)
+            .map(|&boundary| tof >= boundary)
+            .unwrap_or(false)
+        {
             bin_idx += 1;
         }
         if bin_idx >= boundaries.len() {
             // Since events are sorted in ToF, no more events can possibly be added to histogram.
             break;
         }
-        if bin_idx >= 1 && let Some(elem) = hist.get_mut((pixel as usize, bin_idx - 1)) {
+        if bin_idx >= 1
+            && let Some(elem) = hist.get_mut((pixel as usize, bin_idx - 1))
+        {
             *elem += 1.0;
         }
     }
@@ -53,25 +54,34 @@ fn accumulate_sorted_events(event_tofs: &[i32], pixel_ids: &[i32], boundaries: &
 /// https://github.com/mantidproject/mantid/blob/0d4de52da17df6d055e285902e87ebc53d2de7f6/Framework/DataObjects/src/EventList.cpp#L2575
 ///
 /// Sorting events by ToF is more efficient than doing a binary search on each event.
-fn accumulate_unsorted_events(event_tofs: &[i32], pixel_ids: &[i32], boundaries: &[i32], hist: &mut ArrayViewMut2<f64>) {
+fn accumulate_unsorted_events(
+    event_tofs: &[i32],
+    pixel_ids: &[i32],
+    boundaries: &[i32],
+    hist: &mut ArrayViewMut2<f64>,
+) {
     // Vec<(tof, pixel_id)>
-    let mut all_events = event_tofs.iter()
-        .zip(pixel_ids.iter())
-        .collect::<Vec<_>>();
+    let mut all_events = event_tofs.iter().zip(pixel_ids.iter()).collect::<Vec<_>>();
 
     all_events.sort_unstable_by_key(|e| e.0);
 
     let mut bin_idx = 0;
 
     for (&tof, &pixel) in all_events {
-        while boundaries.get(bin_idx).map(|&boundary| tof >= boundary).unwrap_or(false) {
+        while boundaries
+            .get(bin_idx)
+            .map(|&boundary| tof >= boundary)
+            .unwrap_or(false)
+        {
             bin_idx += 1;
         }
         if bin_idx >= boundaries.len() {
             // Since events are sorted in ToF, no more events can possibly be added to histogram.
             break;
         }
-        if bin_idx >= 1 && let Some(elem) = hist.get_mut((pixel as usize, bin_idx - 1)) {
+        if bin_idx >= 1
+            && let Some(elem) = hist.get_mut((pixel as usize, bin_idx - 1))
+        {
             *elem += 1.0;
         }
     }
@@ -183,18 +193,18 @@ fn _kdaediag_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
 mod tests {
     use super::*;
 
-//     #[test]
-//     fn test_tof_bin_event() {
-//         let bin_edges = [2, 4, 6];
-//         assert_eq!(tof_bin_event(0, &bin_edges), None);
-//         assert_eq!(tof_bin_event(1, &bin_edges), None);
-//         assert_eq!(tof_bin_event(2, &bin_edges), Some(0));
-//         assert_eq!(tof_bin_event(3, &bin_edges), Some(0));
-//         assert_eq!(tof_bin_event(4, &bin_edges), Some(1));
-//         assert_eq!(tof_bin_event(5, &bin_edges), Some(1));
-//         assert_eq!(tof_bin_event(6, &bin_edges), None);
-//         assert_eq!(tof_bin_event(7, &bin_edges), None);
-//     }
+    //     #[test]
+    //     fn test_tof_bin_event() {
+    //         let bin_edges = [2, 4, 6];
+    //         assert_eq!(tof_bin_event(0, &bin_edges), None);
+    //         assert_eq!(tof_bin_event(1, &bin_edges), None);
+    //         assert_eq!(tof_bin_event(2, &bin_edges), Some(0));
+    //         assert_eq!(tof_bin_event(3, &bin_edges), Some(0));
+    //         assert_eq!(tof_bin_event(4, &bin_edges), Some(1));
+    //         assert_eq!(tof_bin_event(5, &bin_edges), Some(1));
+    //         assert_eq!(tof_bin_event(6, &bin_edges), None);
+    //         assert_eq!(tof_bin_event(7, &bin_edges), None);
+    //     }
 
     #[test]
     fn test_tof_bin_event_linear() {

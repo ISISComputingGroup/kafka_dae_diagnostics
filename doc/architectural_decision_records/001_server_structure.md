@@ -19,7 +19,7 @@ update at a high rate as new neutron events are histogrammed into the spectrum.
 Use cases for DAE spectra include:
 - A user visually monitoring a spectrum from a GUI. This means it must be possible for a client to
 monitor a spectrum that it is interested in.
-- Scripted clients, which will spectra programmatically, for example:
+- Scripted clients, which will retrieve spectra programmatically, for example:
   * {py:obj}`ibex_bluesky_core.devices.dae.DaeSpectra`
   * {py:obj}`genie.get_spectrum`
 
@@ -32,8 +32,8 @@ update them as new neutron events arrive. {py:obj}`fastcs` can serve arrays over
 simultaneously.
 
 This approach is simple, but very wasteful performance-wise: all spectra would be being updated
-constantly, even if no client was interested. Initial performance tests showed this approach not
-to be viable even for modest numbers of spectra.
+constantly, even if no client was interested. The performance of this approach is not viable, even
+for modest numbers of spectra.
 
 ### CA Server ({py:obj}`pcaspy`)
 

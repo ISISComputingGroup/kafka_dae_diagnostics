@@ -26,6 +26,9 @@ nitpick_ignore_regex = [
     ("py:class", r"^.*\.T.*_co$"),
     ("py:obj", r"^.*\.T.*_co$"),
     ("py:class", r"^numpy.uint64$"),
+    ("py:class", r"^numpy.int32"),
+    ("py:class", r"^numpy.float64"),
+    ("py:class", r"^cimpl.Consumer"),
 ]
 
 myst_enable_extensions = ["dollarmath", "strikethrough", "colon_fence", "attrs_block"]
@@ -94,4 +97,8 @@ intersphinx_mapping = {
     "ibex_bluesky_core": ("https://isiscomputinggroup.github.io/ibex_bluesky_core", None),
     "ibex_developers_manual": ("https://isiscomputinggroup.github.io/ibex_developers_manual", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
+    "confluent_kafka": (
+        "https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/",
+        None,
+    ),
 }

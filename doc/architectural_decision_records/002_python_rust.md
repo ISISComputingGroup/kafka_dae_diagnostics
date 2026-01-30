@@ -9,8 +9,8 @@ Current
 This module will need to deliver a range of DAE diagnostics information, including
 time-of-flight spectra for each period.
 
-Binning incoming events into spectra as they arrive could be performance-sensitive (dependent
-on event rate).
+Binning incoming events into spectra as they arrive can be performance-sensitive, dependent
+on event rate and numbers of periods/spectra/time channels.
 
 :::{note}
 The updates will not actually be _sent_ to EPICS PVs unless a subscriber is attached; see
