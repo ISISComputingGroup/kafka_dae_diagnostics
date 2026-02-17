@@ -2,14 +2,6 @@ use numpy::{PyReadonlyArray1, PyReadwriteArray2, ndarray::ArrayViewMut2};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
-#[inline]
-fn tof_bin_event_linear(tof: i32, start: i32, stop: i32, step: i32) -> Option<usize> {
-    if tof < start || tof >= stop {
-        return None;
-    }
-    Some(((tof - start) / step) as usize)
-}
-
 /// Accumulates events into a histogram, assuming events are already sorted
 /// in time-of-flight. The result is meaningless if events are not sorted.
 ///
@@ -129,62 +121,10 @@ fn bin_events_into_spectrum(
     Ok(())
 }
 
-/// Bin events into a spectrum array, specified by
-/// a (start, stop, step) set of parameters.
-///
-/// This function does not release the GIL as it mutates
-/// a *view* onto a numpy-allocated array. We cannot allow
-/// other python threads to concurrently modify (e.g. resize)
-/// that array.
-#[pyfunction]
-fn bin_events_into_spectrum_linear(
-    mut histogram: PyReadwriteArray2<f64>,
-    event_tofs: PyReadonlyArray1<i32>,
-    pixel_ids: PyReadonlyArray1<i32>,
-    tof_bin_start: i32,
-    tof_bin_stop: i32,
-    tof_bin_step: i32,
-) -> PyResult<()> {
-    let mut histogram = histogram.as_array_mut();
-    let event_tofs = event_tofs.as_slice()?;
-    let pixel_ids = pixel_ids.as_slice()?;
-
-    if tof_bin_step == 0 {
-        return Err(PyValueError::new_err("Must have a positive TOF bin step"));
-    }
-
-    if tof_bin_stop <= tof_bin_start {
-        return Err(PyValueError::new_err(
-            "TOF binning stop must be larger than start",
-        ));
-    }
-
-    if event_tofs.len() != pixel_ids.len() {
-        return Err(PyValueError::new_err(
-            "Events TOFs and pixel_ids must have the same length",
-        ));
-    }
-
-    event_tofs
-        .iter()
-        .zip(pixel_ids.iter())
-        .for_each(|(&tof, &pixel)| {
-            if let Some(tof_bin) =
-                tof_bin_event_linear(tof, tof_bin_start, tof_bin_stop, tof_bin_step)
-                && let Some(e) = histogram.get_mut((pixel as usize, tof_bin))
-            {
-                *e += 1.0
-            }
-        });
-
-    Ok(())
-}
-
 /// Overall rust module for all rust helpers.
 #[pymodule]
 fn _kdaediag_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(bin_events_into_spectrum, m)?)?;
-    m.add_function(wrap_pyfunction!(bin_events_into_spectrum_linear, m)?)?;
 
     Ok(())
 }
@@ -192,30 +132,37 @@ fn _kdaediag_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    //     #[test]
-    //     fn test_tof_bin_event() {
-    //         let bin_edges = [2, 4, 6];
-    //         assert_eq!(tof_bin_event(0, &bin_edges), None);
-    //         assert_eq!(tof_bin_event(1, &bin_edges), None);
-    //         assert_eq!(tof_bin_event(2, &bin_edges), Some(0));
-    //         assert_eq!(tof_bin_event(3, &bin_edges), Some(0));
-    //         assert_eq!(tof_bin_event(4, &bin_edges), Some(1));
-    //         assert_eq!(tof_bin_event(5, &bin_edges), Some(1));
-    //         assert_eq!(tof_bin_event(6, &bin_edges), None);
-    //         assert_eq!(tof_bin_event(7, &bin_edges), None);
-    //     }
+    use numpy::ndarray::Array2;
 
     #[test]
-    fn test_tof_bin_event_linear() {
-        let (start, stop, step) = (2, 6, 2);
-        assert_eq!(tof_bin_event_linear(0, start, stop, step), None);
-        assert_eq!(tof_bin_event_linear(1, start, stop, step), None);
-        assert_eq!(tof_bin_event_linear(2, start, stop, step), Some(0));
-        assert_eq!(tof_bin_event_linear(3, start, stop, step), Some(0));
-        assert_eq!(tof_bin_event_linear(4, start, stop, step), Some(1));
-        assert_eq!(tof_bin_event_linear(5, start, stop, step), Some(1));
-        assert_eq!(tof_bin_event_linear(6, start, stop, step), None);
-        assert_eq!(tof_bin_event_linear(7, start, stop, step), None);
+    fn test_accumulate_sorted_events() {
+        let tofs = [10, 20, 30, 30, 40, 50];
+        let pixel_ids = [0, 1, 0, 0, 0, 0];
+        let boundaries = [15, 25, 35, 45];
+
+        let mut hist = Array2::zeros((2, 3));
+
+        accumulate_sorted_events(&tofs, &pixel_ids, &boundaries, &mut hist.view_mut());
+
+        assert_eq!(hist[(0, 0)], 0.0);
+        assert_eq!(hist[(0, 1)], 2.0);
+        assert_eq!(hist[(0, 2)], 1.0);
+        assert_eq!(hist[(1, 0)], 1.0);
+    }
+
+    #[test]
+    fn test_accumulate_unsorted_events() {
+        let tofs = [10, 30, 50, 40, 30, 20];
+        let pixel_ids = [0, 0, 0, 0, 0, 1];
+        let boundaries = [15, 25, 35, 45];
+
+        let mut hist = Array2::zeros((2, 3));
+
+        accumulate_unsorted_events(&tofs, &pixel_ids, &boundaries, &mut hist.view_mut());
+
+        assert_eq!(hist[(0, 0)], 0.0);
+        assert_eq!(hist[(0, 1)], 2.0);
+        assert_eq!(hist[(0, 2)], 1.0);
+        assert_eq!(hist[(1, 0)], 1.0);
     }
 }

@@ -46,7 +46,7 @@ def benchmark_ev44_processing(
     )
     msgs = [
         generate_fake_events(0, n_events, 10_000_000, 2_000_000, 0, n_detectors, sorted=sorted)
-        for x in range(n_ev44)
+        for _ in range(n_ev44)
     ]
     len_bytes = sum(len(msg) for msg in msgs)
 
@@ -77,7 +77,7 @@ if __name__ == "__main__":
     #
     # HRPD collected ~2600 events per frame (99th percentile of completed runs).
     # HRPD-x expects to have 6-10x HRPD count rate so ~26000 events per frame or
-    # 325 events per frame per ev44.
+    # 325 events per frame per detector ev44.
     #
     # Benchmark histogramming into 8000 time bins, with expected HRPD-X count rate and with
     # 10x the above count rate to simulate an exceptionally 'hot' run.
@@ -89,5 +89,7 @@ if __name__ == "__main__":
     benchmark_ev44_processing(3200, 325, 8000, 16000, True)
     benchmark_ev44_processing(3200, 325, 8000, 16000, False)
 
-    benchmark_ev44_processing(3200, 3250, 8000, 16000, True)
-    benchmark_ev44_processing(3200, 3250, 8000, 16000, False)
+    # These benchmarks are representative after a 'grouping' process which batches events from multiple
+    # detectors so we get one ev44 per frame. Same number of events as above. Always sorted as batching
+    # process can sort by ToF.
+    benchmark_ev44_processing(40, 26000, 8000, 16000, True)
