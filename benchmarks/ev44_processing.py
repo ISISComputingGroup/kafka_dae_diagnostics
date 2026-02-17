@@ -87,9 +87,8 @@ if __name__ == "__main__":
     #
     # HRPD-X's ev44 messages are expected to be emitted in ToF order.
     benchmark_ev44_processing(3200, 325, 8000, 16000, True)
-    benchmark_ev44_processing(3200, 325, 8000, 16000, False)
 
-    # These benchmarks are representative after a 'grouping' process which batches events from multiple
-    # detectors so we get one ev44 per frame. Same number of events as above. Always sorted as batching
-    # process can sort by ToF.
+    # These benchmarks are representative after a 'grouping' process which batches events
+    # from multiple detectors so we get one ev44 per frame. Same number of events as above.
+    # Always sorted as batching process can sort by ToF.
     benchmark_ev44_processing(40, 26000, 8000, 16000, True)

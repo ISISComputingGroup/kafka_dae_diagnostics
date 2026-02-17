@@ -20,45 +20,44 @@ in memory in this process, to allow for fast reads at the point when a client re
 
 Options considered are:
 - Implement histogramming in Python (with {py:obj}`numpy`)
+  - {py:obj}`numpy.searchsorted` on each event to find the appropriate bin.
 - Implement histogramming in native extension (with `PyO3`)
+  - Based on [a similar algorithm in Mantid](https://github.com/mantidproject/mantid/blob/0d4de52da17df6d055e285902e87ebc53d2de7f6/Framework/DataObjects/src/EventList.cpp#L2575)
 
 Both approaches were benchmarked on time taken to histogram the following test data (with a reasonably
 representative set of parameters):
 - {math}`50000` frames, each containing {math}`10000` events
 - Detector IDs randomly distributed between {math}`0` and {math}`50000`
-- Time-of-flights randomly distributed between {math}`0` and {math}`20000000` ns
+- Time-of-flights following gaussian distribution around {math}`10000000` μs with {math}`σ = 2000000` μs
 - Binning into {math}`1000` evenly-spaced bins between {math}`5000000` and {math}`15000000` ns
 
-For arbitrary bins, a binary search is used to find the target bin for an event. This is {math}`\small O(log(N))`.
-For numpy, the implementation is {py:obj}`numpy.searchsorted`. For Rust, the implementation is [`slice::partition_point`](https://doc.rust-lang.org/std/primitive.slice.html#method.partition_point).
-For linear bins, an {math}`\small O(1)` bin lookup is used.
-The implementations were verified to give identical results.
+| Implementation | Time (s) | Throughput (`Gbit/s`) | Throughput (`Mevents/s`) |
+|----------------|----------|-----------------------|--------------------------|
+| `numpy`        | 85.7     | 2.8                   | 5.8                      |
+| native (PyO3)  | 5.8      | 41.7                  | 85.5                     |
 
-Benchmark results:
-- **Native extension**, arbitrary bins: 4.5 seconds
-  * Histogramming 111 MEvents/s
-  * ~7.2 Gbit/s of `ev44`)
-- {py:obj}`numpy`, arbitrary bins: 33.6 seconds
-  - Histogramming 14.9 MEvents/s
-  - ~950 Mbit/s of `ev44`
-- **Native extension**, linear bins: 1.7 seconds
-  * Histogramming 294 MEvents/s
-  * ~19 Gbit/s of `ev44`)
-- {py:obj}`numpy`, linear bins: 16.4 seconds
-  - Histogramming 30.5 MEvents/s
-  - ~2 Gbit/s of `ev44`
+For a representative set of parameters for HRPD-X:
+- {math}`4000` frames, each containing {math}`26000` events
+- Detector IDs randomly distributed between {math}`0` and {math}`16000`
+- Time-of-flights following gaussian distribution around {math}`10000000` μs with {math}`σ = 2000000` μs
+- Binning into {math}`8000` evenly-spaced bins between {math}`5000000` and {math}`15000000` ns
+
+| Implementation | Time (s) | Throughput (`Gbit/s`) | Throughput (`Mevents/s`) |
+|----------------|----------|-----------------------|--------------------------|
+| `numpy`        | 19.4     | 2.6                   | 5.3                      |
+| native (PyO3)  | 1.5      | 33.1                  | 67.6                     |
 
 An analysis of count rates across all _existing_ instruments was done for MNeuData; many existing
 ISIS instruments {abbr}`regularly (99th percentile of runs recorded in journal)` have count rates
 between 1-5 MEvents/s, with higher peak count rates within a run and in exceptional setups.
 
-HRPD-X is expected to have multiple monitors counting at ~100s KHz, and a detector flux around 3x higher than
-HRPD due to WLSF detector efficiency upgrades.
-
-5 MEvents/s corresponds to approximately 320 Mbit/s of `ev44` messages.
+5 MEvents/s corresponds to approximately 320 MB/s (or 2.5 Gbit/s) of `ev44` messages.
 
 Discussion with DSG suggests that their side of the streaming setup (for example UDP to Kafka) has maximum
-throughput of around 8 Gbit/s per WLSF module - though this strongly depends on hardware specifications.
+throughput of around 8 Gbit/s *per WLSF module* - though this strongly depends on hardware specifications.
+Instruments will have _many_ WLSF modules (for example, HRPD-X is expected to have 80 modules).
+HRPD-X is expected to have multiple monitors counting at ~100s KHz, and a detector flux around 3x higher than
+HRPD due to WLSF detector efficiency upgrades.
 
 ## Decision
 
@@ -67,14 +66,10 @@ Implement histogramming using a native PyO3 extension.
 Although this makes this project slightly more complicated to develop and deploy, the performance gains
 seem to be large enough in this case to justify the moderate increase in complexity.
 
-Writing the histogramming in native code allows more 'obvious' code to be written - while it is _reasonably_
-performant, the vectorized numpy code is not an obvious implementation and will be more difficult
-to extend in a performant way than equivalent native code, especially when adding filtering such as vetoes.
-
 ## Consequences
 
-- This module will be primarily Python, with a Rust native extension library where performance is a
-concern (for example, histogramming spectra).
+- This module will be primarily Python, with a Rust native extension library used to implement
+performance-sensitive operations
 - The code will be slightly more difficult to build than a pure-python library.
   - `maturin` + `PyO3` make this relatively easy, but it is still _more_ difficult than pure-python.
 - Developers will need some awareness of Rust to modify the native extension.
