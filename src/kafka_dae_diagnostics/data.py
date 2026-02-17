@@ -36,7 +36,7 @@ class Data:
 
     callbacks_lock: threading.RLock = field(default_factory=threading.RLock)
     """
-    Lock-object, must be taken when spectrum_updaters is iterated/mutated
+    Lock-object, must be taken when ``spectrum_updaters`` is iterated/mutated.
     :meta private:
     """
 
@@ -82,7 +82,7 @@ class Data:
     event_processing_lag: float = 0.0
     """
     Estimated time difference between an event being recorded in
-    electronics and processed in KDAEDIAG ioc.
+    electronics and processed in KDAEDIAG IOC.
     """
 
     @property
@@ -115,7 +115,7 @@ class Data:
 
     @property
     def num_time_channels(self) -> int:
-        """Numer of time channels in histogram."""
+        """Number of time channels in histogram."""
         return self.spectra.shape[2]
 
     @property

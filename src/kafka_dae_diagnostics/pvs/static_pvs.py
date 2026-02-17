@@ -10,7 +10,7 @@ from kafka_dae_diagnostics.data import Data
 
 
 def static_pv_provider(prefix: str, data: Data) -> StaticProvider:
-    """:py:obj:`p4p` static pv provider.
+    """:py:obj:`p4p` static PV provider.
 
     Args:
         prefix: PV prefix

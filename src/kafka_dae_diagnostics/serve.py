@@ -1,6 +1,6 @@
 """Main loop of ``kafka_dae_diagnostics``.
 
-Listen to kafka forever, updating ``data`` as new messages come in,
+Listen to Kafka forever, updating ``data`` as new messages come in,
 while also serving ``data`` over EPICS.
 """
 

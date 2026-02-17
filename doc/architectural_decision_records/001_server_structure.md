@@ -37,7 +37,7 @@ for modest numbers of spectra.
 
 ### CA Server ({py:obj}`pcaspy`)
 
-PCAS & pcaspy are deprecated, and there is not presently a route to "bridge" a pcas/pcaspy server to
+PCAS & pcaspy are deprecated, and there is not presently a route to "bridge" a PCAS/pcaspy server to
 PVA. Support for PVA is considered a requirement, so this option is discarded.
 
 ### PVA server ({py:obj}`p4p`)

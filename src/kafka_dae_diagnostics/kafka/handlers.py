@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def handle_event_messages(event_messages: list[Message], data: Data) -> None:
-    """Handle kafka event messages.
+    """Handle Kafka event messages.
 
     Args:
         event_messages: Messages received from Kafka event topic.
@@ -71,7 +71,7 @@ def handle_ev44(data: Data, msg: bytes) -> None:
 def handle_run_info_messages(
     run_info_messages: list[Message], data: Data, event_consumer: Consumer
 ) -> None:
-    """Handle kafka event messages.
+    """Handle Kafka run info messages.
 
     Args:
         run_info_messages: Messages received from Kafka runInfo topic.
@@ -166,6 +166,6 @@ def handle_pl72(data: Data, msg: bytes, event_consumer: Consumer) -> None:
 
 
 def handle_6s4t(data: Data, msg: bytes) -> None:
-    """Handle a 6s4t (run stop) mesage from Kafka."""
+    """Handle a 6s4t (run stop) message from Kafka."""
     run_stop_6s4t = deserialise_6s4t(msg)
     data.stop_time = run_stop_6s4t.stop_time / 1000

@@ -28,7 +28,7 @@ Both approaches were benchmarked on time taken to histogram the following test d
 representative set of parameters):
 - {math}`50000` frames, each containing {math}`10000` events
 - Detector IDs randomly distributed between {math}`0` and {math}`50000`
-- Time-of-flights following gaussian distribution around {math}`10000000` μs with {math}`σ = 2000000` μs
+- Time-of-flights following Gaussian distribution around {math}`10000000` μs with {math}`σ = 2000000` μs
 - Binning into {math}`1000` evenly-spaced bins between {math}`5000000` and {math}`15000000` ns
 
 | Implementation | Time (s) | Throughput (`Gbit/s`) | Throughput (`Mevents/s`) |
@@ -39,7 +39,7 @@ representative set of parameters):
 For a representative set of parameters for HRPD-X:
 - {math}`4000` frames, each containing {math}`26000` events
 - Detector IDs randomly distributed between {math}`0` and {math}`16000`
-- Time-of-flights following gaussian distribution around {math}`10000000` μs with {math}`σ = 2000000` μs
+- Time-of-flights following Gaussian distribution around {math}`10000000` μs with {math}`σ = 2000000` μs
 - Binning into {math}`8000` evenly-spaced bins between {math}`5000000` and {math}`15000000` ns
 
 | Implementation | Time (s) | Throughput (`Gbit/s`) | Throughput (`Mevents/s`) |
@@ -56,7 +56,7 @@ between 1-5 MEvents/s, with higher peak count rates within a run and in exceptio
 Discussion with DSG suggests that their side of the streaming setup (for example UDP to Kafka) has maximum
 throughput of around 8 Gbit/s *per WLSF module* - though this strongly depends on hardware specifications.
 Instruments will have _many_ WLSF modules (for example, HRPD-X is expected to have 80 modules).
-HRPD-X is expected to have multiple monitors counting at ~100s KHz, and a detector flux around 3x higher than
+HRPD-X is expected to have multiple monitors counting at ~100s kHz, and a detector flux around 3x higher than
 HRPD due to WLSF detector efficiency upgrades.
 
 ## Decision
