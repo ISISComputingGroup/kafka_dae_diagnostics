@@ -36,8 +36,8 @@ representative set of parameters):
 | `numpy`        | 85.7     | 2.8                   | 5.8                      |
 | native (PyO3)  | 5.8      | 41.7                  | 85.5                     |
 
-For a representative set of parameters for HRPD-X:
-- {math}`4000` frames, each containing {math}`26000` events
+For an estimated representative set of parameters for HRPD-X:
+- {math}`4000` frames (i.e. 100 seconds at 40Hz), each containing {math}`26000` events
 - Detector IDs randomly distributed between {math}`0` and {math}`16000`
 - Time-of-flights following Gaussian distribution around {math}`10000000` μs with {math}`σ = 2000000` μs
 - Binning into {math}`8000` evenly-spaced bins between {math}`5000000` and {math}`15000000` ns
@@ -50,8 +50,6 @@ For a representative set of parameters for HRPD-X:
 An analysis of count rates across all _existing_ instruments was done for MNeuData; many existing
 ISIS instruments {abbr}`regularly (99th percentile of runs recorded in journal)` have count rates
 between 1-5 MEvents/s, with higher peak count rates within a run and in exceptional setups.
-
-5 MEvents/s corresponds to approximately 320 MB/s (or 2.5 Gbit/s) of `ev44` messages.
 
 Discussion with DSG suggests that their side of the streaming setup (for example UDP to Kafka) has maximum
 throughput of around 8 Gbit/s *per WLSF module* - though this strongly depends on hardware specifications.
