@@ -71,7 +71,7 @@ def run_callbacks(data: Data) -> None:
         for callback_id, cb in data.callbacks.items():
             try:
                 cb()
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 logger.warning(
                     "Callback '%s' failed, error: %s %s", callback_id, e.__class__.__name__, e
                 )
