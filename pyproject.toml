@@ -30,7 +30,7 @@ classifiers = [
 
 dependencies = [
   "confluent-kafka",
-  "ess-streaming-data-types",
+  "isis-streaming-data-types",
   "numpy>=2",
   "p4p",
 ]
