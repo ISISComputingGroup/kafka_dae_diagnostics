@@ -92,7 +92,7 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "pcaspy": ("https://pcaspy.readthedocs.io/en/latest/", None),
     "p4p": ("https://epics-base.github.io/p4p/", None),
-    "fastcs": ("https://diamondlightsource.github.io/FastCS/main/", None),
+    "fastcs": ("https://diamondlightsource.github.io/fastcs/main/", None),
     "genie": ("https://isiscomputinggroup.github.io/genie", None),
     "ibex_bluesky_core": ("https://isiscomputinggroup.github.io/ibex_bluesky_core", None),
     "ibex_developers_manual": ("https://isiscomputinggroup.github.io/ibex_developers_manual", None),
