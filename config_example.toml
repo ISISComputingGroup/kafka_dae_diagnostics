@@ -1,0 +1,28 @@
+# PV Prefix of all PVs on this IOC.
+pv_prefix = "TE:TESTMACHINE:KDAEDIAG:"
+
+# How often (milliseconds) to update EPICS PVs.
+callback_frequency_ms = 250
+
+# Kafka topic on which to listen for runInfo messages
+# (usually <instrument>_runInfo)
+runinfo_topic = "somemachine_runInfo"
+# Kafka topic on which to listen for event messages
+# (usually <instrument>_events)
+events_topic = "somemachine_events"
+
+[kafka_runinfo_consumer]
+"bootstrap.servers" = "livedata.isis.cclrc.ac.uk:31092"
+"group.id" = "kafka-dae-diagnostics"
+"auto.offset.reset" = "latest"
+"enable.auto.commit" = "false"
+"fetch.max.bytes" = "8388608"  # 8MB
+"max.partition.fetch.bytes" = "8388608"  # 8MB
+
+[kafka_events_consumer]
+"bootstrap.servers" = "livedata.isis.cclrc.ac.uk:31092"
+"group.id" = "kafka-dae-diagnostics"
+"auto.offset.reset" = "latest"
+"enable.auto.commit" = "false"
+"fetch.max.bytes" = "8388608"  # 8MB
+"max.partition.fetch.bytes" = "8388608"  # 8MB

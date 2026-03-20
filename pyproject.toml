@@ -33,6 +33,7 @@ dependencies = [
   "isis-streaming-data-types",
   "numpy>=2",
   "p4p",
+  "pydantic<3",
 ]
 
 [project.optional-dependencies]

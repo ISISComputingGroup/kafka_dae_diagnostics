@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from confluent_kafka import TopicPartition
 
+from kafka_dae_diagnostics.config import DiagnosticsConfig
 from kafka_dae_diagnostics.data import Data
 from kafka_dae_diagnostics.kafka.consumers import (
     consume_from_kafka_forever,
@@ -18,7 +19,16 @@ def test_make_runinfo_consumer():
 
     with patch("kafka_dae_diagnostics.kafka.consumers.Consumer") as mock_consumer:
         mock_consumer.return_value.get_watermark_offsets.return_value = (1234, 4321)
-        make_runinfo_consumer("127.0.0.1", topic)
+        make_runinfo_consumer(
+            DiagnosticsConfig(
+                runinfo_topic=topic,
+                kafka_runinfo_consumer={},
+                kafka_events_consumer={},
+                pv_prefix="",
+                events_topic="",
+                callback_frequency_ms=1000,
+            )
+        )
 
         mock_consumer.return_value.assign.assert_called_once_with([TopicPartition(topic, 0, 4319)])
 
@@ -28,7 +38,16 @@ def test_make_event_consumer():
 
     with patch("kafka_dae_diagnostics.kafka.consumers.Consumer") as mock_consumer:
         mock_consumer.return_value.get_watermark_offsets.return_value = (1234, 4321)
-        make_event_consumer("127.0.0.1", topic)
+        make_event_consumer(
+            DiagnosticsConfig(
+                runinfo_topic="",
+                events_topic=topic,
+                kafka_runinfo_consumer={},
+                kafka_events_consumer={},
+                pv_prefix="",
+                callback_frequency_ms=1000,
+            )
+        )
 
         mock_consumer.return_value.assign.assert_called_once()
 
@@ -72,8 +91,17 @@ def test_consume_from_kafka_forever():
         # nothing more to process.
         sleep.side_effect = TimeoutError("Waiting for new events")
 
+        config = DiagnosticsConfig(
+            runinfo_topic="runInfo",
+            events_topic="events",
+            kafka_runinfo_consumer={},
+            kafka_events_consumer={},
+            pv_prefix="",
+            callback_frequency_ms=1000,
+        )
+
         with pytest.raises(TimeoutError, match="Waiting for new events"):
-            consume_from_kafka_forever("some_broker", "runInfo", "events", data, 0.1)
+            consume_from_kafka_forever(config=config, data=data)
 
         handle_run_info_messages.assert_called_once_with(
             [b"some_runinfo_message"], data=mock.ANY, event_consumer=mock.ANY

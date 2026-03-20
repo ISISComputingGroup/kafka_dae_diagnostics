@@ -79,16 +79,16 @@ if __name__ == "__main__":
     # HRPD-x expects to have 6-10x HRPD count rate so ~26000 events per frame or
     # 325 events per frame per detector ev44.
     #
-    # Benchmark histogramming into 8000 time bins, with expected HRPD-X count rate and with
-    # 10x the above count rate to simulate an exceptionally 'hot' run.
-    #
     # If these benchmarks take less than one second, histogramming will be able to keep
     # up with HRPD-x sustained data rate.
     #
-    # HRPD-X's ev44 messages are expected to be emitted in ToF order.
-    benchmark_ev44_processing(3200, 325, 8000, 16000, True)
-
     # These benchmarks are representative after a 'grouping' process which batches events
     # from multiple detectors so we get one ev44 per frame. Same number of events as above.
     # Always sorted as batching process can sort by ToF.
+    print("======\nHRPD-X\n======")
     benchmark_ev44_processing(40, 26000, 8000, 16000, True)
+
+    print("=========\nSANDALS-2\n=========")
+    # Approx 200_000 events per frame, but aggregator will split that into 2 x 100_000 event ev44s
+    # SANDALS-2 has roughly 1620 unique pixel_ids
+    benchmark_ev44_processing(80, 100_000, 8000, 1620, True)
