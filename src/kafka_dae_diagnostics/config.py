@@ -15,16 +15,16 @@ class DiagnosticsConfig(BaseModel):
     """How often (milliseconds) to update EPICS PVs."""
 
     runinfo_topic: str
-    """Kafka topic on which to listen for runinfo messages."""
+    """Kafka topic on which to listen for ``runInfo`` messages."""
 
     events_topic: str
-    """Kafka topic on which to listen for events messages."""
+    """Kafka topic on which to listen for ``event`` messages."""
 
     kafka_runinfo_consumer: dict[str, str]
-    """Kafka settings for runinfo consumer."""
+    """Kafka settings for ``runInfo`` stream consumer."""
 
     kafka_events_consumer: dict[str, str]
-    """Kafka settings for events consumer."""
+    """Kafka settings for ``event`` stream consumer."""
 
 
 def load_config(config_path: str) -> DiagnosticsConfig:

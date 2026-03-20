@@ -1,5 +1,6 @@
 benchmark
 benchmarked
+config
 ev
 Gbit
 histogram
@@ -17,6 +18,8 @@ pcaspy
 performant
 programmatically
 PV
+pydantic
 runInfo
 toolchain
 μs
+ValidationError

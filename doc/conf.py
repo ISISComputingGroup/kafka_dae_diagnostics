@@ -30,8 +30,8 @@ nitpick_ignore_regex = [
     ("py:class", r"^numpy.float64"),
     ("py:class", r"^cimpl.Consumer"),
     ("py:class", r"^annotated_types\..*"),
-    ("py:class", r"^pydantic\..*"),
 ]
+autodoc_default_options = {"exclude-members": "model_config"}
 
 myst_enable_extensions = ["dollarmath", "strikethrough", "colon_fence", "attrs_block"]
 suppress_warnings = ["myst.strikethrough"]
@@ -103,5 +103,5 @@ intersphinx_mapping = {
         "https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/",
         None,
     ),
-    "pydantic": ("https://docs.pydantic.dev", None),
+    "pydantic": ("https://docs.pydantic.dev", "pydantic.inv"),
 }
