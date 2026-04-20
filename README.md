@@ -1,2 +1,5 @@
 # kafka_dae_diagnostics (`KDAEDIAG`)
-Kafka event consumer - soft IOC which provides live views, spectra plots etc. 
+
+Kafka event consumer - soft IOC which provides live views, spectra plots etc.
+
+See [documentation](https://isiscomputinggroup.github.io/kafka_dae_diagnostics) for details.

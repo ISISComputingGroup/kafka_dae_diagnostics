@@ -18,21 +18,27 @@ maturin develop --release  # release build
 ```
 
 Note that when changing rust code, one of the above commands will need to be run after each change to the source code;
-python-only changes do not require this.
+python-only changes do not require this. The maturin build runs `cargo build` under-the-hood, so `cargo build` does
+not need to be invoked separately.
 
+{#running_locally}
 ## Running locally
 
 In a virtual environment, set the following environment variables:
 
 ```
 set EPICS_PVAS_INTF_ADDR_LIST=127.0.0.1
+set EPICS_PVAS_BEACON_ADDR_LIST=127.255.255.255
 set PVXS_LOG=*=ERR
 ```
 
 Then run using:
 ```
-kdaediag --pv-prefix TE:YOURMACHINE:KDAEDIAG: --broker livedata.isis.cclrc.ac.uk:31092 --event-topic YOURMACHINE_events --runinfo-topic YOURMACHINE_runInfo
+kdaediag --config config.toml --log-level DEBUG
 ```
+
+An example `config.toml` is provided in the repository; this will need to be modified for your machine.
+The `config.toml` specifies the PV prefix for all PVs created by this IOC and the Kafka topic names to read from.
 
 To generate fake event streams for testing, use [`saluki howl`](https://github.com/isisComputingGroup/saluki).
 
