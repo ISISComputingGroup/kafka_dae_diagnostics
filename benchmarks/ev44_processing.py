@@ -5,7 +5,7 @@ import time
 import numpy as np
 from streaming_data_types import serialise_ev44
 
-from kafka_dae_diagnostics.data import Data
+from kafka_dae_diagnostics.data import Data, FrameMetaData
 from kafka_dae_diagnostics.kafka.handlers import handle_ev44
 
 RNG = np.random.default_rng(seed=0)
@@ -50,9 +50,13 @@ def benchmark_ev44_processing(
     ]
     len_bytes = sum(len(msg) for msg in msgs)
 
+    data.frame_metadata[0] = FrameMetaData(
+        period=0,proton_charge=0.123456, vetos=0
+    )
+
     start = time.time()
     for msg in msgs:
-        handle_ev44(data, msg)
+        handle_ev44(data, msg, 0)
     end = time.time()
     t = end - start
 
@@ -92,3 +96,7 @@ if __name__ == "__main__":
     # Approx 200_000 events per frame, but aggregator will split that into 2 x 100_000 event ev44s
     # SANDALS-2 has roughly 1620 unique pixel_ids
     benchmark_ev44_processing(80, 100_000, 8000, 1620, True)
+
+    print("=========\nWISH-2\n=========")
+    # Uh-oh
+    benchmark_ev44_processing(80, 100_000, 8000, 1_000_000, True)

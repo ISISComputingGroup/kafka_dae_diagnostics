@@ -8,8 +8,8 @@ name = "_kdaediag_rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-numpy = {version = "0.27.1" }
-pyo3 = { version = "0.27.2", features = ["abi3-py312"] }
+numpy = {version = "0.28.0" }
+pyo3 = { version = "0.28.3", features = ["abi3-py312"] }
 
 [lints.clippy]
 indexing_slicing = "deny"

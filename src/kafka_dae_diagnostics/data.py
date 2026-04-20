@@ -10,6 +10,13 @@ import numpy.typing as npt
 
 
 @dataclasses.dataclass
+class FrameMetaData:
+    vetos: int = 0
+    proton_charge: float = 0.0
+    period: int = 0
+
+
+@dataclasses.dataclass
 class Data:
     """A mutable object describing the data being served by this IOC."""
 
@@ -83,6 +90,36 @@ class Data:
     """
     Estimated time difference between an event being recorded in
     electronics and processed in KDAEDIAG IOC.
+    """
+
+    frame_metadata: dict[int, FrameMetaData] = field(default_factory=dict)
+    """
+    Metadata for the current frame, keyed by Kafka partition ID.
+    """
+
+    raw_frames: int = 0
+    """
+    Number of raw frames seen in the current run.
+    """
+
+    good_frames: int = 0
+    """
+    Number of good (non-vetoed) frames seen in the current run.
+    """
+
+    raw_uah: float = 0.0
+    """
+    Raw uAh collected in the current run (including vetoed frames).
+    """
+
+    good_uah: float = 0.0
+    """
+    Good uAh collected in the current run.
+    """
+
+    veto_mask: int = 0
+    """
+    Integer mask of enabled vetoes.
     """
 
     @property

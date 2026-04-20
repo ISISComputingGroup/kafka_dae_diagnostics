@@ -21,7 +21,8 @@ def main() -> None:
         "--log-level",
         default="INFO",
         type=str,
-        help="Path to config file.",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        help="Logging level.",
     )
     args = ap.parse_args()
 

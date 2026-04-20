@@ -30,7 +30,7 @@ classifiers = [
 
 dependencies = [
   "confluent-kafka",
-  "isis-streaming-data-types",
+  "isis-streaming-data-types>=0.1.1",
   "numpy>=2",
   "p4p",
   "pydantic<3",
@@ -56,6 +56,7 @@ test = [
 ]
 dev = [
   "kafka-dae-diagnostics[doc,lint,test]",
+  "maturin",
 ]
 
 [project.urls]
