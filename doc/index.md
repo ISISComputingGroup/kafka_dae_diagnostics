@@ -3,13 +3,9 @@
 This module provides a `KDAEDIAG` IOC, which acts as a Kafka event-stream consumer and publishes
 a number of diagnostic PVs (for example spectra plots) over EPICS PV Access.
 
-The diagnostics IOC can be launched with:
+For information on running this IOC locally, see {ref}`running_locally`.
 
-```bash
-set EPICS_PVAS_INTF_ADDR_LIST=127.0.0.1
-set EPICS_PVA_BEACON_ADDR_LIST=127.255.255.255
-kdaediag --config config.toml
-```
+---
 
 ```{toctree}
 :titlesonly:

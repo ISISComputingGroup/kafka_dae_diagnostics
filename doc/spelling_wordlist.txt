@@ -8,8 +8,8 @@ histogrammed
 histogramming
 IOC
 kHz
+maturin
 Mbit
-MEvents
 MEvents
 MiB
 ns

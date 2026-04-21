@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import os
 
 from kafka_dae_diagnostics.config import load_config
 from kafka_dae_diagnostics.serve import serve
@@ -27,6 +28,12 @@ def main() -> None:
     args = ap.parse_args()
 
     logging.basicConfig(level=args.log_level)
+
+    if "EPICS_PVAS_INTF_ADDR_LIST" not in os.environ:
+        logger.warning(
+            "EPICS_PVAS_INTF_ADDR_LIST environment variable not set; "
+            "IOC may not bind to expected network interfaces."
+        )
 
     config = load_config(args.config)
 

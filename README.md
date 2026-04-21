@@ -2,4 +2,4 @@
 
 Kafka event consumer - soft IOC which provides live views, spectra plots etc.
 
-See [docs](https://isiscomputinggroup.github.io/kafka_dae_diagnostics) for details.
+See [documentation](https://isiscomputinggroup.github.io/kafka_dae_diagnostics) for details.
