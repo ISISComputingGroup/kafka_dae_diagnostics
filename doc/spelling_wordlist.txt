@@ -11,7 +11,6 @@ kHz
 maturin
 Mbit
 MEvents
-MEvents
 MiB
 ns
 PCAS
