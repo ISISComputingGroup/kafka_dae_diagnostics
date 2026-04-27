@@ -50,7 +50,12 @@ def handle_ev44(data: Data, msg: bytes) -> None:
         msg: Message bytes received from Kafka.
 
     """
-    ev44 = deserialise_ev44(msg)
+    try:
+        ev44 = deserialise_ev44(msg)
+    except Exception:
+        logger.exception("Failed deserialising ev44")
+        return
+
     bin_events_into_spectrum(
         histogram=data.spectra[0],
         event_tofs=ev44.time_of_flight,
@@ -117,7 +122,11 @@ def handle_pl72(data: Data, msg: bytes, event_consumer: Consumer) -> None:
         event_consumer: Kafka event topic consumer.
 
     """
-    pl72 = deserialise_pl72(msg)
+    try:
+        pl72 = deserialise_pl72(msg)
+    except Exception:
+        logger.exception("Failed deserialising pl72: %s")
+        return
 
     det_spec_map = pl72.detector_spectrum_map
     if det_spec_map is None:
@@ -167,5 +176,10 @@ def handle_pl72(data: Data, msg: bytes, event_consumer: Consumer) -> None:
 
 def handle_6s4t(data: Data, msg: bytes) -> None:
     """Handle a 6s4t (run stop) message from Kafka."""
-    run_stop_6s4t = deserialise_6s4t(msg)
+    try:
+        run_stop_6s4t = deserialise_6s4t(msg)
+    except Exception:
+        logger.exception("Failed deserialising 6s4t")
+        return
+    logger.info("Run stop (run_name=%s)", run_stop_6s4t.run_name)
     data.stop_time = run_stop_6s4t.stop_time / 1000
