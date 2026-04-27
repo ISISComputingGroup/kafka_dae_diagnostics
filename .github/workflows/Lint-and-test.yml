@@ -54,7 +54,7 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v6
-      - uses: PyO3/maturin-action@v1.49.4
+      - uses: PyO3/maturin-action@v1.51.0
         with:
           args: --release --out dist
           maturin-version: "v1.11.5"
