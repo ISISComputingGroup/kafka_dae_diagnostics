@@ -1,0 +1,81 @@
+name: Build
+on: [push, workflow_call]
+jobs:
+  rust-tests:
+    name: Rust tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ "ubuntu-latest", "windows-latest" ]
+    steps:
+      - uses: actions/checkout@v6
+      - name: install stable rust
+        run: rustup install stable
+      - name: Rust format check
+        run: cargo fmt --check
+        working-directory: ./rust
+      - name: Rust lints (clippy)
+        run: cargo clippy -- --deny warnings
+        working-directory: ./rust
+      - name: Rust unit tests
+        run: cargo test
+        working-directory: ./rust
+  python-tests:
+    name: Python tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ "ubuntu-latest", "windows-latest" ]
+        version: ['3.12']
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.version }}
+      - name: install stable rust
+        run: rustup install stable
+      - name: install requirements
+        run: uv sync --extra lint --extra test
+      - name: run ruff check
+        run: uv run ruff check
+      - name: run ruff format --check
+        run: uv run ruff format --check
+      - name: run pyright
+        run: uv run pyright
+      - name: run pytest
+        run: uv run pytest
+  build-wheel:
+    name: Build wheel
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ "ubuntu-latest", "windows-latest" ]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v6
+      - uses: PyO3/maturin-action@v1.49.4
+        with:
+          args: --release --out dist
+          maturin-version: "v1.11.5"
+      - name: Upload wheels
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ format('wheels-{0}', matrix.os) }}
+          path: dist/**
+          if-no-files-found: error
+          retention-days: 1
+
+  results:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    name: Final Results
+    needs: [rust-tests, python-tests, build-wheel]
+    steps:
+    - run: exit 1
+      # see https://stackoverflow.com/a/67532120/4907315
+      if: >-
+          ${{
+               contains(needs.*.result, 'failure')
+            || contains(needs.*.result, 'cancelled')
+          }}

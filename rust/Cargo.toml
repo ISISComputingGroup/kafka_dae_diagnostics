@@ -1,0 +1,19 @@
+[package]
+name = "kafka-dae-diagnostics-rs"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "_kdaediag_rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+numpy = {version = "0.27.1" }
+pyo3 = { version = "0.27.2", features = ["abi3-py312"] }
+
+[lints.clippy]
+indexing_slicing = "deny"
+unwrap_used = "deny"
+panic = "deny"
+missing_safety_doc = "deny"
+undocumented_unsafe_blocks = "deny"

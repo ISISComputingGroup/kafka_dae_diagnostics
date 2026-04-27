@@ -1,0 +1,49 @@
+name: Release
+on: push
+jobs:
+  lint-and-test: 
+    if: github.ref_type == 'tag'
+    name: Run linter and tests
+    uses: ./.github/workflows/Lint-and-test.yml
+  github-release:
+    name: >-
+      Sign the Python distribution with Sigstore
+      and upload them to GitHub Release
+    needs: [lint-and-test]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # IMPORTANT: mandatory for making GitHub Releases
+      id-token: write  # IMPORTANT: mandatory for sigstore
+    steps:
+    - name: Download Linux wheels
+      uses: actions/download-artifact@v7
+      with:
+        name: wheels-ubuntu-latest
+        path: dist_ubuntu/
+    - name: Download Windows wheels
+      uses: actions/download-artifact@v7
+      with:
+        name: wheels-windows-latest
+        path: dist_windows/
+    - name: Sign the dists with Sigstore
+      uses: sigstore/gh-action-sigstore-python@v3.2.0
+      with:
+        inputs: >-
+          ./dist_ubuntu/*.whl
+          ./dist_windows/*.whl
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with: 
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+    - name: Upload artifact signatures to GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      # Upload to GitHub Release using the `gh` CLI.
+      # `dist/` contains the built packages, and the
+      # sigstore-produced signatures and certificates.
+      run: >-
+        gh release upload
+        '${{ github.ref_name }}' dist_ubuntu/** dist_windows/**
+        --repo '${{ github.repository }}'
