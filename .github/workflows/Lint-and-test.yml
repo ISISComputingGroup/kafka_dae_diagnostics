@@ -59,7 +59,7 @@ jobs:
           args: --release --out dist
           maturin-version: "v1.11.5"
       - name: Upload wheels
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ format('wheels-{0}', matrix.os) }}
           path: dist/**
