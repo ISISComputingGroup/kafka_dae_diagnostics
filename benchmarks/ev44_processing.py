@@ -50,9 +50,7 @@ def benchmark_ev44_processing(
     ]
     len_bytes = sum(len(msg) for msg in msgs)
 
-    data.frame_metadata[0] = FrameMetaData(
-        period=0,proton_charge=0.123456, vetos=0
-    )
+    data.frame_metadata[0] = FrameMetaData(period=0, proton_charge=0.123456, vetos=0)
 
     start = time.time()
     for msg in msgs:

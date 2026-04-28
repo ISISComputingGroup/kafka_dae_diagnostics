@@ -11,9 +11,16 @@ import numpy.typing as npt
 
 @dataclasses.dataclass
 class FrameMetaData:
+    """Metadata associated with a set of neutron events."""
+
     vetos: int = 0
+    """Veto flags"""
+
     proton_charge: float = 0.0
+    """Proton charge, in uAh per frame"""
+
     period: int = 0
+    """Period into which this data was collected"""
 
 
 @dataclasses.dataclass

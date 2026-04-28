@@ -26,13 +26,13 @@ jobs:
         name: wheels-windows-latest
         path: dist_windows/
     - name: Sign the dists with Sigstore
-      uses: sigstore/gh-action-sigstore-python@v3.2.0
+      uses: sigstore/gh-action-sigstore-python@v3.3.0
       with:
         inputs: >-
           ./dist_ubuntu/*.whl
           ./dist_windows/*.whl
     - name: Create GitHub Release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       with: 
         generate_release_notes: true
       env:

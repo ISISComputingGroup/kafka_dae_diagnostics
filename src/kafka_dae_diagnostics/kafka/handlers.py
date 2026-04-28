@@ -5,7 +5,12 @@ import time
 
 import numpy as np
 from confluent_kafka import Consumer, Message, TopicPartition
-from streaming_data_types import deserialise_6s4t, deserialise_ev44, deserialise_pl72, deserialise_pu00
+from streaming_data_types import (
+    deserialise_6s4t,
+    deserialise_ev44,
+    deserialise_pl72,
+    deserialise_pu00,
+)
 from streaming_data_types.utils import get_schema
 
 from kafka_dae_diagnostics._kdaediag_rs import bin_events_into_spectrum
@@ -35,6 +40,7 @@ def handle_event_msg(data: Data, msg: bytes, partition: int) -> None:
     Args:
         data: Reference to data being served.
         msg: Message bytes received from Kafka.
+        partition: Partition ID on which this message was received.
 
     """
     schema = get_schema(msg)
@@ -50,9 +56,14 @@ def handle_ev44(data: Data, msg: bytes, partition: int) -> None:
     Args:
         data: Reference to data being served.
         msg: Message bytes received from Kafka.
+        partition: Partition ID on which this message was received.
 
     """
-    ev44 = deserialise_ev44(msg)
+    try:
+        ev44 = deserialise_ev44(msg)
+    except Exception:
+        logger.exception("Failed deserialising ev44")
+        return
 
     metadata = data.frame_metadata.get(partition)
 
@@ -83,6 +94,14 @@ def handle_ev44(data: Data, msg: bytes, partition: int) -> None:
 
 
 def handle_pu00(data: Data, msg: bytes, partition: int) -> None:
+    """Handle a pu00 (frame metadata) message from Kafka.
+
+    Args:
+        data: Reference to data being served.
+        msg: Message bytes received from Kafka.
+        partition: partition number on which this message was received.
+
+    """
     pu00 = deserialise_pu00(msg)
 
     data.frame_metadata[partition] = FrameMetaData(
@@ -153,7 +172,11 @@ def handle_pl72(data: Data, msg: bytes, event_consumer: Consumer) -> None:
         event_consumer: Kafka event topic consumer.
 
     """
-    pl72 = deserialise_pl72(msg)
+    try:
+        pl72 = deserialise_pl72(msg)
+    except Exception:
+        logger.exception("Failed deserialising pl72: %s")
+        return
 
     det_spec_map = pl72.detector_spectrum_map
     if det_spec_map is None:
@@ -200,8 +223,8 @@ def handle_pl72(data: Data, msg: bytes, event_consumer: Consumer) -> None:
     data.most_recent_kafka_timestamp = pl72_timestamp_s
     data.start_time = pl72_timestamp_s
 
-    data.raw_uah = 0.
-    data.good_uah = 0.
+    data.raw_uah = 0.0
+    data.good_uah = 0.0
 
     data.raw_frames = 0
     data.good_frames = 0
@@ -209,5 +232,10 @@ def handle_pl72(data: Data, msg: bytes, event_consumer: Consumer) -> None:
 
 def handle_6s4t(data: Data, msg: bytes) -> None:
     """Handle a 6s4t (run stop) message from Kafka."""
-    run_stop_6s4t = deserialise_6s4t(msg)
+    try:
+        run_stop_6s4t = deserialise_6s4t(msg)
+    except Exception:
+        logger.exception("Failed deserialising 6s4t")
+        return
+    logger.info("Run stop (run_name=%s)", run_stop_6s4t.run_name)
     data.stop_time = run_stop_6s4t.stop_time / 1000

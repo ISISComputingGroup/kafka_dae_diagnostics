@@ -136,3 +136,21 @@ def test_handle_invalid_msg_ignored():
     # Should not crash - messages ignored silently if unrecognised
     handle_event_messages([msg], Data())
     handle_run_info_messages([msg], Data(), MagicMock())
+
+
+def test_handle_invalid_ev44():
+    msg = b"\1\2\3\4" + b"ev44"
+    data = Data()
+    handle_ev44(data, msg)
+
+
+def test_handle_invalid_6s4t():
+    msg = b"\1\2\3\4" + b"6s4t"
+    data = Data()
+    handle_6s4t(data, msg)
+
+
+def test_handle_invalid_pl72():
+    msg = b"\1\2\3\4" + b"pl72"
+    data = Data()
+    handle_pl72(data, msg, MagicMock())
