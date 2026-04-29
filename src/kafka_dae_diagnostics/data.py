@@ -56,7 +56,7 @@ class Data:
 
     total_events: int = 0
     """
-    Total number of neutron events in this run.
+    Total number of good neutron events in this run.
     """
 
     total_event_messages: int = 0
@@ -71,13 +71,13 @@ class Data:
 
     largest_kafka_timestamp: float = 0.0
     """
-    Largest timestamp seen in an ev44 or pl72 message since
+    Largest timestamp seen in an ev44, pu00 or pl72 message since
     the beginning of this run. Seconds since epoch.
     """
 
     most_recent_kafka_timestamp: float = 0.0
     """
-    Timestamp in the most recently-processed ev44 or pl72 message.
+    Timestamp in the most recently-processed ev44, pu00 or pl72 message.
     Seconds since epoch.
     """
 
@@ -104,6 +104,20 @@ class Data:
     Metadata for the current frame, keyed by Kafka partition ID.
     """
 
+    raw_frames_pd: npt.NDArray[np.int64] = field(
+        default_factory=lambda: np.zeros(shape=(1,), dtype=np.int64)
+    )
+    """
+    Array of raw frames collected in each period.
+    """
+
+    good_frames_pd: npt.NDArray[np.int64] = field(
+        default_factory=lambda: np.zeros(shape=(1,), dtype=np.int64)
+    )
+    """
+    Array of good frames collected in each period.
+    """
+
     raw_frames: int = 0
     """
     Number of raw frames seen in the current run.
@@ -112,6 +126,20 @@ class Data:
     good_frames: int = 0
     """
     Number of good (non-vetoed) frames seen in the current run.
+    """
+
+    raw_uah_pd: npt.NDArray[np.float64] = field(
+        default_factory=lambda: np.zeros(shape=(1,), dtype=np.float64)
+    )
+    """
+    Array of raw uAh collected in each period.
+    """
+
+    good_uah_pd: npt.NDArray[np.float64] = field(
+        default_factory=lambda: np.zeros(shape=(1,), dtype=np.float64)
+    )
+    """
+    Array of good uAh collected in each period.
     """
 
     raw_uah: float = 0.0

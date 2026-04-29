@@ -67,9 +67,11 @@ def handle_ev44(data: Data, msg: bytes, partition: int) -> None:
 
     metadata = data.frame_metadata.get(partition)
 
-    # if metadata is None:
-    #     logger.warning("Dropping event message as no corresponding metadata on partition %d", partition)
-    #     return
+    if metadata is None:
+        logger.warning(
+            "Dropping event message as no corresponding metadata on partition %d", partition
+        )
+        return
 
     data.total_event_messages += 1
     data.total_event_megabytes += len(msg) / 1024**2
@@ -103,20 +105,33 @@ def handle_pu00(data: Data, msg: bytes, partition: int) -> None:
 
     """
     pu00 = deserialise_pu00(msg)
+    period = pu00.period_number
+    proton_charge = pu00.proton_charge
 
     data.frame_metadata[partition] = FrameMetaData(
         vetos=pu00.vetos,
-        proton_charge=pu00.proton_charge,
-        period=pu00.period_number,
+        proton_charge=proton_charge,
+        period=period,
     )
 
     data.raw_frames += 1
-    data.raw_uah += pu00.proton_charge
+    data.raw_uah += proton_charge
+    try:
+        data.raw_frames_pd[period] += 1
+        data.raw_uah_pd[period] += proton_charge
+    except IndexError:
+        logger.warning("Frame metadata with invalid period %s", period)
 
-    is_vetoed = (pu00.vetos & data.veto_mask) != 0
+    is_vetoed = (pu00.vetos & data.veto_mask) != 0 or True
+
     if not is_vetoed:
         data.good_frames += 1
-        data.good_uah += pu00.proton_charge
+        data.good_uah += proton_charge
+        try:
+            data.good_frames_pd[period] += 1
+            data.good_uah_pd[period] += proton_charge
+        except IndexError:
+            logger.warning("Frame metadata with invalid period %s", period)
 
     pu00_timestamp_ns = pu00.timestamp_ns / 1_000_000_000
     data.largest_kafka_timestamp = max(data.largest_kafka_timestamp, pu00_timestamp_ns)
@@ -205,6 +220,11 @@ def handle_pl72(data: Data, msg: bytes, event_consumer: Consumer) -> None:
     else:
         del data.spectra
         data.spectra = np.zeros((periods, detectors, time_channels), dtype=np.float64)
+
+    data.raw_frames_pd = np.zeros((periods,), dtype=np.int64)
+    data.good_frames_pd = np.zeros((periods,), dtype=np.int64)
+    data.raw_uah_pd = np.zeros((periods,), dtype=np.float64)
+    data.good_uah_pd = np.zeros((periods,), dtype=np.float64)
 
     topic = event_consumer.assignment()[0].topic
     partitions = event_consumer.list_topics(topic).topics[topic].partitions.keys()
