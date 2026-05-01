@@ -16,12 +16,12 @@ jobs:
       id-token: write  # IMPORTANT: mandatory for sigstore
     steps:
     - name: Download Linux wheels
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: wheels-ubuntu-latest
         path: dist_ubuntu/
     - name: Download Windows wheels
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: wheels-windows-latest
         path: dist_windows/
