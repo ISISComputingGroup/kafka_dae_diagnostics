@@ -94,7 +94,3 @@ if __name__ == "__main__":
     # Approx 200_000 events per frame, but aggregator will split that into 2 x 100_000 event ev44s
     # SANDALS-2 has roughly 1620 unique pixel_ids
     benchmark_ev44_processing(80, 100_000, 8000, 1620, True)
-
-    print("=========\nWISH-2\n=========")
-    # Uh-oh
-    benchmark_ev44_processing(80, 100_000, 8000, 1_000_000, True)

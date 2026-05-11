@@ -48,6 +48,8 @@ def handle_event_msg(data: Data, msg: bytes, partition: int) -> None:
         handle_ev44(data, msg, partition)
     elif schema == "pu00":
         handle_pu00(data, msg, partition)
+    else:
+        logger.warning("Received message with unknown schema %s", schema)
 
 
 def handle_ev44(data: Data, msg: bytes, partition: int) -> None:
@@ -85,12 +87,17 @@ def handle_ev44(data: Data, msg: bytes, partition: int) -> None:
     if is_vetoed:
         return
 
-    bin_events_into_spectrum(
-        histogram=data.spectra[metadata.period],
-        event_tofs=ev44.time_of_flight,
-        pixel_ids=ev44.pixel_id,
-        tof_bin_boundaries=data.bin_boundaries,
-    )
+    try:
+        histogram = data.spectra[metadata.period]
+    except IndexError:
+        logger.warning("Cannot histogram ev44 data for period %d", metadata.period)
+    else:
+        bin_events_into_spectrum(
+            histogram=histogram,
+            event_tofs=ev44.time_of_flight,
+            pixel_ids=ev44.pixel_id,
+            tof_bin_boundaries=data.bin_boundaries,
+        )
 
     data.total_events += ev44.pixel_id.size
 

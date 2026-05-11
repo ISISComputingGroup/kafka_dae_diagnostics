@@ -3,16 +3,25 @@ from unittest.mock import MagicMock
 
 import pytest
 from confluent_kafka import Message
-from streaming_data_types import serialise_6s4t, serialise_ev44, serialise_pl72
+from streaming_data_types import serialise_6s4t, serialise_ev44, serialise_pl72, serialise_pu00
 from streaming_data_types.run_start_pl72 import DetectorSpectrumMap
 
-from kafka_dae_diagnostics.data import Data
+from kafka_dae_diagnostics.data import Data, FrameMetaData
 from kafka_dae_diagnostics.kafka.handlers import (
     handle_6s4t,
     handle_ev44,
     handle_event_messages,
     handle_pl72,
     handle_run_info_messages,
+)
+
+FRAME_METADATA = serialise_pu00(
+    source_name="",
+    message_id=0,
+    timestamp_ns=1_234_000_000_000,
+    proton_charge=1.23456,
+    period_number=0,
+    vetos=0,
 )
 
 ONE_EVENT = serialise_ev44(
@@ -47,34 +56,68 @@ INVALID_MSG = b"\0\0\0\0\0\0\0\0"
 
 
 def test_handle_event_messages():
+    msg0 = MagicMock(spec=Message)
+    msg0.value.return_value = FRAME_METADATA
+    msg0.partition.return_value = 1
+
     msg1 = MagicMock(spec=Message)
     msg1.value.return_value = ONE_EVENT
+    msg1.partition.return_value = 1
 
     msg2 = MagicMock(spec=Message)
     msg2.value.return_value = ONE_EVENT
+    msg2.partition.return_value = 1
 
     msg3 = MagicMock(spec=Message)
     msg3.value.return_value = None
+    msg3.partition.return_value = None
 
     msg4 = MagicMock(spec=Message)
     msg4.value.return_value = None
     msg4.error.return_value = None
+    msg4.partition.return_value = None
 
     data = Data()
-    handle_event_messages([msg1, msg2, msg3, msg4], data)
+    handle_event_messages([msg0, msg1, msg2, msg3, msg4], data)
 
     assert data.total_events == 2
 
 
 def test_handle_ev44():
-    data = Data()
-    handle_ev44(data, ONE_EVENT)
+    data = Data(frame_metadata={1: FrameMetaData(period=0, proton_charge=1.23, vetos=0)})
+    handle_ev44(data, ONE_EVENT, 1)
 
     assert data.total_events == 1
     assert data.largest_kafka_timestamp == 1234
     assert data.most_recent_kafka_timestamp == 1234
     assert data.total_event_messages == 1
     assert data.event_processing_lag == pytest.approx(time.time() - 1234, abs=2)
+
+
+def test_handle_ev44_without_metadata():
+    data = Data()
+    handle_ev44(data, ONE_EVENT, 1)
+
+    assert data.total_events == 0
+
+
+def test_handle_ev44_with_invalid_period_number():
+    data = Data(frame_metadata={1: FrameMetaData(period=987654321, proton_charge=1.23, vetos=0)})
+    handle_ev44(
+        data,
+        serialise_ev44(
+            source_name="",
+            message_id=0,
+            reference_time=[1_234_000_000_000],
+            reference_time_index=[0],
+            pixel_id=[0],
+            time_of_flight=[0],
+        ),
+        1,
+    )
+
+    # Events still counted, but not histogrammed
+    assert data.total_events == 1
 
 
 def test_handle_runinfo_msg():
@@ -132,6 +175,7 @@ def test_handle_6s4t():
 def test_handle_invalid_msg_ignored():
     msg = MagicMock(spec=Message)
     msg.value.return_value = INVALID_MSG
+    msg.partition.return_value = 1
 
     # Should not crash - messages ignored silently if unrecognised
     handle_event_messages([msg], Data())
@@ -141,7 +185,7 @@ def test_handle_invalid_msg_ignored():
 def test_handle_invalid_ev44():
     msg = b"\1\2\3\4" + b"ev44"
     data = Data()
-    handle_ev44(data, msg)
+    handle_ev44(data, msg, 1)
 
 
 def test_handle_invalid_6s4t():
