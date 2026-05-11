@@ -98,8 +98,7 @@ def handle_ev44(data: Data, msg: bytes, partition: int) -> None:
             pixel_ids=ev44.pixel_id,
             tof_bin_boundaries=data.bin_boundaries,
         )
-
-    data.total_events += ev44.pixel_id.size
+        data.total_events += ev44.pixel_id.size
 
 
 def handle_pu00(data: Data, msg: bytes, partition: int) -> None:
@@ -129,7 +128,7 @@ def handle_pu00(data: Data, msg: bytes, partition: int) -> None:
     except IndexError:
         logger.warning("Frame metadata with invalid period %s", period)
 
-    is_vetoed = (pu00.vetos & data.veto_mask) != 0 or True
+    is_vetoed = (pu00.vetos & data.veto_mask) != 0
 
     if not is_vetoed:
         data.good_frames += 1

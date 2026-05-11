@@ -12,6 +12,7 @@ from kafka_dae_diagnostics.kafka.handlers import (
     handle_ev44,
     handle_event_messages,
     handle_pl72,
+    handle_pu00,
     handle_run_info_messages,
 )
 
@@ -116,8 +117,70 @@ def test_handle_ev44_with_invalid_period_number():
         1,
     )
 
-    # Events still counted, but not histogrammed
-    assert data.total_events == 1
+    # Event not counted or histogrammed
+    assert data.total_events == 0
+    assert data.spectra.sum() == 0
+
+
+def test_handle_vetoed_ev44():
+    data = Data(
+        frame_metadata={1: FrameMetaData(period=0, proton_charge=1.23, vetos=0xFFFF)}, veto_mask=1
+    )
+    handle_ev44(data, ONE_EVENT, 1)
+
+    assert data.total_event_messages == 1
+    assert data.total_events == 0
+    assert data.spectra.sum() == 0
+
+
+def test_handle_pu00_with_invalid_period_number():
+    data = Data()
+    handle_pu00(
+        data,
+        serialise_pu00(
+            source_name="",
+            message_id=0,
+            timestamp_ns=1234_000_000_000,
+            period_number=987654321,
+            proton_charge=1.23,
+            vetos=0,
+        ),
+        1,
+    )
+
+    # Good/raw frame gets counted normally...
+    assert data.raw_frames == 1
+    assert data.good_frames == 1
+    assert data.raw_uah == pytest.approx(1.23)
+    assert data.good_uah == pytest.approx(1.23)
+
+    # But not into any per-period array
+    assert data.good_uah_pd.sum() == pytest.approx(0)
+    assert data.raw_uah_pd.sum() == pytest.approx(0)
+
+
+def test_handle_vetoed_pu00():
+    data = Data(veto_mask=1)
+    handle_pu00(
+        data,
+        serialise_pu00(
+            source_name="",
+            message_id=0,
+            timestamp_ns=1234_000_000_000,
+            period_number=0,
+            proton_charge=1.23,
+            vetos=0xFFFF,
+        ),
+        1,
+    )
+
+    assert data.raw_frames == 1
+    assert data.good_frames == 0
+    assert data.raw_uah == pytest.approx(1.23)
+    assert data.good_uah == pytest.approx(0)
+
+    assert data.raw_uah_pd.sum() == pytest.approx(1.23)
+    assert data.good_uah_pd.sum() == pytest.approx(0)
 
 
 def test_handle_runinfo_msg():
