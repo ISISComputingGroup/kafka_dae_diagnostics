@@ -86,7 +86,7 @@ def handle_ev44(data: Data, msg: bytes, partition: int) -> None:
     data.most_recent_kafka_timestamp = ev44_timestamp_s
     data.event_processing_lag = max(time.time() - ev44_timestamp_s, 0)
 
-    is_vetoed = (metadata.vetos & data.veto_mask) != 0
+    is_vetoed = (metadata.vetoes & data.veto_mask) != 0
     if is_vetoed:
         return
 
@@ -105,7 +105,7 @@ def handle_ev44(data: Data, msg: bytes, partition: int) -> None:
 
 
 def handle_pu00(data: Data, msg: bytes, partition: int) -> None:
-    """Handle a pu00 (frame metadata) message from Kafka.
+    """Handle a ``pu00`` (frame metadata) message from Kafka.
 
     Args:
         data: Reference to data being served.
@@ -118,7 +118,7 @@ def handle_pu00(data: Data, msg: bytes, partition: int) -> None:
     proton_charge = pu00.proton_charge
 
     data.frame_metadata[partition] = FrameMetaData(
-        vetos=pu00.vetos,
+        vetoes=pu00.vetos,
         proton_charge=proton_charge,
         period=period,
     )

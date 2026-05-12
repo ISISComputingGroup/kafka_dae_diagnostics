@@ -56,13 +56,13 @@ The sum of this array may differ from `GOODFRAMES` if frames with an invalid per
 
 ### `GOODUAH` / `RAWUAH`
 
-Accumulated microAmp-hours in the current run.
+Accumulated micro-amp-hours in the current run.
 
-`GOODUAH` counts only microAmp-hours for the non-vetoed frames, `RAWUAH` counts both vetoed and non-vetoed frames.
+`GOODUAH` counts only micro-amp-hours for the non-vetoed frames, `RAWUAH` counts both vetoed and non-vetoed frames.
 
 ### `GOODUAH_PD` / `RAWUAH_PD`
 
-Array of good/raw microAmp-hours in the current run, keyed by period number. The array has length `NUMPERIODS`.
+Array of good/raw micro-amp-hours in the current run, keyed by period number. The array has length `NUMPERIODS`.
 
 :::{note}
 The sum of `GOODUAH_PD` may differ from `GOODUAH` if frames with an invalid period number are received. Those frames will be included in `GOODUAH`, but will not appear in `GOODUAH_PD`.

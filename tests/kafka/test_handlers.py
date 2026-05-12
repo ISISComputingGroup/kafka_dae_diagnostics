@@ -85,7 +85,7 @@ def test_handle_event_messages():
 
 
 def test_handle_ev44():
-    data = Data(frame_metadata={1: FrameMetaData(period=0, proton_charge=1.23, vetos=0)})
+    data = Data(frame_metadata={1: FrameMetaData(period=0, proton_charge=1.23, vetoes=0)})
     handle_ev44(data, ONE_EVENT, 1)
 
     assert data.total_events == 1
@@ -103,7 +103,7 @@ def test_handle_ev44_without_metadata():
 
 
 def test_handle_ev44_with_invalid_period_number():
-    data = Data(frame_metadata={1: FrameMetaData(period=987654321, proton_charge=1.23, vetos=0)})
+    data = Data(frame_metadata={1: FrameMetaData(period=987654321, proton_charge=1.23, vetoes=0)})
     handle_ev44(
         data,
         serialise_ev44(
@@ -124,7 +124,7 @@ def test_handle_ev44_with_invalid_period_number():
 
 def test_handle_vetoed_ev44():
     data = Data(
-        frame_metadata={1: FrameMetaData(period=0, proton_charge=1.23, vetos=0xFFFF)}, veto_mask=1
+        frame_metadata={1: FrameMetaData(period=0, proton_charge=1.23, vetoes=0xFFFF)}, veto_mask=1
     )
     handle_ev44(data, ONE_EVENT, 1)
 

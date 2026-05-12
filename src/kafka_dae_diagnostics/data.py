@@ -13,8 +13,8 @@ import numpy.typing as npt
 class FrameMetaData:
     """Metadata associated with a set of neutron events."""
 
-    vetos: int = 0
-    """Integer mask of active vetos in this frame."""
+    vetoes: int = 0
+    """Integer mask of active vetoes in this frame."""
 
     proton_charge: float = 0.0
     """Proton charge, in uAh per frame"""
@@ -71,19 +71,19 @@ class Data:
 
     largest_kafka_timestamp: float = 0.0
     """
-    Largest timestamp seen in an ev44, pu00 or pl72 message since
+    Largest timestamp seen in an ``ev44``, ``pu00`` or ``pl72`` message since
     the beginning of this run. Seconds since epoch.
     """
 
     most_recent_kafka_timestamp: float = 0.0
     """
-    Timestamp in the most recently-processed ev44, pu00 or pl72 message.
+    Timestamp in the most recently-processed ``ev44``, ``pu00`` or ``pl72`` message.
     Seconds since epoch.
     """
 
     start_time: float = 0.0
     """
-    Timestamp of the most recent pl72 run-start message.
+    Timestamp of the most recent ``pl72`` run-start message.
     Seconds since epoch.
     """
 
