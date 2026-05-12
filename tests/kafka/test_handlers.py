@@ -263,7 +263,7 @@ def test_handle_invalid_pl72():
     handle_pl72(data, msg, MagicMock())
 
 
-def test_handle_message_without_partition(caplog):
+def test_handle_message_without_partition(caplog: pytest.LogCaptureFixture):
     msg = MagicMock(spec=Message)
     msg.value.return_value = RUN_START
     msg.partition.return_value = None
