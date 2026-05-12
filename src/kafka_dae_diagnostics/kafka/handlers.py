@@ -29,7 +29,10 @@ def handle_event_messages(event_messages: list[Message], data: Data) -> None:
     """
     for msg in event_messages:
         if value := msg.value():
-            handle_event_msg(data, value, msg.partition())
+            if partition := msg.partition():
+                handle_event_msg(data, value, partition)
+            else:
+                logger.warning("Ignoring Kafka message on partition=None")
         elif error := msg.error():
             logger.warning("Kafka message error: %s", error.code())
 

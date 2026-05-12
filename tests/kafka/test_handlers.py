@@ -261,3 +261,13 @@ def test_handle_invalid_pl72():
     msg = b"\1\2\3\4" + b"pl72"
     data = Data()
     handle_pl72(data, msg, MagicMock())
+
+
+def test_handle_message_without_partition(caplog):
+    msg = MagicMock(spec=Message)
+    msg.value.return_value = RUN_START
+    msg.partition.return_value = None
+
+    handle_event_messages([msg], Data())
+
+    assert "Ignoring Kafka message on partition=None" in caplog.text
