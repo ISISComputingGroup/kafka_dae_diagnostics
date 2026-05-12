@@ -14,7 +14,7 @@ class FrameMetaData:
     """Metadata associated with a set of neutron events."""
 
     vetos: int = 0
-    """Veto flags"""
+    """Integer mask of active vetos in this frame."""
 
     proton_charge: float = 0.0
     """Proton charge, in uAh per frame"""
@@ -201,4 +201,15 @@ class Data:
         duration = self.duration
         if duration == 0:
             return 0
-        return self.total_event_megabytes / self.duration
+        return self.total_event_megabytes / duration
+
+    @property
+    def count_rate(self) -> float:
+        """Average count rate during this run in MEv/h.
+
+        Includes good counts only.
+        """
+        duration = self.duration
+        if duration == 0:
+            return 0
+        return (self.total_events * 3600) / (duration * 1_000_000)

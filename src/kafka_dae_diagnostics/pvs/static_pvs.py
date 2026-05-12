@@ -197,7 +197,7 @@ class StaticPVs:
         self.count_rate = SharedPV(
             nt=NTScalar(display=True, form=True),
             initial={
-                "value": data.num_time_channels,
+                "value": data.count_rate,
                 "display.units": "Mev/h",
                 "display.precision": 3,
             },
