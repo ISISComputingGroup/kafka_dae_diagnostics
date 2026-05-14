@@ -71,6 +71,7 @@ class StaticPVs:
             nt=NTScalar(display=True, form=True),
             initial={
                 "value": data.mev,
+                "display.units": "MEv",
                 "display.precision": 6,
             },
         )

@@ -99,7 +99,7 @@ class Data:
     electronics and processed in KDAEDIAG IOC.
     """
 
-    frame_metadata: dict[int, FrameMetaData] = field(default_factory=dict)
+    frame_metadata: dict[int | None, FrameMetaData] = field(default_factory=dict)
     """
     Metadata for the current frame, keyed by Kafka partition ID.
     """
@@ -152,7 +152,7 @@ class Data:
     Good uAh collected in the current run.
     """
 
-    veto_mask: int = 0
+    veto_mask: int = 0xFFFF
     """
     Integer mask of enabled vetoes.
     """

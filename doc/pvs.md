@@ -103,8 +103,8 @@ the requested period or spectrum is outside the range currently configured.
 
 ### `SPEC:<period>:<spectrum>:X`
 
-These PVs provide the X points (the time-of-flight bin centres) for a time of flight spectrum. This array has length `num_time_channels`.
+These PVs provide the X points (the time-of-flight bin centres) for a time of flight spectrum. This array has length `NUMTIMECHANNELS`.
 
 ### `SPEC:<period>:<spectrum>:Y`
 
-These PVs provide the Y points (the number of counts in the relevant bin) for a time of flight spectrum. This array has length `num_time_channels`.
+These PVs provide the Y points (the number of counts in the relevant bin) for a time of flight spectrum. This array has length `NUMTIMECHANNELS`.

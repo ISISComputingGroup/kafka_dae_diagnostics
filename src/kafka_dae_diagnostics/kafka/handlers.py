@@ -29,15 +29,12 @@ def handle_event_messages(event_messages: list[Message], data: Data) -> None:
     """
     for msg in event_messages:
         if value := msg.value():
-            if partition := msg.partition():
-                handle_event_msg(data, value, partition)
-            else:
-                logger.warning("Ignoring Kafka message on partition=None")
+            handle_event_msg(data, value, msg.partition())
         elif error := msg.error():
             logger.warning("Kafka message error: %s", error.code())
 
 
-def handle_event_msg(data: Data, msg: bytes, partition: int) -> None:
+def handle_event_msg(data: Data, msg: bytes, partition: int | None) -> None:
     """Handle an arbitrary message from Kafka event topic.
 
     Args:
@@ -55,7 +52,7 @@ def handle_event_msg(data: Data, msg: bytes, partition: int) -> None:
         logger.warning("Received message with unknown schema %s", schema)
 
 
-def handle_ev44(data: Data, msg: bytes, partition: int) -> None:
+def handle_ev44(data: Data, msg: bytes, partition: int | None) -> None:
     """Handle an ev44 (event-data) message from Kafka.
 
     Args:
@@ -104,7 +101,7 @@ def handle_ev44(data: Data, msg: bytes, partition: int) -> None:
         data.total_events += ev44.pixel_id.size
 
 
-def handle_pu00(data: Data, msg: bytes, partition: int) -> None:
+def handle_pu00(data: Data, msg: bytes, partition: int | None) -> None:
     """Handle a ``pu00`` (frame metadata) message from Kafka.
 
     Args:
