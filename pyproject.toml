@@ -48,7 +48,7 @@ doc = [
 ]
 lint = [
   "pyright",
-  "ruff==0.15.14",
+  "ruff==0.15.15",
 ]
 test = [
   "pytest",
