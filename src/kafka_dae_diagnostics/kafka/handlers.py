@@ -11,12 +11,31 @@ from streaming_data_types import (
     deserialise_pl72,
     deserialise_pu00,
 )
+from streaming_data_types.exceptions import ShortBufferException
 from streaming_data_types.utils import get_schema
 
 from kafka_dae_diagnostics._kdaediag_rs import bin_events_into_spectrum
 from kafka_dae_diagnostics.data import Data, FrameMetaData
 
 logger = logging.getLogger(__name__)
+
+
+def extract_schema(msg: Message) -> str | None:
+    """Get the schema ID from a Kafka message.
+
+    Returns:
+        Schema ID, or None if the Kafka message had no payload or the payload was too short.
+
+    """
+    value = msg.value()
+
+    if value is None:
+        return None
+
+    try:
+        return get_schema(value)
+    except ShortBufferException:
+        return None
 
 
 def handle_event_messages(event_messages: list[Message], data: Data) -> None:
@@ -28,31 +47,31 @@ def handle_event_messages(event_messages: list[Message], data: Data) -> None:
 
     """
     for msg in event_messages:
-        if value := msg.value():
-            handle_event_msg(data, value, msg.partition())
-        elif error := msg.error():
+        if error := msg.error():
             logger.warning("Kafka message error: %s", error.code())
+        else:
+            handle_event_msg(data, msg)
 
 
-def handle_event_msg(data: Data, msg: bytes, partition: int | None) -> None:
+def handle_event_msg(data: Data, msg: Message) -> None:
     """Handle an arbitrary message from Kafka event topic.
 
     Args:
         data: Reference to data being served.
         msg: Message bytes received from Kafka.
-        partition: Partition ID on which this message was received.
 
     """
-    schema = get_schema(msg)
+    schema = extract_schema(msg)
+
     if schema == "ev44":
-        handle_ev44(data, msg, partition)
+        handle_ev44(data, msg)
     elif schema == "pu00":
-        handle_pu00(data, msg, partition)
+        handle_pu00(data, msg)
     else:
         logger.warning("Received message with unknown schema %s", schema)
 
 
-def handle_ev44(data: Data, msg: bytes, partition: int | None) -> None:
+def handle_ev44(data: Data, msg: Message) -> None:
     """Handle an ev44 (event-data) message from Kafka.
 
     Args:
@@ -61,8 +80,15 @@ def handle_ev44(data: Data, msg: bytes, partition: int | None) -> None:
         partition: Partition ID on which this message was received.
 
     """
+    msg_value = msg.value()
+    partition = msg.partition()
+
+    if msg_value is None:
+        logger.warning("Received ev44 message with no value")
+        return
+
     try:
-        ev44 = deserialise_ev44(msg)
+        ev44 = deserialise_ev44(msg_value)
     except Exception:
         logger.exception("Failed deserialising ev44")
         return
@@ -76,7 +102,7 @@ def handle_ev44(data: Data, msg: bytes, partition: int | None) -> None:
         return
 
     data.total_event_messages += 1
-    data.total_event_megabytes += len(msg) / 1024**2
+    data.total_event_megabytes += len(msg_value) / 1024**2
 
     ev44_timestamp_s = ev44.reference_time[0] / 1_000_000_000
     data.largest_kafka_timestamp = max(data.largest_kafka_timestamp, ev44_timestamp_s)
@@ -101,19 +127,29 @@ def handle_ev44(data: Data, msg: bytes, partition: int | None) -> None:
         data.total_events += ev44.pixel_id.size
 
 
-def handle_pu00(data: Data, msg: bytes, partition: int | None) -> None:
+def handle_pu00(data: Data, msg: Message) -> None:
     """Handle a ``pu00`` (frame metadata) message from Kafka.
 
     Args:
         data: Reference to data being served.
         msg: Message bytes received from Kafka.
-        partition: partition number on which this message was received.
 
     """
-    pu00 = deserialise_pu00(msg)
+    msg_value = msg.value()
+    if msg_value is None:
+        logger.warning("Received pu00 message with no value")
+        return
+
+    try:
+        pu00 = deserialise_pu00(msg.value())
+    except Exception:
+        logger.exception("Failed deserialising ev44")
+        return
+
     period = pu00.period_number
     proton_charge = pu00.proton_charge
 
+    partition = msg.partition()
     data.frame_metadata[partition] = FrameMetaData(
         vetoes=pu00.vetos,
         proton_charge=proton_charge,
@@ -157,14 +193,13 @@ def handle_run_info_messages(
     """
     logger.debug("Processing %s runInfo messages", len(run_info_messages))
     for msg in run_info_messages:
-        if value := msg.value():
-            handle_runinfo_msg(data, value, event_consumer)
-        elif error := msg.error():
+        if error := msg.error():
             logger.warning("Kafka message error: %s", error.code())
-            continue
+        else:
+            handle_runinfo_msg(data, msg, event_consumer)
 
 
-def handle_runinfo_msg(data: Data, msg: bytes, event_consumer: Consumer) -> None:
+def handle_runinfo_msg(data: Data, msg: Message, event_consumer: Consumer) -> None:
     """Handle an arbitrary message from Kafka runInfo topic.
 
     Args:
@@ -173,14 +208,15 @@ def handle_runinfo_msg(data: Data, msg: bytes, event_consumer: Consumer) -> None
         event_consumer: Kafka event topic consumer.
 
     """
-    schema = get_schema(msg)
+    schema = extract_schema(msg)
+
     if schema == "pl72":
         handle_pl72(data, msg, event_consumer)
     elif schema == "6s4t":
         handle_6s4t(data, msg)
 
 
-def handle_pl72(data: Data, msg: bytes, event_consumer: Consumer) -> None:
+def handle_pl72(data: Data, msg: Message, event_consumer: Consumer) -> None:
     """Handle a pl72 (run start) message from Kafka.
 
     This zeroes the spectra array (reallocating if the size changed),
@@ -193,8 +229,13 @@ def handle_pl72(data: Data, msg: bytes, event_consumer: Consumer) -> None:
         event_consumer: Kafka event topic consumer.
 
     """
+    msg_value = msg.value()
+    if msg_value is None:
+        logger.warning("Received pl72 message with no value")
+        return
+
     try:
-        pl72 = deserialise_pl72(msg)
+        pl72 = deserialise_pl72(msg_value)
     except Exception:
         logger.exception("Failed deserialising pl72: %s")
         return
@@ -256,10 +297,15 @@ def handle_pl72(data: Data, msg: bytes, event_consumer: Consumer) -> None:
     data.good_frames = 0
 
 
-def handle_6s4t(data: Data, msg: bytes) -> None:
+def handle_6s4t(data: Data, msg: Message) -> None:
     """Handle a 6s4t (run stop) message from Kafka."""
+    msg_value = msg.value()
+    if msg_value is None:
+        logger.warning("Received 6s4t message with no value")
+        return
+
     try:
-        run_stop_6s4t = deserialise_6s4t(msg)
+        run_stop_6s4t = deserialise_6s4t(msg_value)
     except Exception:
         logger.exception("Failed deserialising 6s4t")
         return
