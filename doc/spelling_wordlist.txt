@@ -1,6 +1,7 @@
 benchmark
 benchmarked
 config
+Dataclass
 ev
 Gbit
 histogram
