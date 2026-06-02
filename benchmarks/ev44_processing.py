@@ -5,8 +5,8 @@ import time
 import numpy as np
 from streaming_data_types import serialise_ev44
 
-from kafka_dae_diagnostics.data import Data
-from kafka_dae_diagnostics.kafka.handlers import handle_ev44
+from kafka_dae_diagnostics.data import Data, FrameMetaData
+from kafka_dae_diagnostics.kafka.handlers import NonEmptyMessage, handle_ev44
 
 RNG = np.random.default_rng(seed=0)
 
@@ -19,20 +19,23 @@ def generate_fake_events(  # noqa: PLR0913 PLR0917 (benchmark script only)
     det_min: int,
     det_max: int,
     sorted: bool,
-) -> bytes:
+) -> NonEmptyMessage:
     """Generate fake flatbuffers-encoded ev44 messages."""
     detector_ids = RNG.integers(low=det_min, high=det_max, size=events_per_frame)
     tofs = np.maximum(0.0, RNG.normal(loc=tof_peak, scale=tof_sigma, size=events_per_frame))
     if sorted:
         tofs.sort()
 
-    return serialise_ev44(
-        source_name="saluki",
-        reference_time=[time.time() * 1_000_000_000],
-        message_id=msg_id,
-        reference_time_index=[0],
-        time_of_flight=tofs,
-        pixel_id=detector_ids,
+    return NonEmptyMessage(
+        value=serialise_ev44(
+            source_name="saluki",
+            reference_time=[time.time() * 1_000_000_000],
+            message_id=msg_id,
+            reference_time_index=[0],
+            time_of_flight=tofs,
+            pixel_id=detector_ids,
+        ),
+        partition=0,
     )
 
 
@@ -48,11 +51,13 @@ def benchmark_ev44_processing(
         generate_fake_events(0, n_events, 10_000_000, 2_000_000, 0, n_detectors, sorted=sorted)
         for _ in range(n_ev44)
     ]
-    len_bytes = sum(len(msg) for msg in msgs)
+    len_bytes = sum(len(msg.value) for msg in msgs)
+
+    data.frame_metadata[0] = FrameMetaData(period=0, proton_charge=0.123456, vetoes=0)
 
     start = time.time()
     for msg in msgs:
-        handle_ev44(data, msg)
+        handle_ev44(data, msg)  # type: ignore
     end = time.time()
     t = end - start
 

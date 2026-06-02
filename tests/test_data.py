@@ -67,3 +67,13 @@ def test_average_data_rate():
 
     data.largest_kafka_timestamp = 0
     assert data.average_data_rate == pytest.approx(0)
+
+
+def test_count_rate():
+    data = Data(
+        total_events=123456789,
+        start_time=123,
+        largest_kafka_timestamp=456,
+    )
+
+    assert data.count_rate == pytest.approx(1334.667989)

@@ -1,6 +1,7 @@
 benchmark
 benchmarked
 config
+Dataclass
 ev
 Gbit
 histogram
@@ -10,6 +11,8 @@ IOC
 kHz
 maturin
 Mbit
+Mebibytes
+MEv
 MEvents
 MiB
 ns
@@ -21,5 +24,6 @@ PV
 pydantic
 runInfo
 toolchain
+uAh
 μs
 ValidationError

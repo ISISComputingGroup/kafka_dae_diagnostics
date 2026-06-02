@@ -27,6 +27,7 @@ nitpick_ignore_regex = [
     ("py:obj", r"^.*\.T.*_co$"),
     ("py:class", r"^numpy.uint64$"),
     ("py:class", r"^numpy.int32"),
+    ("py:class", r"^numpy.int64"),
     ("py:class", r"^numpy.float64"),
     ("py:class", r"^cimpl.Consumer"),
     ("py:class", r"^annotated_types\..*"),

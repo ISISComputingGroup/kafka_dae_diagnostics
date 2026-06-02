@@ -10,6 +10,20 @@ import numpy.typing as npt
 
 
 @dataclasses.dataclass
+class FrameMetaData:
+    """Metadata associated with a set of neutron events."""
+
+    vetoes: int = 0
+    """Integer mask of active vetoes in this frame."""
+
+    proton_charge: float = 0.0
+    """Proton charge, in uAh per frame"""
+
+    period: int = 0
+    """Period into which this data was collected"""
+
+
+@dataclasses.dataclass
 class Data:
     """A mutable object describing the data being served by this IOC."""
 
@@ -42,7 +56,7 @@ class Data:
 
     total_events: int = 0
     """
-    Total number of neutron events in this run.
+    Total number of non-vetoed neutron events in this run.
     """
 
     total_event_messages: int = 0
@@ -57,19 +71,19 @@ class Data:
 
     largest_kafka_timestamp: float = 0.0
     """
-    Largest timestamp seen in an ev44 or pl72 message since
+    Largest timestamp seen in an ``ev44``, ``pu00`` or ``pl72`` message since
     the beginning of this run. Seconds since epoch.
     """
 
     most_recent_kafka_timestamp: float = 0.0
     """
-    Timestamp in the most recently-processed ev44 or pl72 message.
+    Timestamp in the most recently-processed ``ev44``, ``pu00`` or ``pl72`` message.
     Seconds since epoch.
     """
 
     start_time: float = 0.0
     """
-    Timestamp of the most recent pl72 run-start message.
+    Timestamp of the most recent ``pl72`` run-start message.
     Seconds since epoch.
     """
 
@@ -83,6 +97,64 @@ class Data:
     """
     Estimated time difference between an event being recorded in
     electronics and processed in KDAEDIAG IOC.
+    """
+
+    frame_metadata: dict[int | None, FrameMetaData] = field(default_factory=dict)
+    """
+    Metadata for the current frame, keyed by Kafka partition ID.
+    """
+
+    raw_frames_pd: npt.NDArray[np.int64] = field(
+        default_factory=lambda: np.zeros(shape=(1,), dtype=np.int64)
+    )
+    """
+    Array of raw frames collected in each period.
+    """
+
+    good_frames_pd: npt.NDArray[np.int64] = field(
+        default_factory=lambda: np.zeros(shape=(1,), dtype=np.int64)
+    )
+    """
+    Array of good frames collected in each period.
+    """
+
+    raw_frames: int = 0
+    """
+    Number of raw frames seen in the current run.
+    """
+
+    good_frames: int = 0
+    """
+    Number of good (non-vetoed) frames seen in the current run.
+    """
+
+    raw_uah_pd: npt.NDArray[np.float64] = field(
+        default_factory=lambda: np.zeros(shape=(1,), dtype=np.float64)
+    )
+    """
+    Array of raw uAh collected in each period.
+    """
+
+    good_uah_pd: npt.NDArray[np.float64] = field(
+        default_factory=lambda: np.zeros(shape=(1,), dtype=np.float64)
+    )
+    """
+    Array of good uAh collected in each period.
+    """
+
+    raw_uah: float = 0.0
+    """
+    Raw uAh collected in the current run (including vetoed frames).
+    """
+
+    good_uah: float = 0.0
+    """
+    Good uAh collected in the current run.
+    """
+
+    veto_mask: int = 0xFFFF
+    """
+    Integer mask of enabled vetoes.
     """
 
     @property
@@ -129,4 +201,15 @@ class Data:
         duration = self.duration
         if duration == 0:
             return 0
-        return self.total_event_megabytes / self.duration
+        return self.total_event_megabytes / duration
+
+    @property
+    def count_rate(self) -> float:
+        """Average count rate during this run in MEv/h.
+
+        Includes good counts only.
+        """
+        duration = self.duration
+        if duration == 0:
+            return 0
+        return (self.total_events * 3600) / (duration * 1_000_000)

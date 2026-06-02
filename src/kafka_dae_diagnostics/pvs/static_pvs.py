@@ -28,6 +28,15 @@ def static_pv_provider(prefix: str, data: Data) -> StaticProvider:
     static_provider.add(f"{prefix}EVENTMODEDATARATE", static_pvs.data_rate)
     static_provider.add(f"{prefix}HISTMEMORY", static_pvs.histogram_memory)
 
+    static_provider.add(f"{prefix}GOODFRAMES", static_pvs.good_frames)
+    static_provider.add(f"{prefix}RAWFRAMES", static_pvs.raw_frames)
+    static_provider.add(f"{prefix}GOODFRAMES_PD", static_pvs.good_frames_pd)
+    static_provider.add(f"{prefix}RAWFRAMES_PD", static_pvs.raw_frames_pd)
+    static_provider.add(f"{prefix}GOODUAH", static_pvs.good_uah)
+    static_provider.add(f"{prefix}RAWUAH", static_pvs.raw_uah)
+    static_provider.add(f"{prefix}GOODUAH_PD", static_pvs.good_uah_pd)
+    static_provider.add(f"{prefix}RAWUAH_PD", static_pvs.raw_uah_pd)
+
     static_provider.add(f"{prefix}NUMPERIODS", static_pvs.num_periods)
     static_provider.add(f"{prefix}NUMSPECTRA", static_pvs.num_spectra)
     static_provider.add(f"{prefix}NUMTIMECHANNELS", static_pvs.num_time_channels)
@@ -44,10 +53,10 @@ def static_pv_provider(prefix: str, data: Data) -> StaticProvider:
 
 
 class StaticPVs:
-    """Hold static (scalar) PV definitions."""
+    """Hold static PV definitions."""
 
     def __init__(self, data: "Data") -> None:
-        """Hold static (scalar) PV definitions."""
+        """Hold static PV definitions."""
         self._last_update = time.time()
         self._last_update_data_size = data.total_event_megabytes
 
@@ -62,6 +71,7 @@ class StaticPVs:
             nt=NTScalar(display=True, form=True),
             initial={
                 "value": data.mev,
+                "display.units": "MEv",
                 "display.precision": 6,
             },
         )
@@ -85,6 +95,78 @@ class StaticPVs:
             initial={
                 "value": data.histogram_megabytes,
                 "display.units": "MiB",
+                "display.precision": 3,
+            },
+        )
+
+        self.good_frames_pd = SharedPV(
+            nt=NTScalar("al", display=True, form=True),
+            initial={
+                "value": data.good_frames_pd,
+                "display.units": "frames",
+                "display.precision": 0,
+            },
+        )
+
+        self.raw_frames_pd = SharedPV(
+            nt=NTScalar("al", display=True, form=True),
+            initial={
+                "value": data.raw_frames_pd,
+                "display.units": "frames",
+                "display.precision": 0,
+            },
+        )
+
+        self.good_frames = SharedPV(
+            nt=NTScalar(display=True, form=True),
+            initial={
+                "value": data.good_frames,
+                "display.units": "frames",
+                "display.precision": 0,
+            },
+        )
+
+        self.raw_frames = SharedPV(
+            nt=NTScalar(display=True, form=True),
+            initial={
+                "value": data.raw_frames,
+                "display.units": "frames",
+                "display.precision": 0,
+            },
+        )
+
+        self.good_uah_pd = SharedPV(
+            nt=NTScalar("ad", display=True, form=True),
+            initial={
+                "value": data.good_uah_pd,
+                "display.units": "uAh",
+                "display.precision": 0,
+            },
+        )
+
+        self.raw_uah_pd = SharedPV(
+            nt=NTScalar("ad", display=True, form=True),
+            initial={
+                "value": data.raw_uah_pd,
+                "display.units": "uAh",
+                "display.precision": 0,
+            },
+        )
+
+        self.good_uah = SharedPV(
+            nt=NTScalar(display=True, form=True),
+            initial={
+                "value": data.good_uah,
+                "display.units": "uAh",
+                "display.precision": 3,
+            },
+        )
+
+        self.raw_uah = SharedPV(
+            nt=NTScalar(display=True, form=True),
+            initial={
+                "value": data.raw_uah,
+                "display.units": "uAh",
                 "display.precision": 3,
             },
         )
@@ -116,7 +198,7 @@ class StaticPVs:
         self.count_rate = SharedPV(
             nt=NTScalar(display=True, form=True),
             initial={
-                "value": data.num_time_channels,
+                "value": data.count_rate,
                 "display.units": "Mev/h",
                 "display.precision": 3,
             },
@@ -187,6 +269,16 @@ class StaticPVs:
         self.total_event_messages.post(data.total_event_messages, timestamp=now)
         self.total_event_megabytes.post(data.total_event_megabytes, timestamp=now)
         self.histogram_memory.post(data.histogram_megabytes, timestamp=now)
+
+        self.good_frames.post(data.good_frames, timestamp=now)
+        self.raw_frames.post(data.raw_frames, timestamp=now)
+        self.good_frames_pd.post(data.good_frames_pd, timestamp=now)
+        self.raw_frames_pd.post(data.raw_frames_pd, timestamp=now)
+        self.good_uah.post(data.good_uah, timestamp=now)
+        self.raw_uah.post(data.raw_uah, timestamp=now)
+        self.good_uah_pd.post(data.good_uah_pd, timestamp=now)
+        self.raw_uah_pd.post(data.raw_uah_pd, timestamp=now)
+
         self.num_periods.post(data.num_periods, timestamp=now)
         self.num_spectra.post(data.num_spectra, timestamp=now)
         self.num_time_channels.post(data.num_time_channels, timestamp=now)

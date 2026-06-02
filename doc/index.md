@@ -12,6 +12,7 @@ For information on running this IOC locally, see {ref}`running_locally`.
 :caption: Developer Information
 :glob:
 
+pvs
 local_development
 architectural_decision_records
 ```
