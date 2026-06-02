@@ -35,7 +35,7 @@ def generate_fake_events(  # noqa: PLR0913 PLR0917 (benchmark script only)
             time_of_flight=tofs,
             pixel_id=detector_ids,
         ),
-        partition=1,
+        partition=0,
     )
 
 
