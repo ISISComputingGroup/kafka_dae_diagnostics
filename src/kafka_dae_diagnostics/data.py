@@ -56,7 +56,7 @@ class Data:
 
     total_events: int = 0
     """
-    Total number of good neutron events in this run.
+    Total number of non-vetoed neutron events in this run.
     """
 
     total_event_messages: int = 0

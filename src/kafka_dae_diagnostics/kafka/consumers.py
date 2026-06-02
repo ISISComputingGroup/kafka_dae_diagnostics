@@ -7,7 +7,7 @@ from confluent_kafka import Consumer, TopicPartition
 
 from kafka_dae_diagnostics.config import DiagnosticsConfig
 from kafka_dae_diagnostics.data import Data
-from kafka_dae_diagnostics.kafka.handlers import handle_event_messages, handle_run_info_messages
+from kafka_dae_diagnostics.kafka.handlers import handle_event_topic_messages, handle_run_info_messages
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +83,7 @@ def consume_from_kafka_forever(config: DiagnosticsConfig, data: Data) -> None:
         event_messages = event_consumer.consume(num_messages=10_000, timeout=0.0)
         if event_messages:
             handle_events_start_time = time.time()
-            handle_event_messages(event_messages, data=data)
+            handle_event_topic_messages(event_messages, data=data)
             time_ms = (time.time() - handle_events_start_time) * 1000
             logger.debug(
                 "Handled %d event messages in %.3f ms (%.3f ms per message).",

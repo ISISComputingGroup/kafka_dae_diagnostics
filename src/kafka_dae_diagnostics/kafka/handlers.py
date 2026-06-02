@@ -49,7 +49,7 @@ def extract_schema(msg: NonEmptyMessage) -> str | None:
         return None
 
 
-def handle_event_messages(event_messages: list[Message], data: Data) -> None:
+def handle_event_topic_messages(event_messages: list[Message], data: Data) -> None:
     """Handle Kafka event messages.
 
     Args:
@@ -61,10 +61,10 @@ def handle_event_messages(event_messages: list[Message], data: Data) -> None:
         if error := msg.error():
             logger.warning("Kafka message error: %s", error.code())
         elif value := msg.value():
-            handle_event_msg(data, NonEmptyMessage(value=value, partition=msg.partition()))
+            handle_event_topic_msg(data, NonEmptyMessage(value=value, partition=msg.partition()))
 
 
-def handle_event_msg(data: Data, msg: NonEmptyMessage) -> None:
+def handle_event_topic_msg(data: Data, msg: NonEmptyMessage) -> None:
     """Handle an arbitrary message from Kafka event topic.
 
     Args:

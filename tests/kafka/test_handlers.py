@@ -13,7 +13,7 @@ from kafka_dae_diagnostics.kafka.handlers import (
     extract_schema,
     handle_6s4t,
     handle_ev44,
-    handle_event_messages,
+    handle_event_topic_messages,
     handle_pl72,
     handle_pu00,
     handle_run_info_messages,
@@ -90,7 +90,7 @@ def test_handle_event_messages():
     msg4 = make_message(None)
 
     data = Data()
-    handle_event_messages([msg0, msg1, msg2, msg3, msg4], data)
+    handle_event_topic_messages([msg0, msg1, msg2, msg3, msg4], data)
 
     assert data.total_events == 2
 
@@ -255,7 +255,7 @@ def test_handle_invalid_msg_ignored():
     msg.partition.return_value = 1
 
     # Should not crash - messages ignored silently if unrecognised
-    handle_event_messages([msg], Data())
+    handle_event_topic_messages([msg], Data())
     handle_run_info_messages([msg], Data(), MagicMock())
 
 
