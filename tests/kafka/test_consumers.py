@@ -79,7 +79,7 @@ def test_consume_from_kafka_forever():
             "kafka_dae_diagnostics.kafka.consumers.handle_run_info_messages"
         ) as handle_run_info_messages,
         patch(
-            "kafka_dae_diagnostics.kafka.consumers.handle_event_messages"
+            "kafka_dae_diagnostics.kafka.consumers.handle_event_topic_messages"
         ) as handle_event_messages,
         patch("kafka_dae_diagnostics.kafka.consumers.run_callbacks") as run_callbacks,
         patch("kafka_dae_diagnostics.kafka.consumers.time.sleep") as sleep,
