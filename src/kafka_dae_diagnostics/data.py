@@ -8,7 +8,7 @@ from dataclasses import field
 import numpy as np
 import numpy.typing as npt
 
-from kafka_dae_diagnostics.veto_diagnostics import VetoDiagnostics
+from kafka_dae_diagnostics.veto_diagnostics import NUM_VETOS, VetoDiagnostics
 
 
 @dataclasses.dataclass
@@ -161,6 +161,54 @@ class Data:
 
     veto_diagnostics: VetoDiagnostics = field(default_factory=VetoDiagnostics)
     """Veto diagnostics."""
+
+    veto_names_array: npt.NDArray[np.str_] = field(
+        default_factory=lambda: np.array(
+            [
+                "FIFO",
+                "SMP",
+                "TS2 Pulse",
+                "Wrong Pulse",
+                "Unused",
+                "ISIS slow",
+                "External 0",
+                "External 1",
+                "External 2",
+                "External 3",
+                "Fast Chopper 0",
+                "Fast Chopper 1",
+                "Fast Chopper 2",
+                "Fast Chopper 3",
+                "Reserved 0",
+                "Reserved 1",
+                "Unused",
+                "Unused",
+                "Unused",
+                "Unused",
+                "Unused",
+                "Unused",
+                "Unused",
+                "Unused",
+                "Unused",
+                "Unused",
+                "Unused",
+                "Unused",
+                "Unused",
+                "Unused",
+                "Unused",
+                "Unused",
+            ]
+        )
+    )
+
+    @property
+    def enabled_vetos_array(self) -> npt.NDArray[np.int32]:
+        """Array describing whether each of the 32 veto bits is cyrrently enabled."""
+        ret = np.zeros((NUM_VETOS,), dtype=np.int32)
+        for shift in range(NUM_VETOS):
+            if (self.veto_mask & (1 << shift)) != 0:
+                ret[shift] = 1
+        return ret
 
     @property
     def mev(self) -> float:
