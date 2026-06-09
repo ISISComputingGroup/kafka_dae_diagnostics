@@ -12,6 +12,8 @@ ahash = "0.8.12"
 isis_streaming_data_types = "0.1.1"
 numpy = {version = "0.28.0" }
 pyo3 = { version = "0.28.3", features = ["abi3-py312"] }
+pyo3-log = "0.13.3"
+log = "0.4.32"
 
 [lints.clippy]
 indexing_slicing = "deny"

@@ -126,11 +126,19 @@ fn bin_events_into_spectrum(
 
 #[pymodule]
 mod _kdaediag_rs {
+    use pyo3::prelude::*;
+
     #[pymodule_export]
     use super::bin_events_into_spectrum;
 
     #[pymodule_export]
     use super::data::Data;
+
+    #[pymodule_init]
+    fn init(m: &Bound<'_, PyModule>) -> PyResult<()> {
+        pyo3_log::init();
+        Ok(())
+    }
 }
 
 #[cfg(test)]
