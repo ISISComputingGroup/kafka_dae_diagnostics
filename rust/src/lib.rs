@@ -1,4 +1,5 @@
 mod data;
+mod handlers;
 
 use numpy::{PyReadonlyArray1, PyReadwriteArray2, ndarray::ArrayViewMut2};
 use pyo3::exceptions::PyValueError;
@@ -125,8 +126,6 @@ fn bin_events_into_spectrum(
 
 #[pymodule]
 mod _kdaediag_rs {
-    use pyo3::prelude::*;
-
     #[pymodule_export]
     use super::bin_events_into_spectrum;
 

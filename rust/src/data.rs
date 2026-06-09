@@ -1,51 +1,37 @@
-use std::cmp::max;
-use numpy::ndarray::{Array1, Array3};
-use pyo3::{pyclass, pymethods, Py, PyAny};
-use pyo3::types::{PyDict, PyTuple, PySuper};
 use ahash::AHashMap;
+use numpy::ndarray::{Array1, Array3};
+use pyo3::{Py, PyAny, pyclass, pymethods};
 
-
-struct FrameMetadata {
-
+pub(crate) struct FrameMetadata {
+    pub(crate) vetos: u32,
+    pub(crate) proton_charge: f32,
+    pub(crate) period: u32,
 }
 
 #[pyclass]
 #[derive(Default)]
 pub struct Data {
-    spectra: Array3<f64>,
-    callbacks: Vec<Py<PyAny>>,
-    bin_boundaries: Array1<i32>,
-    #[pyo3(get, set)]
-    total_events: u64,
-    #[pyo3(get, set)]
-    total_event_messages: u64,
-    #[pyo3(get, set)]
-    total_event_megabytes: f64,
-    #[pyo3(get, set)]
-    largest_kafka_timestamp: f64,
-    #[pyo3(get, set)]
-    most_recent_kafka_timestamp: f64,
-    #[pyo3(get, set)]
-    start_time: f64,
-    #[pyo3(get, set)]
-    stop_time: f64,
-    #[pyo3(get, set)]
-    event_processing_lag: f64,
-    frame_metadata: AHashMap<i64, FrameMetadata>,
-    raw_frames_pd: Array1<u64>,
-    good_frames_pd: Array1<u64>,
-    #[pyo3(get, set)]
-    raw_frames: u64,
-    #[pyo3(get, set)]
-    good_frames: u64,
-    raw_uah_pd: Array1<f64>,
-    good_uah_pd: Array1<f64>,
-    #[pyo3(get, set)]
-    raw_uah: f64,
-    #[pyo3(get, set)]
-    good_uah: f64,
-    #[pyo3(get, set)]
-    veto_mask: u32,
+    pub(crate) spectra: Array3<f64>,
+    pub(crate) callbacks: Vec<Py<PyAny>>,
+    pub(crate) bin_boundaries: Array1<i32>,
+    pub(crate) total_events: u64,
+    pub(crate) total_event_messages: u64,
+    pub(crate) total_event_megabytes: f64,
+    pub(crate) largest_kafka_timestamp: f64,
+    pub(crate) most_recent_kafka_timestamp: f64,
+    pub(crate) start_time: f64,
+    pub(crate) stop_time: f64,
+    pub(crate) event_processing_lag: f64,
+    pub(crate) frame_metadata: AHashMap<i64, FrameMetadata>,
+    pub(crate) raw_frames_pd: Array1<u64>,
+    pub(crate) good_frames_pd: Array1<u64>,
+    pub(crate) raw_frames: u64,
+    pub(crate) good_frames: u64,
+    pub(crate) raw_uah_pd: Array1<f64>,
+    pub(crate) good_uah_pd: Array1<f64>,
+    pub(crate) raw_uah: f64,
+    pub(crate) good_uah: f64,
+    pub(crate) veto_mask: u32,
 }
 
 #[pymethods]
@@ -62,7 +48,7 @@ impl Data {
     }
 
     fn duration(&self) -> f64 {
-        ((self.largest_kafka_timestamp - self.start_time)).max(0.)
+        (self.largest_kafka_timestamp - self.start_time).max(0.)
     }
 
     fn mev_per_hour(&self) -> f64 {
