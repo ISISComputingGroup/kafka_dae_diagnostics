@@ -8,6 +8,8 @@ from dataclasses import field
 import numpy as np
 import numpy.typing as npt
 
+from kafka_dae_diagnostics.veto_diagnostics import VetoDiagnostics
+
 
 @dataclasses.dataclass
 class FrameMetaData:
@@ -156,6 +158,9 @@ class Data:
     """
     Integer mask of enabled vetoes.
     """
+
+    veto_diagnostics: VetoDiagnostics = field(default_factory=VetoDiagnostics)
+    """Veto diagnostics."""
 
     @property
     def mev(self) -> float:

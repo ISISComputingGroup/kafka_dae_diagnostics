@@ -154,6 +154,8 @@ def handle_pu00(data: Data, msg: NonEmptyMessage) -> None:
         period=period,
     )
 
+    data.veto_diagnostics.add_veto(pu00.vetos)
+
     data.raw_frames += 1
     data.raw_uah += proton_charge
     try:
@@ -262,6 +264,8 @@ def handle_pl72(data: Data, msg: NonEmptyMessage, event_consumer: Consumer) -> N
     else:
         del data.spectra
         data.spectra = np.zeros((periods, detectors, time_channels), dtype=np.float64)
+
+    data.veto_diagnostics.reset()
 
     data.raw_frames_pd = np.zeros((periods,), dtype=np.int64)
     data.good_frames_pd = np.zeros((periods,), dtype=np.int64)

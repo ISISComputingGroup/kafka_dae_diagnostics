@@ -47,6 +47,11 @@ def static_pv_provider(prefix: str, data: Data) -> StaticProvider:
     static_provider.add(f"{prefix}PROCESSINGLAG", static_pvs.event_processing_lag)
     static_provider.add(f"{prefix}DIAGNOSTICSLAG", static_pvs.diagnostics_update_lag)
 
+    static_provider.add(f"{prefix}VETO:RECENT:PERCENT", static_pvs.recent_veto_percentages)
+    static_provider.add(f"{prefix}VETO:RECENT:COUNT", static_pvs.recent_veto_count)
+    static_provider.add(f"{prefix}VETO:RUN:PERCENT", static_pvs.run_veto_percentages)
+    static_provider.add(f"{prefix}VETO:RUN:COUNT", static_pvs.run_veto_count)
+
     data.callbacks["static-callbacks"] = lambda: static_pvs.update_all(data)
 
     return static_provider
@@ -256,6 +261,39 @@ class StaticPVs:
             },
         )
 
+        self.recent_veto_percentages = SharedPV(
+            nt=NTScalar("ad", display=True, form=True),
+            initial={
+                "value": data.veto_diagnostics.get_recent_veto_percentages(),
+                "display.units": "%",
+                "display.precision": 2,
+            },
+        )
+        self.run_veto_percentages = SharedPV(
+            nt=NTScalar("ad", display=True, form=True),
+            initial={
+                "value": data.veto_diagnostics.get_run_veto_percentages(),
+                "display.units": "%",
+                "display.precision": 2,
+            },
+        )
+        self.recent_veto_count = SharedPV(
+            nt=NTScalar("ad", display=True, form=True),
+            initial={
+                "value": data.veto_diagnostics.get_recent_veto_count(),
+                "display.units": "frames",
+                "display.precision": 0,
+            },
+        )
+        self.run_veto_count = SharedPV(
+            nt=NTScalar("ad", display=True, form=True),
+            initial={
+                "value": data.veto_diagnostics.get_run_veto_count(),
+                "display.units": "frames",
+                "display.precision": 0,
+            },
+        )
+
     def update_all(self, data: Data) -> None:
         """Update all PVs with new data.
 
@@ -288,6 +326,15 @@ class StaticPVs:
         self.run_duration.post(data.duration, timestamp=now)
         self.event_processing_lag.post(data.event_processing_lag, timestamp=now)
         self.data_rate.post(data.average_data_rate, timestamp=now)
+
+        self.recent_veto_percentages.post(
+            data.veto_diagnostics.get_recent_veto_percentages(), timestamp=now
+        )
+        self.run_veto_percentages.post(
+            data.veto_diagnostics.get_run_veto_percentages(), timestamp=now
+        )
+        self.recent_veto_count.post(data.veto_diagnostics.get_recent_veto_count(), timestamp=now)
+        self.run_veto_count.post(data.veto_diagnostics.get_run_veto_count(), timestamp=now)
 
         diagnostics_update_lag = now - self._last_update
         self._last_update = now
