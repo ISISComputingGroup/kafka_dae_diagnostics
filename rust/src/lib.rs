@@ -1,3 +1,5 @@
+mod data;
+
 use numpy::{PyReadonlyArray1, PyReadwriteArray2, ndarray::ArrayViewMut2};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
@@ -121,12 +123,15 @@ fn bin_events_into_spectrum(
     Ok(())
 }
 
-/// Overall rust module for all rust helpers.
 #[pymodule]
-fn _kdaediag_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(bin_events_into_spectrum, m)?)?;
+mod _kdaediag_rs {
+    use pyo3::prelude::*;
 
-    Ok(())
+    #[pymodule_export]
+    use super::bin_events_into_spectrum;
+
+    #[pymodule_export]
+    use super::data::Data;
 }
 
 #[cfg(test)]

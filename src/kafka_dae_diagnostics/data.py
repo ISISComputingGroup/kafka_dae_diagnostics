@@ -2,6 +2,7 @@
 
 import dataclasses
 import threading
+from collections import deque
 from collections.abc import Callable
 from dataclasses import field
 
@@ -155,6 +156,11 @@ class Data:
     veto_mask: int = 0xFFFF
     """
     Integer mask of enabled vetoes.
+    """
+
+    recent_frame_veto_flags: deque[int] = field(default_factory=lambda: deque(maxlen=100))
+    """
+    Queue of the veto flags from the most recently received frames in this run.
     """
 
     @property
