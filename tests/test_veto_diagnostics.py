@@ -9,7 +9,7 @@ def veto_diagnostics() -> VetoDiagnostics:
     return VetoDiagnostics(max_recent_frames=100)
 
 
-def test_no_vetos(veto_diagnostics):
+def test_no_vetos(veto_diagnostics: VetoDiagnostics) -> None:
     assert np.all(veto_diagnostics.get_run_veto_count() == 0)
     assert np.all(veto_diagnostics.get_recent_veto_count() == 0)
 
@@ -17,7 +17,7 @@ def test_no_vetos(veto_diagnostics):
     np.testing.assert_allclose(veto_diagnostics.get_recent_veto_percentages(), 0.0)
 
 
-def test_one_veto(veto_diagnostics):
+def test_one_veto(veto_diagnostics: VetoDiagnostics) -> None:
     veto_diagnostics.add_veto(0b11010011)
 
     assert np.all(
@@ -37,7 +37,7 @@ def test_one_veto(veto_diagnostics):
     )
 
 
-def test_two_different_vetos(veto_diagnostics):
+def test_two_different_vetos(veto_diagnostics: VetoDiagnostics) -> None:
     veto_diagnostics.add_veto(0b11010011)
     veto_diagnostics.add_veto(0)
 
@@ -58,7 +58,7 @@ def test_two_different_vetos(veto_diagnostics):
     )
 
 
-def test_many_vetos(veto_diagnostics):
+def test_many_vetos(veto_diagnostics: VetoDiagnostics) -> None:
 
     num_vetos = 123456
 
@@ -84,7 +84,7 @@ def test_many_vetos(veto_diagnostics):
     )
 
 
-def test_reset(veto_diagnostics):
+def test_reset(veto_diagnostics: VetoDiagnostics) -> None:
     veto_diagnostics.add_veto(0b11010011)
 
     assert veto_diagnostics.get_run_veto_percentages()[0] == pytest.approx(100)
