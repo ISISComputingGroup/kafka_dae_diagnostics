@@ -19,6 +19,8 @@ def static_pv_provider(prefix: str, data: Data) -> StaticProvider:
     """
     static_pvs = StaticPVs(data)
     static_provider = StaticProvider()
+    static_provider.add(f"{prefix}RUNSTATE", static_pvs.run_state)
+
     static_provider.add(f"{prefix}EVENTS", static_pvs.total_events)
     static_provider.add(f"{prefix}MEVENTS", static_pvs.total_mevents)
     static_provider.add(f"{prefix}TOTALCOUNTS", static_pvs.total_events)
@@ -44,8 +46,12 @@ def static_pv_provider(prefix: str, data: Data) -> StaticProvider:
     static_provider.add(f"{prefix}START_TIME", static_pvs.start_time)
     static_provider.add(f"{prefix}STOP_TIME", static_pvs.stop_time)
     static_provider.add(f"{prefix}RUNDURATION", static_pvs.run_duration)
+
     static_provider.add(f"{prefix}PROCESSINGLAG", static_pvs.event_processing_lag)
     static_provider.add(f"{prefix}DIAGNOSTICSLAG", static_pvs.diagnostics_update_lag)
+    static_provider.add(
+        f"{prefix}SECSSINCELASTEVENTMESSAGE", static_pvs.seconds_since_last_event_message
+    )
 
     static_provider.add(f"{prefix}VETO:RECENT:PERCENT", static_pvs.recent_veto_percentages)
     static_provider.add(f"{prefix}VETO:RECENT:COUNT", static_pvs.recent_veto_count)
@@ -65,7 +71,14 @@ class StaticPVs:
     def __init__(self, data: "Data") -> None:
         """Hold static PV definitions."""
         self._last_update = time.time()
-        self._last_update_data_size = data.total_event_megabytes
+
+        self.run_state = SharedPV(
+            nt=NTScalar(display=True, form=True),
+            initial={
+                "value": data.run_state,
+                "display.precision": 0,
+            },
+        )
 
         self.total_events = SharedPV(
             nt=NTScalar(display=True, form=True),
@@ -263,6 +276,15 @@ class StaticPVs:
             },
         )
 
+        self.seconds_since_last_event_message = SharedPV(
+            nt=NTScalar(display=True, form=True),
+            initial={
+                "value": data.seconds_since_last_event_message,
+                "display.units": "s",
+                "display.precision": 3,
+            },
+        )
+
         self.recent_veto_percentages = SharedPV(
             nt=NTScalar("ad", display=True, form=True),
             initial={
@@ -318,6 +340,8 @@ class StaticPVs:
 
         """
         now = time.time()
+        self.run_state.post(data.run_state, timestamp=now)
+
         self.total_events.post(data.total_events, timestamp=now)
         self.total_mevents.post(data.mev, timestamp=now)
         self.total_event_messages.post(data.total_event_messages, timestamp=now)
@@ -341,6 +365,9 @@ class StaticPVs:
         self.stop_time.post(data.stop_time, timestamp=now)
         self.run_duration.post(data.duration, timestamp=now)
         self.event_processing_lag.post(data.event_processing_lag, timestamp=now)
+        self.seconds_since_last_event_message.post(
+            data.seconds_since_last_event_message, timestamp=now
+        )
         self.data_rate.post(data.average_data_rate, timestamp=now)
 
         self.recent_veto_percentages.post(

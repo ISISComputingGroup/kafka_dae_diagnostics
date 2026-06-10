@@ -1,7 +1,9 @@
+from unittest.mock import patch
+
 import numpy as np
 import pytest
 
-from kafka_dae_diagnostics.data import Data
+from kafka_dae_diagnostics.data import Data, RunState
 
 
 def test_mev():
@@ -77,3 +79,47 @@ def test_count_rate():
     )
 
     assert data.count_rate == pytest.approx(1334.667989)
+
+
+def test_run_state_setup():
+    data = Data(
+        start_time=0,
+        stop_time=1,
+    )
+    assert data.run_state == RunState.SETUP
+
+
+@patch("kafka_dae_diagnostics.data.Data.seconds_since_last_event_message", 1000)
+def test_run_state_processing():
+    data = Data(
+        start_time=2,
+        stop_time=1,
+    )
+
+    assert data.run_state == RunState.PROCESSING
+
+
+@patch(
+    "kafka_dae_diagnostics.veto_diagnostics.VetoDiagnostics.get_recent_veto_percentages",
+    lambda *_, **__: np.array([60.0] + [0.0] * 31),
+)
+def test_run_state_vetoing():
+    data = Data(
+        start_time=2,
+        stop_time=1,
+    )
+
+    assert data.run_state == RunState.VETOING
+
+
+@patch(
+    "kafka_dae_diagnostics.veto_diagnostics.VetoDiagnostics.get_recent_veto_percentages",
+    lambda *_, **__: np.array([40.0] + [0.0] * 31),
+)
+def test_run_state_running():
+    data = Data(
+        start_time=2,
+        stop_time=1,
+    )
+
+    assert data.run_state == RunState.RUNNING

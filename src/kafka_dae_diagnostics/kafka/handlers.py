@@ -81,6 +81,8 @@ def handle_event_topic_msg(data: Data, msg: NonEmptyMessage) -> None:
     else:
         logger.warning("Received message with unknown schema %s", schema)
 
+    data.most_recent_event_processing_timestamp = time.time()
+
 
 def handle_ev44(data: Data, msg: NonEmptyMessage) -> None:
     """Handle an ev44 (event-data) message from Kafka.
