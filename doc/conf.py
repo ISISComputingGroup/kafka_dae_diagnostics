@@ -52,6 +52,8 @@ extensions = [
     "sphinxcontrib.mermaid",
     # Documentation links in code blocks
     "sphinx_codeautolink",
+    # For code-tabs
+    "sphinx_design",
 ]
 mermaid_d3_zoom = True
 napoleon_google_docstring = True
