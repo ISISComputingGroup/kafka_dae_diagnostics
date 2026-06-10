@@ -3,10 +3,9 @@
 import time
 
 import numpy as np
-from streaming_data_types import serialise_ev44
+from streaming_data_types import serialise_ev44, serialise_pu00
 
-from kafka_dae_diagnostics.data import Data, FrameMetaData
-from kafka_dae_diagnostics.kafka.handlers import NonEmptyMessage, handle_ev44
+from kafka_dae_diagnostics._kdaediag_rs import Data
 
 RNG = np.random.default_rng(seed=0)
 
@@ -19,23 +18,20 @@ def generate_fake_events(  # noqa: PLR0913 PLR0917 (benchmark script only)
     det_min: int,
     det_max: int,
     sorted: bool,
-) -> NonEmptyMessage:
+) -> bytes:
     """Generate fake flatbuffers-encoded ev44 messages."""
     detector_ids = RNG.integers(low=det_min, high=det_max, size=events_per_frame)
     tofs = np.maximum(0.0, RNG.normal(loc=tof_peak, scale=tof_sigma, size=events_per_frame))
     if sorted:
         tofs.sort()
 
-    return NonEmptyMessage(
-        value=serialise_ev44(
-            source_name="saluki",
-            reference_time=[time.time() * 1_000_000_000],
-            message_id=msg_id,
-            reference_time_index=[0],
-            time_of_flight=tofs,
-            pixel_id=detector_ids,
-        ),
-        partition=0,
+    return serialise_ev44(
+        source_name="saluki",
+        reference_time=[time.time() * 1_000_000_000],
+        message_id=msg_id,
+        reference_time_index=[0],
+        time_of_flight=tofs,
+        pixel_id=detector_ids,
     )
 
 
@@ -44,20 +40,27 @@ def benchmark_ev44_processing(
 ) -> None:
     """Run an ev44 processing benchmark."""
     data = Data(
-        spectra=np.zeros((1, n_detectors, n_bins), dtype=np.float64),
-        bin_boundaries=np.linspace(5_000_000, 15_000_000, n_bins + 1, dtype=np.int32),
+        # spectra=np.zeros((1, n_detectors, n_bins), dtype=np.float64),
+        # bin_boundaries=np.linspace(5_000_000, 15_000_000, n_bins + 1, dtype=np.int32),
     )
     msgs = [
         generate_fake_events(0, n_events, 10_000_000, 2_000_000, 0, n_detectors, sorted=sorted)
         for _ in range(n_ev44)
     ]
-    len_bytes = sum(len(msg.value) for msg in msgs)
+    len_bytes = sum(len(msg) for msg in msgs)
 
-    data.frame_metadata[0] = FrameMetaData(period=0, proton_charge=0.123456, vetoes=0)
+    data.handle_msg(serialise_pu00(
+        source_name="",
+        message_id=0,
+        timestamp_ns=0,
+        proton_charge=0.123456,
+        period_number=0,
+        vetos=0,
+    ), 0)
 
     start = time.time()
     for msg in msgs:
-        handle_ev44(data, msg)  # type: ignore
+        data.handle_msg(msg, 0)  # type: ignore
     end = time.time()
     t = end - start
 

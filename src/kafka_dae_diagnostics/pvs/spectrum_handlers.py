@@ -11,7 +11,7 @@ from p4p.nt import NTScalar
 from p4p.server.raw import Handler
 from p4p.server.thread import SharedPV
 
-from kafka_dae_diagnostics.data import Data
+from kafka_dae_diagnostics._kdaediag_rs import Data
 
 logger = logging.getLogger(__name__)
 
