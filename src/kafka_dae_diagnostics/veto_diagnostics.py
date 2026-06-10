@@ -42,6 +42,7 @@ class VetoDiagnostics:
     """Lock-object"""
 
     max_recent_frames: int = 100
+    """Maximum number of frames to keep in the 'recent frames' queue."""
 
     def add_veto(self, veto: int) -> None:
         """Add a veto from a new frame."""

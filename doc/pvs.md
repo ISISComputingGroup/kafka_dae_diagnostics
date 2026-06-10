@@ -96,6 +96,42 @@ Estimated time difference, in seconds, between an event being emitted by the str
 
 The amount of time taken, in seconds, between diagnostic PV updates. After an event message is processed by the diagnostics IOC, the corresponding update will not be published to PVs until this interval next expires.
 
+### `VETO:RECENT:PERCENT`
+
+The percentage of frames which were vetoed, within the most recently processed 100 frames in this run
+(configurable via {py:obj}`~kafka_dae_diagnostics.veto_diagnostics.VetoDiagnostics.max_recent_frames`).
+
+This PV is an array of length 32, where element `N` corresponds to a veto mask of `1 << N`.
+
+### `VETO:RECENT:COUNT`
+
+The number of frames which were vetoed, within the most recently processed 100 frames in this run
+(configurable via {py:obj}`~kafka_dae_diagnostics.veto_diagnostics.VetoDiagnostics.max_recent_frames`).
+
+This PV is an array of length 32, where element `N` corresponds to a veto mask of `1 << N`.
+
+### `VETO:RUN:PERCENT`
+
+The percentage of frames which were vetoed, within the current run.
+
+This PV is an array of length 32, where element `N` corresponds to a veto mask of `1 << N`.
+
+### `VETO:RUN:COUNT`
+
+The number of frames which were vetoed, within the current run.
+
+This PV is an array of length 32, where element `N` corresponds to a veto mask of `1 << N`.
+
+### `VETO:ENABLED`
+
+This PV is an array of length 32, where element `N` corresponds to a veto mask of `1 << N`. The value will be
+`1` if the veto is enabled (either soft or hard), or `0` if the veto is disabled.
+
+### `VETO:NAMES`
+
+This PV is an array of length 32, where element `N` corresponds to a veto mask of `1 << N`. The values are the
+user-friendly string names of each veto, for example `External veto 0`.
+
 ## Dynamic PVs
 
 These PVs are created on-the-fly by `kafka_dae_diagnostics`. The PV will not exist if
