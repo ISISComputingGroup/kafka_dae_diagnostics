@@ -22,6 +22,7 @@ performant
 programmatically
 PV
 pydantic
+readbacks
 runInfo
 toolchain
 uAh
