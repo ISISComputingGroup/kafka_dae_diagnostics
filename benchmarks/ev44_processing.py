@@ -1,11 +1,12 @@
 """Benchmark scripts for ev44 message processing."""
 
 import time
+import uuid
 
 import numpy as np
-from streaming_data_types import serialise_ev44, serialise_pu00
-
-from kafka_dae_diagnostics._kdaediag_rs import Data
+from kafka_dae_diagnostics._kdaediag_rs import Data  # noqa: PLC2701 (benchmark code only)
+from streaming_data_types import serialise_ev44, serialise_pl72, serialise_pu00
+from streaming_data_types.run_start_pl72 import DetectorSpectrumMap
 
 RNG = np.random.default_rng(seed=0)
 
@@ -39,24 +40,40 @@ def benchmark_ev44_processing(
     n_ev44: int, n_events: int, n_bins: int, n_detectors: int, sorted: bool
 ) -> None:
     """Run an ev44 processing benchmark."""
-    data = Data(
-        # spectra=np.zeros((1, n_detectors, n_bins), dtype=np.float64),
-        # bin_boundaries=np.linspace(5_000_000, 15_000_000, n_bins + 1, dtype=np.int32),
-    )
+    data = Data()
     msgs = [
         generate_fake_events(0, n_events, 10_000_000, 2_000_000, 0, n_detectors, sorted=sorted)
         for _ in range(n_ev44)
     ]
     len_bytes = sum(len(msg) for msg in msgs)
 
-    data.handle_msg(serialise_pu00(
-        source_name="",
-        message_id=0,
-        timestamp_ns=0,
-        proton_charge=0.123456,
-        period_number=0,
-        vetos=0,
-    ), 0)
+    data.handle_msg(
+        serialise_pl72(
+            job_id=str(uuid.uuid4()),
+            filename="foo",
+            start_time=0,
+            stop_time=0,
+            run_name="test",
+            detector_spectrum_map=DetectorSpectrumMap(
+                detector_ids=np.arange(n_detectors),
+                spectrum_numbers=np.arange(n_detectors),
+                n_spectra=n_detectors,
+            ),
+        ),
+        0,
+    )
+
+    data.handle_msg(
+        serialise_pu00(
+            source_name="",
+            message_id=0,
+            timestamp_ns=0,
+            proton_charge=0.123456,
+            period_number=0,
+            vetos=0,
+        ),
+        0,
+    )
 
     start = time.time()
     for msg in msgs:

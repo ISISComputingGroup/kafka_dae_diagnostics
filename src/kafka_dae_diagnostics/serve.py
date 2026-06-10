@@ -6,8 +6,8 @@ while also serving ``data`` over EPICS.
 
 from p4p.server import DynamicProvider, Server
 
-from kafka_dae_diagnostics.config import DiagnosticsConfig
 from kafka_dae_diagnostics._kdaediag_rs import Data
+from kafka_dae_diagnostics.config import DiagnosticsConfig
 from kafka_dae_diagnostics.kafka.consumers import consume_from_kafka_forever
 from kafka_dae_diagnostics.pvs.spectrum_handlers import SpectrumHandler
 from kafka_dae_diagnostics.pvs.static_pvs import static_pv_provider

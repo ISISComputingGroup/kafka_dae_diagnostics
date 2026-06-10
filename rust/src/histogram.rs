@@ -1,12 +1,20 @@
-use log::warn;
-use numpy::ndarray::{Array1, Array3, ArrayViewMut2};
-use pyo3::{pyclass, pyfunction, pymethods, PyErr, PyResult};
+use log::{warn};
+use numpy::ndarray::{Array3};
+use pyo3::{PyErr, PyResult};
 use pyo3::exceptions::PyValueError;
 
-#[derive(Default)]
 pub struct Histogram {
     data: Array3<f64>,
     bin_boundaries: Vec<i32>,
+}
+
+impl Default for Histogram {
+    fn default() -> Self {
+        Histogram {
+            data: Array3::zeros((1, 1, 1)),
+            bin_boundaries: vec![0, 100_000_000],
+        }
+    }
 }
 
 impl Histogram {
@@ -25,7 +33,7 @@ impl Histogram {
 
     pub (crate) fn reset(&mut self, periods: usize, spectra: usize) {
         self.data = Array3::zeros(
-            (periods, self.bin_boundaries.len()-1, spectra)
+            (periods, spectra, self.bin_boundaries.len()-1)
         );
     }
 

@@ -5,8 +5,8 @@ import time
 
 from confluent_kafka import Consumer, TopicPartition
 
-from kafka_dae_diagnostics.config import DiagnosticsConfig
 from kafka_dae_diagnostics._kdaediag_rs import Data
+from kafka_dae_diagnostics.config import DiagnosticsConfig
 from kafka_dae_diagnostics.kafka.handlers import (
     handle_event_topic_messages,
     handle_run_info_messages,

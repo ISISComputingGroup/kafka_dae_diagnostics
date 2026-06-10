@@ -1,6 +1,5 @@
 import numpy as np
 import pytest
-
 from kafka_dae_diagnostics._kdaediag_rs import Data
 
 
@@ -15,21 +14,21 @@ def test_mev(data):
 
 
 def test_duration(data):
-    data.largest_kafka_timestamp=20
-    data.start_time=5
+    data.largest_kafka_timestamp = 20
+    data.start_time = 5
     assert data.duration() == pytest.approx(15)
 
 
 def test_negative_duration(data):
-    data.largest_kafka_timestamp=20
-    data.start_time=25
+    data.largest_kafka_timestamp = 20
+    data.start_time = 25
     assert data.duration() == pytest.approx(0)
 
 
 def test_mev_per_hour(data):
-    data.largest_kafka_timestamp=3600
-    data.start_time=0
-    data.total_events=5_600_000
+    data.largest_kafka_timestamp = 3600
+    data.start_time = 0
+    data.total_events = 5_600_000
     assert data.mev_per_hour() == pytest.approx(5.6)
 
     data.start_time = 3600
@@ -57,9 +56,9 @@ def test_histogram_megabytes():
 
 
 def test_average_data_rate(data):
-    data.total_event_megabytes=123.456
-    data.start_time=0
-    data.largest_kafka_timestamp=2
+    data.total_event_megabytes = 123.456
+    data.start_time = 0
+    data.largest_kafka_timestamp = 2
     assert data.average_data_rate() == pytest.approx(123.456 / 2)
 
     data.largest_kafka_timestamp = 0
@@ -67,8 +66,8 @@ def test_average_data_rate(data):
 
 
 def test_count_rate(data):
-    data.total_events=123456789
-    data.start_time=123
-    data.largest_kafka_timestamp=456
+    data.total_events = 123456789
+    data.start_time = 123
+    data.largest_kafka_timestamp = 456
 
     assert data.count_rate() == pytest.approx(1334.667989)

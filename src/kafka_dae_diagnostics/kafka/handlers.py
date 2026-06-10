@@ -1,7 +1,9 @@
 """Utilities for reacting to Kafka messages."""
 
 import logging
+
 from confluent_kafka import Consumer, Message, TopicPartition
+
 from kafka_dae_diagnostics._kdaediag_rs import Data
 
 logger = logging.getLogger(__name__)
