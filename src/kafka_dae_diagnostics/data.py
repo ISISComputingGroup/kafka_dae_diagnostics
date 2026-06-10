@@ -203,7 +203,7 @@ class Data:
 
     @property
     def enabled_vetos_array(self) -> npt.NDArray[np.int32]:
-        """Array describing whether each of the 32 veto bits is cyrrently enabled."""
+        """Array describing whether each of the 32 veto bits is currently enabled."""
         ret = np.zeros((NUM_VETOS,), dtype=np.int32)
         for shift in range(NUM_VETOS):
             if (self.veto_mask & (1 << shift)) != 0:
