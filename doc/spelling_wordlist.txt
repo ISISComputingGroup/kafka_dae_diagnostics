@@ -2,6 +2,7 @@ benchmark
 benchmarked
 config
 Dataclass
+enum
 ev
 Gbit
 histogram
