@@ -21,6 +21,41 @@ runinfo_topic = "somemachine_runInfo"
 # (usually <instrument>_events)
 events_topic = "somemachine_events"
 
+veto_names = [
+    "FIFO",
+    "SMP",
+    "TS2 Pulse",
+    "Wrong Pulse",
+    "Unused",
+    "ISIS slow",
+    "External 0",
+    "External 1",
+    "External 2",
+    "External 3",
+    "Fast Chopper 0",
+    "Fast Chopper 1",
+    "Fast Chopper 2",
+    "Fast Chopper 3",
+    "Reserved 0",
+    "Reserved 1",
+    "Unused",
+    "Unused",
+    "Unused",
+    "Unused",
+    "Unused",
+    "Unused",
+    "Unused",
+    "Unused",
+    "Unused",
+    "Unused",
+    "Unused",
+    "Unused",
+    "Unused",
+    "Unused",
+    "Unused",
+    "Unused",
+]
+
 [kafka_runinfo_consumer]
 "bootstrap.servers" = "server:1234"
 
