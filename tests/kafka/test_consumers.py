@@ -12,6 +12,7 @@ from kafka_dae_diagnostics.kafka.consumers import (
     make_runinfo_consumer,
     run_callbacks,
 )
+from kafka_dae_diagnostics.veto_diagnostics import NUM_VETOS
 
 
 def test_make_runinfo_consumer():
@@ -27,6 +28,7 @@ def test_make_runinfo_consumer():
                 pv_prefix="",
                 events_topic="",
                 callback_frequency_ms=1000,
+                veto_names=[f"v{n}" for n in range(NUM_VETOS)],
             )
         )
 
@@ -46,6 +48,7 @@ def test_make_event_consumer():
                 kafka_events_consumer={},
                 pv_prefix="",
                 callback_frequency_ms=1000,
+                veto_names=[f"v{n}" for n in range(NUM_VETOS)],
             )
         )
 
@@ -98,6 +101,7 @@ def test_consume_from_kafka_forever():
             kafka_events_consumer={},
             pv_prefix="",
             callback_frequency_ms=1000,
+            veto_names=[f"v{n}" for n in range(NUM_VETOS)],
         )
 
         with pytest.raises(TimeoutError, match="Waiting for new events"):
