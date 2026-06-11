@@ -2,11 +2,11 @@
 
 import time
 
-from p4p.nt import NTScalar
+from p4p.nt import NTEnum, NTScalar
 from p4p.server import StaticProvider
 from p4p.server.thread import SharedPV
 
-from kafka_dae_diagnostics.data import Data
+from kafka_dae_diagnostics.data import Data, RunState
 
 
 def static_pv_provider(prefix: str, data: Data) -> StaticProvider:
@@ -20,6 +20,7 @@ def static_pv_provider(prefix: str, data: Data) -> StaticProvider:
     static_pvs = StaticPVs(data)
     static_provider = StaticProvider()
     static_provider.add(f"{prefix}RUNSTATE", static_pvs.run_state)
+    static_provider.add(f"{prefix}RUNSTATE_STR", static_pvs.run_state_str)
 
     static_provider.add(f"{prefix}EVENTS", static_pvs.total_events)
     static_provider.add(f"{prefix}MEVENTS", static_pvs.total_mevents)
@@ -73,10 +74,16 @@ class StaticPVs:
         self._last_update = time.time()
 
         self.run_state = SharedPV(
-            nt=NTScalar(display=True, form=True),
+            nt=NTEnum(display=True),
             initial={
-                "value": data.run_state,
-                "display.precision": 0,
+                "choices": [x.name for x in RunState],
+                "index": data.run_state.value,
+            },
+        )
+        self.run_state_str = SharedPV(
+            nt=NTScalar("s", display=True, form=True),
+            initial={
+                "value": data.run_state.name,
             },
         )
 
@@ -340,7 +347,10 @@ class StaticPVs:
 
         """
         now = time.time()
-        self.run_state.post(data.run_state, timestamp=now)
+
+        run_state = data.run_state
+        self.run_state.post(run_state.value, timestamp=now)
+        self.run_state_str.post(run_state.name, timestamp=now)
 
         self.total_events.post(data.total_events, timestamp=now)
         self.total_mevents.post(data.mev, timestamp=now)
