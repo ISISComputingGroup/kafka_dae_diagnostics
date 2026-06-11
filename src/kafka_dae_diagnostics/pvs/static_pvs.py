@@ -8,8 +8,10 @@ from p4p.server.thread import SharedPV
 
 from kafka_dae_diagnostics._kdaediag_rs import Data
 
+from kafka_dae_diagnostics.pvs.callbacks import Callbacks
 
-def static_pv_provider(prefix: str, data: Data) -> StaticProvider:
+
+def static_pv_provider(prefix: str, data: Data, callbacks: Callbacks) -> StaticProvider:
     """:py:obj:`p4p` static PV provider.
 
     Args:
@@ -47,7 +49,7 @@ def static_pv_provider(prefix: str, data: Data) -> StaticProvider:
     static_provider.add(f"{prefix}PROCESSINGLAG", static_pvs.event_processing_lag)
     static_provider.add(f"{prefix}DIAGNOSTICSLAG", static_pvs.diagnostics_update_lag)
 
-    data.callbacks["static-callbacks"] = lambda: static_pvs.update_all(data)
+    callbacks.add_callback("static_callbacks", lambda data: static_pvs.update_all(data))
 
     return static_provider
 

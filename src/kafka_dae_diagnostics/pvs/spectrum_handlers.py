@@ -2,6 +2,8 @@
 
 import logging
 import re
+import threading
+import typing
 import uuid
 from typing import Any
 
@@ -13,13 +15,15 @@ from p4p.server.thread import SharedPV
 
 from kafka_dae_diagnostics._kdaediag_rs import Data
 
+from kafka_dae_diagnostics.pvs.callbacks import Callbacks
+
 logger = logging.getLogger(__name__)
 
 
 class SpectrumHandler(Handler):
     """Handle Spectrum Y (counts) data."""
 
-    def __init__(self, prefix: str, data: Data) -> None:
+    def __init__(self, prefix: str, data: Data, callbacks: Callbacks) -> None:
         """Handle Spectrum Y (counts) data.
 
         Args:
@@ -28,6 +32,7 @@ class SpectrumHandler(Handler):
 
         """
         self._data = data
+        self._callbacks = callbacks
         self._prefix = prefix
         self._channel_regex = re.compile(rf"^{re.escape(prefix)}SPEC:(\d+):(\d+):([XY])$")
 
@@ -41,8 +46,8 @@ class SpectrumHandler(Handler):
         match = self._channel_regex.fullmatch(name)
         return (
             match is not None
-            and int(match.group(1)) < self._data.num_periods
-            and int(match.group(2)) < self._data.num_spectra
+            and int(match.group(1)) < self._data.num_periods()
+            and int(match.group(2)) < self._data.num_spectra()
         )
 
     def makeChannel(self, name: str, peer: str) -> SharedPV:
@@ -68,11 +73,9 @@ class SpectrumHandler(Handler):
         ) -> npt.NDArray[np.float64]:
             match typ:
                 case "Y":
-                    return self._data.spectra[period][det]
+                    return self._data.histogram_data(period, det)
                 case "X":
-                    return (
-                        (self._data.bin_boundaries[1:] + self._data.bin_boundaries[:-1]) / 2
-                    ).astype(np.float64)
+                    return self._data.bin_centres()
                 case _:  # pragma: no cover (unreachable)
                     raise ValueError(f"Unknown channel type: {typ}")
 
@@ -80,8 +83,7 @@ class SpectrumHandler(Handler):
             @staticmethod
             def onLastDisconnect(*_: list[Any], **__: dict[str, Any]) -> None:  # noqa N802 p4p requires this name
                 logger.info("Closing channel %s %s", name, peer)
-                with self._data.callbacks_lock:
-                    del self._data.callbacks[callback_id]
+                self._callbacks.remove_callback(callback_id)
 
         pv = SharedPV(
             nt=NTScalar("ad"),
@@ -89,7 +91,6 @@ class SpectrumHandler(Handler):
             handler=ConnectionHandler(),
         )
 
-        with self._data.callbacks_lock:
-            self._data.callbacks[callback_id] = lambda: pv.post(extract_data())
+        self._callbacks.add_callback(callback_id, lambda _: pv.post(extract_data()))
 
         return pv

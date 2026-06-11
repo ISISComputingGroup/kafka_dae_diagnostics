@@ -6,7 +6,7 @@ use isis_streaming_data_types::flatbuffers_generated::run_start_pl72::RunStart;
 use isis_streaming_data_types::flatbuffers_generated::run_stop_6s4t::RunStop;
 use log::{info, warn};
 use numpy::ndarray::{Array1, Array3};
-use numpy::{PyArray1};
+use numpy::{PyArray, PyArray1, PyArray2};
 use pyo3::prelude::*;
 use crate::frame_metadata::FrameMetadata;
 use numpy::{IntoPyArray};
@@ -131,7 +131,7 @@ impl Data {
         let time_channels = 1000;
 
         self.histogram.reset(periods, spectra);
-        self.histogram.change_bin_boundaries(Array1::linspace(5_000_000., 15_000_000., 8001).mapv(|f| f as i32).to_vec())?;
+        self.histogram.change_bin_boundaries(Array1::linspace(0., 100_000_000., time_channels + 1).mapv(|f| f as i32).to_vec())?;
 
         self.raw_frames_pd = Array1::zeros(periods);
         self.good_frames_pd = Array1::zeros(periods);
@@ -285,5 +285,17 @@ impl Data {
         } else {
             (self.total_events as f64 * 3600.0) / (duration * 1_000_000.0)
         }
+    }
+
+    fn bin_boundaries<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<i32>> {
+        PyArray1::from_slice(py, self.histogram.bin_boundaries())
+    }
+
+    fn bin_centres<'py>(&self, py: Python<'py>) -> Bound<'py, PyArray1<f64>> {
+        PyArray1::from_slice(py, self.histogram.bin_centres())
+    }
+
+    fn histogram_data<'py>(&self, py: Python<'py>, period: usize, spectrum: usize) -> Bound<'py, PyArray1<f64>> {
+        PyArray1::from_array(py, &self.histogram.data(period, spectrum))
     }
 }

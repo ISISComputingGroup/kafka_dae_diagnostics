@@ -1,11 +1,13 @@
+use itertools::Itertools;
 use log::{warn};
-use numpy::ndarray::{Array3};
+use numpy::ndarray::{s, Array3, ArrayView1};
 use pyo3::{PyErr, PyResult};
 use pyo3::exceptions::PyValueError;
 
 pub struct Histogram {
     data: Array3<f64>,
     bin_boundaries: Vec<i32>,
+    bin_centres: Vec<f64>,
 }
 
 impl Default for Histogram {
@@ -13,6 +15,7 @@ impl Default for Histogram {
         Histogram {
             data: Array3::zeros((1, 1, 1)),
             bin_boundaries: vec![0, 100_000_000],
+            bin_centres: vec![50_000_000.0],
         }
     }
 }
@@ -24,6 +27,7 @@ impl Histogram {
         }
 
         if new_boundaries != self.bin_boundaries {
+            self.bin_centres = new_boundaries.iter().tuples().map(|(&a, &b)| (a + b) as f64 / 2.0).collect();
             self.bin_boundaries = new_boundaries;
             self.reset(self.periods(), self.spectra());
         }
@@ -51,6 +55,18 @@ impl Histogram {
 
     pub (crate) fn megabytes(&self) -> f64 {
         (self.data.len() * 8) as f64 / (1024.0 * 1024.0)
+    }
+
+    pub (crate) fn bin_boundaries(&self) -> &[i32] {
+        &self.bin_boundaries
+    }
+
+    pub (crate) fn bin_centres(&self) -> &[f64] {
+        &self.bin_centres
+    }
+
+    pub(crate) fn data(&self, period: usize, spectrum: usize) -> ArrayView1<'_, f64> {
+        self.data.slice(s![period, spectrum, ..])
     }
 
     fn accumulate_sorted_events(&mut self, period: usize, tofs: &[i32], pixel_ids: &[i32]) {

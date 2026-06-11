@@ -12,7 +12,7 @@ mod _kdaediag_rs {
     use super::diag_data::Data;
 
     #[pymodule_init]
-    fn init(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    fn init(_: &Bound<'_, PyModule>) -> PyResult<()> {
         pyo3_log::init();
         Ok(())
     }
