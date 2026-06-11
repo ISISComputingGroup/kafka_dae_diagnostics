@@ -11,6 +11,14 @@ runinfo_topic = "somemachine_runInfo"
 # (usually <instrument>_events)
 events_topic = "somemachine_events"
 
+# The minimum active percentage (for each individual veto), beyond which the
+# run state will be VETOING rather than RUNNING.
+min_vetoing_percentage = 50.0
+
+# When running, if we have not received messages on the _events stream within
+# this many seconds from now, the run state will be PROCESSING rather than RUNNING.
+stale_event_message_timeout_s = 5.0
+
 [kafka_runinfo_consumer]
 "bootstrap.servers" = "livedata.isis.cclrc.ac.uk:31092"
 "group.id" = "kafka-dae-diagnostics"

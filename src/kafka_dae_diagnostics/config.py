@@ -26,6 +26,17 @@ class DiagnosticsConfig(BaseModel):
     kafka_events_consumer: dict[str, str]
     """Kafka settings for ``event`` stream consumer."""
 
+    min_vetoing_percentage: float = 50.0
+    """
+    The minimum active percentage (for each individual veto), beyond which the
+    run state will be VETOING rather than RUNNING.
+    """
+
+    stale_event_message_timeout_s: float = 5.0
+    """When running, if we have not received messages on the _events stream within
+    this many seconds from now, the run state will be PROCESSING rather than RUNNING.
+    """
+
 
 def load_config(config_path: str) -> DiagnosticsConfig:
     """Validate and load a config file at the specified path."""
