@@ -319,7 +319,7 @@ class Data:
             self.veto_diagnostics.get_recent_veto_percentages() >= self.vetoing_percentage,
             where=self.enabled_vetos_array.astype(np.bool_),
         ):
-            # TODO: in principle this could fail to detect 100% vetoing if
+            # In principle this could fail to detect 100% vetoing if
             # e.g. veto1-4 veto 25% each (in a fully-non-overlapping way).
             # That is a somewhat pathological case...
             return RunState.VETOING
