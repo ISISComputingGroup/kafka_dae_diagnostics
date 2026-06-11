@@ -4,6 +4,7 @@ Listen to Kafka forever, updating ``data`` as new messages come in,
 while also serving ``data`` over EPICS.
 """
 
+import numpy as np
 from p4p.server import DynamicProvider, Server
 
 from kafka_dae_diagnostics.config import DiagnosticsConfig
@@ -25,6 +26,7 @@ def serve(
     data = Data(
         vetoing_percentage=config.min_vetoing_percentage,
         stale_event_timeout_s=config.stale_event_message_timeout_s,
+        veto_names_array=np.array(config.veto_names, dtype=np.str_),
     )
     spectrum_handler = SpectrumHandler(prefix=config.pv_prefix, data=data)
     providers = [

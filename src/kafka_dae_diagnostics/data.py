@@ -190,43 +190,11 @@ class Data:
     """Veto diagnostics."""
 
     veto_names_array: npt.NDArray[np.str_] = field(
-        default_factory=lambda: np.array(
-            [
-                "FIFO",
-                "SMP",
-                "TS2 Pulse",
-                "Wrong Pulse",
-                "Unused",
-                "ISIS slow",
-                "External 0",
-                "External 1",
-                "External 2",
-                "External 3",
-                "Fast Chopper 0",
-                "Fast Chopper 1",
-                "Fast Chopper 2",
-                "Fast Chopper 3",
-                "Reserved 0",
-                "Reserved 1",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-            ]
-        )
+        default_factory=lambda: np.array([f"veto_{n}" for n in range(NUM_VETOS)], dtype=np.str_)
     )
+    """
+    Veto names, as a numpy array of strings.
+    """
 
     @property
     def enabled_vetos_array(self) -> npt.NDArray[np.int32]:
