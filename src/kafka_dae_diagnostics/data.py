@@ -12,16 +12,6 @@ import numpy.typing as npt
 
 from kafka_dae_diagnostics.veto_diagnostics import NUM_VETOS, VetoDiagnostics
 
-MIN_VETO_PERCENTAGE: float = 50.0
-"""The minimum percentage at which the DAE is considered 'vetoing' rather than 'running'."""
-
-
-STALE_EVENT_MESSAGE_TIMEOUT_S: float = 5.0
-"""
-The time interval (seconds) in which we call the system 'PROCESSING' if we have not received
-new event messages.
-"""
-
 
 class RunState(enum.IntEnum):
     """Enum describing the possible run-states."""
@@ -51,6 +41,15 @@ class FrameMetaData:
 @dataclasses.dataclass
 class Data:
     """A mutable object describing the data being served by this IOC."""
+
+    stale_event_timeout_s: float = 5.0
+    """
+    The time interval (seconds) in which we call the system 'PROCESSING' if we have not received
+    new event messages.
+    """
+
+    vetoing_percentage: float = 50.0
+    """The minimum percentage at which the DAE is considered 'vetoing' rather than 'running'."""
 
     spectra: npt.NDArray[np.float64] = field(
         default_factory=lambda: np.zeros(shape=(1, 1, 1), dtype=np.float64)
@@ -311,13 +310,13 @@ class Data:
         if self.stop_time > self.start_time:
             # Most recent message is a run stop -> we're not running.
             return RunState.SETUP
-        elif self.seconds_since_last_event_message > STALE_EVENT_MESSAGE_TIMEOUT_S:
+        elif self.seconds_since_last_event_message > self.stale_event_timeout_s:
             # We think we should be RUNNING, but are not receiving
             # event messages, flag "PROCESSING" as this likely implies
             # that pipeline is 'stuck' at some level.
             return RunState.PROCESSING
         elif np.any(
-            self.veto_diagnostics.get_recent_veto_percentages() >= MIN_VETO_PERCENTAGE,
+            self.veto_diagnostics.get_recent_veto_percentages() >= self.vetoing_percentage,
             where=self.enabled_vetos_array.astype(np.bool_),
         ):
             # TODO: in principle this could fail to detect 100% vetoing if

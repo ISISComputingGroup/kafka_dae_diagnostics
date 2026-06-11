@@ -22,7 +22,10 @@ def serve(
         config: Diagnostics IOC configuration parameters
 
     """
-    data = Data()
+    data = Data(
+        vetoing_percentage=config.min_vetoing_percentage,
+        stale_event_timeout_s=config.stale_event_message_timeout_s,
+    )
     spectrum_handler = SpectrumHandler(prefix=config.pv_prefix, data=data)
     providers = [
         DynamicProvider("spectra", handler=spectrum_handler),
