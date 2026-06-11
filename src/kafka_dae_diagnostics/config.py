@@ -1,8 +1,11 @@
 """Utilities for reading Diagnostics IOC configuration from TOML."""
 
 import tomllib
+from typing import Annotated
 
-from pydantic import BaseModel, PositiveFloat, ValidationError
+from pydantic import BaseModel, Field, PositiveFloat, ValidationError
+
+from kafka_dae_diagnostics.veto_diagnostics import NUM_VETOS
 
 
 class DiagnosticsConfig(BaseModel):
@@ -35,6 +38,13 @@ class DiagnosticsConfig(BaseModel):
     stale_event_message_timeout_s: float = 5.0
     """When running, if we have not received messages on the _events stream within
     this many seconds from now, the run state will be PROCESSING rather than RUNNING.
+    """
+
+    veto_names: Annotated[list[str], Field(min_length=NUM_VETOS, max_length=NUM_VETOS)]
+    """Veto names, as a list of strings.
+
+    The first item in this list has bitmask (1 << 0), the last item has bitmask (1 << 31).
+    There must be exactly 32 entries in this list.
     """
 
 
