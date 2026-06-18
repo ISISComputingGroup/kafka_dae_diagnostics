@@ -1,6 +1,6 @@
 import pytest
 
-from kafka_dae_diagnostics.data import Data
+from kafka_dae_diagnostics._kdaediag_rs import Data
 from kafka_dae_diagnostics.pvs.spectrum_handlers import SpectrumHandler
 
 PREFIX = "UNITTEST:"

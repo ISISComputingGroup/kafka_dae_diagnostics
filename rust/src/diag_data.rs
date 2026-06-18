@@ -1,18 +1,16 @@
+use crate::frame_metadata::FrameMetadata;
+use crate::histogram::Histogram;
 use ahash::AHashMap;
-use isis_streaming_data_types::{deserialize_message, DeserializedMessage};
 use isis_streaming_data_types::flatbuffers_generated::events_ev44::Event44Message;
 use isis_streaming_data_types::flatbuffers_generated::pulse_metadata_pu00::Pu00Message;
 use isis_streaming_data_types::flatbuffers_generated::run_start_pl72::RunStart;
 use isis_streaming_data_types::flatbuffers_generated::run_stop_6s4t::RunStop;
+use isis_streaming_data_types::{DeserializedMessage, deserialize_message};
 use log::{info, warn};
-use numpy::ndarray::{Array1, Array3};
-use numpy::{PyArray, PyArray1, PyArray2};
+use numpy::IntoPyArray;
+use numpy::PyArray1;
+use numpy::ndarray::Array1;
 use pyo3::prelude::*;
-use crate::frame_metadata::FrameMetadata;
-use numpy::{IntoPyArray};
-use pyo3::impl_::callback::IntoPyCallbackOutput;
-use pyo3::IntoPyObjectExt;
-use crate::histogram::Histogram;
 
 #[pyclass]
 #[derive(Default)]
@@ -39,30 +37,29 @@ pub struct Data {
 }
 
 impl Data {
-
     fn handle_ev44(&mut self, partition: i64, msg: Event44Message) -> PyResult<()> {
         if let Some(metadata) = self.frame_metadata.get(&partition) {
             if msg.reference_time().len() < 1 {
                 warn!("ev44 message with no reference times; ignoring");
-                return Ok(())
+                return Ok(());
             }
             let ev44_timestamp_s = msg.reference_time().get(0) as f64 / 1_000_000_000.0;
 
             self.total_event_messages += 1;
             self.largest_kafka_timestamp = self.largest_kafka_timestamp.max(ev44_timestamp_s);
             self.most_recent_kafka_timestamp = ev44_timestamp_s;
-            self.event_processing_lag = 0.;  // TODO
+            self.event_processing_lag = 0.; // TODO
 
             let is_vetoed = (metadata.vetos & self.veto_mask) != 0;
 
             if is_vetoed {
-                return Ok(())
+                return Ok(());
             }
 
-            if let Some(pixels) = msg.pixel_id() && let Some(tofs) = msg.time_of_flight() {
-                let period = self.frame_metadata
-                    .get(&partition)
-                    .map(|meta| meta.period);
+            if let Some(pixels) = msg.pixel_id()
+                && let Some(tofs) = msg.time_of_flight()
+            {
+                let period = self.frame_metadata.get(&partition).map(|meta| meta.period);
 
                 if let Some(period) = period {
                     self.histogram.add_events(
@@ -88,9 +85,14 @@ impl Data {
         self.raw_frames += 1;
         self.raw_uah += proton_charge as f64;
 
-        self.frame_metadata.insert(partition, FrameMetadata {
-            vetos, proton_charge, period
-        });
+        self.frame_metadata.insert(
+            partition,
+            FrameMetadata {
+                vetos,
+                proton_charge,
+                period,
+            },
+        );
 
         if let Some(raw_frames_pd) = self.raw_frames_pd.get_mut(period as usize) {
             *raw_frames_pd += 1;
@@ -122,8 +124,14 @@ impl Data {
             1
         };
 
-        info!("Run start (filename='{:?}', start_time={:?}, run_name='{:?}', instrument_name='{:?}', n_spectra={}",
-        msg.filename(), msg.start_time(), msg.run_name(), msg.instrument_name(), n_spectra);
+        info!(
+            "Run start (filename='{:?}', start_time={:?}, run_name='{:?}', instrument_name='{:?}', n_spectra={}",
+            msg.filename(),
+            msg.start_time(),
+            msg.run_name(),
+            msg.instrument_name(),
+            n_spectra
+        );
 
         // TODO: periods, detectors, time channels
         let periods = 1;
@@ -131,7 +139,13 @@ impl Data {
         let time_channels = 1000;
 
         self.histogram.reset(periods, spectra);
-        self.histogram.change_bin_boundaries(Array1::linspace(0., 100_000_000., time_channels + 1).mapv(|f| f as i32).to_vec())?;
+        self.histogram.change_parameters(
+            periods,
+            spectra,
+            Array1::linspace(0., 100_000_000., time_channels + 1)
+                .mapv(|f| f as i32)
+                .to_vec(),
+        )?;
 
         self.raw_frames_pd = Array1::zeros(periods);
         self.good_frames_pd = Array1::zeros(periods);
@@ -141,7 +155,7 @@ impl Data {
         Ok(())
     }
 
-    fn handle_6s4t(&mut self,msg: RunStop) -> PyResult<()> {
+    fn handle_6s4t(&mut self, msg: RunStop) -> PyResult<()> {
         self.stop_time = msg.stop_time() as f64 / 1000.;
         Ok(())
     }
@@ -266,7 +280,7 @@ impl Data {
     }
 
     fn event_processing_lag(&self) -> f64 {
-        0.0  // TODO
+        0.0 // TODO
     }
 
     fn average_data_rate(&self) -> f64 {
@@ -295,7 +309,208 @@ impl Data {
         PyArray1::from_slice(py, self.histogram.bin_centres())
     }
 
-    fn histogram_data<'py>(&self, py: Python<'py>, period: usize, spectrum: usize) -> Bound<'py, PyArray1<f64>> {
+    fn histogram_data<'py>(
+        &self,
+        py: Python<'py>,
+        period: usize,
+        spectrum: usize,
+    ) -> Bound<'py, PyArray1<f64>> {
         PyArray1::from_array(py, &self.histogram.data(period, spectrum))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    mod diagnostics {
+        use approx::assert_abs_diff_eq;
+        use super::*;
+
+        #[test]
+        fn test_mev() {
+            let data = Data {
+                total_events: 5_600_000,
+                ..Default::default()
+            };
+
+            assert_abs_diff_eq!(data.mev(), 5.6);
+        }
+
+        #[test]
+        fn test_duration() {
+            let data = Data {
+                largest_kafka_timestamp: 20.,
+                start_time: 5.,
+                ..Default::default()
+            };
+
+            assert_abs_diff_eq!(data.duration(), 15.0);
+        }
+
+        #[test]
+        fn test_negative_duration() {
+            let data = Data {
+                largest_kafka_timestamp: 20.,
+                start_time: 25.,
+                ..Default::default()
+            };
+
+            assert_abs_diff_eq!(data.duration(), 0.0);
+        }
+
+        #[test]
+        fn test_mev_per_hour() {
+            let mut data = Data {
+                largest_kafka_timestamp: 3600.,
+                start_time: 0.,
+                total_events: 5_600_000,
+                ..Default::default()
+            };
+
+            assert_abs_diff_eq!(data.mev_per_hour(), 5.6);
+            data.start_time = 3600.;
+            assert_abs_diff_eq!(data.mev_per_hour(), 0.);
+        }
+
+        #[test]
+        fn test_average_data_rate() {
+            let mut data = Data {
+                total_event_bytes: 123456789,
+                start_time: 0.,
+                largest_kafka_timestamp: 123.0,
+                ..Default::default()
+            };
+
+            assert_abs_diff_eq!(data.average_data_rate(), 123456789.0 / (123. * 1024.0 * 1024.0));
+            data.largest_kafka_timestamp = 0.;
+            assert_abs_diff_eq!(data.average_data_rate(), 0.);
+        }
+
+        #[test]
+        fn test_count_rate() {
+            let data = Data {
+                total_events: 123456789,
+                start_time: 123.,
+                largest_kafka_timestamp: 456.,
+                ..Default::default()
+            };
+
+            assert_abs_diff_eq!(data.count_rate(), 1334.667989, epsilon = 1e-6);
+        }
+    }
+
+    mod message_handling {
+        use approx::assert_abs_diff_eq;
+        use super::*;
+        use flatbuffers::FlatBufferBuilder;
+        use isis_streaming_data_types::flatbuffers_generated::events_ev44::{finish_event_44_message_buffer, Event44Message, Event44MessageArgs};
+        use isis_streaming_data_types::flatbuffers_generated::pulse_metadata_pu00::{finish_pu_00_message_buffer, Pu00Message, Pu00MessageArgs};
+
+        fn frame_metadata() -> Vec<u8> {
+            let mut fbb = FlatBufferBuilder::new();
+
+            let args = Pu00MessageArgs {
+                source_name: Some(fbb.create_string("")),
+                message_id: 0,
+                reference_time: 1_234_000_000_000_i64,
+                proton_charge: Some(1.23456),
+                period_number: Some(0),
+                vetos: Some(0),
+            };
+
+            let pu00 = Pu00Message::create(&mut fbb, &args);
+            finish_pu_00_message_buffer(&mut fbb, pu00);
+            fbb.finished_data().to_vec()
+        }
+
+        fn one_event() -> Vec<u8> {
+            let mut fbb = FlatBufferBuilder::new();
+
+            let args = Event44MessageArgs {
+                source_name: Some(fbb.create_string("")),
+                message_id: 0,
+                reference_time: Some(fbb.create_vector(&[1_234_000_000_000_i64])),
+                reference_time_index: Some(fbb.create_vector(&[0])),
+                time_of_flight: Some(fbb.create_vector(&[0])),
+                pixel_id: Some(fbb.create_vector(&[0])),
+            };
+
+            let ev44 = Event44Message::create(&mut fbb, &args);
+            finish_event_44_message_buffer(&mut fbb, ev44);
+            fbb.finished_data().to_vec()
+        }
+
+        #[test]
+        fn test_handle_event_messages() {
+            let mut data = Data::new();
+
+            data.handle_msg(&frame_metadata(), 0).unwrap();
+            data.handle_msg(&one_event(), 0).unwrap();
+            data.handle_msg(&one_event(), 0).unwrap();
+
+            assert_eq!(data.total_events, 2);
+            assert_eq!(data.total_event_messages, 2);
+        }
+
+        #[test]
+        fn test_handle_ev44() {
+            let mut data = Data::new();
+
+            data.handle_msg(&frame_metadata(), 0).unwrap();
+            data.handle_msg(&one_event(), 0).unwrap();
+
+            assert_eq!(data.total_events, 1);
+            assert_abs_diff_eq!(data.largest_kafka_timestamp, 1234., epsilon = 1e-6);
+            assert_abs_diff_eq!(data.most_recent_kafka_timestamp, 1234., epsilon = 1e-6);
+            assert_eq!(data.total_event_messages, 1);
+        }
+
+        #[test]
+        fn test_handle_ev44_without_metadata() {
+            let mut data = Data::new();
+
+            data.handle_msg(&one_event(), 0).unwrap();
+
+            assert_eq!(data.total_events, 0);
+        }
+
+        #[test]
+        fn test_handle_ev44_with_invalid_period_number() {
+            let mut data = Data::new();
+            data.frame_metadata.insert(0, FrameMetadata {
+                vetos: 0,
+                period: 987654321,
+                proton_charge: 1.0,
+            });
+
+            data.handle_msg(&one_event(), 0).unwrap();
+
+            // Event not counted
+            assert_eq!(data.total_events, 0);
+        }
+
+        #[test]
+        fn test_handle_vetoed_ev44() {
+            let mut data = Data::new();
+            data.veto_mask = 0b10000001;
+
+            data.frame_metadata.insert(0, FrameMetadata {
+                vetos: 0b11010011,
+                period: 0,
+                proton_charge: 1.0,
+            });
+
+            data.handle_msg(&one_event(), 0).unwrap();
+
+            assert_eq!(data.total_event_messages, 1);
+            assert_eq!(data.total_events, 0);
+        }
+
+        #[test]
+        fn test_handle_pu00_with_invalid_period_number() {
+            todo!()
+        }
+
     }
 }
