@@ -31,6 +31,7 @@ nitpick_ignore_regex = [
     ("py:class", r"^numpy.float64"),
     ("py:class", r"^cimpl.Consumer"),
     ("py:class", r"^annotated_types\..*"),
+    ("py:class", r"^numpy._typing._array_like.NDArray"),
 ]
 autodoc_default_options = {"exclude-members": "model_config"}
 
