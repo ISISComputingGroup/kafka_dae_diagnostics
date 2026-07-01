@@ -2,15 +2,17 @@
 
 import logging
 import time
+from typing import Callable
 
 from confluent_kafka import Consumer, TopicPartition
 
+from kafka_dae_diagnostics._kdaediag_rs import Data
 from kafka_dae_diagnostics.config import DiagnosticsConfig
-from kafka_dae_diagnostics.data import Data
 from kafka_dae_diagnostics.kafka.handlers import (
     handle_event_topic_messages,
     handle_run_info_messages,
 )
+from kafka_dae_diagnostics.pvs.callbacks import Callbacks
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +68,7 @@ def run_callbacks(data: Data) -> None:
                 )
 
 
-def consume_from_kafka_forever(config: DiagnosticsConfig, data: Data) -> None:
+def consume_from_kafka_forever(config: DiagnosticsConfig, data: Data, callbacks: Callbacks) -> None:
     """Consume from Kafka forever.
 
     Args:
@@ -97,7 +99,7 @@ def consume_from_kafka_forever(config: DiagnosticsConfig, data: Data) -> None:
 
         now = time.time()
         if (now - last_callback_time) * 1000 > config.callback_frequency_ms:
-            run_callbacks(data)
+            callbacks.run_callbacks(data)
             last_callback_time = now
 
         if len(event_messages) == 0:

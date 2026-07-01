@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from kafka_dae_diagnostics.data import Data
+from kafka_dae_diagnostics._kdaediag_rs import Data
 from kafka_dae_diagnostics.pvs.static_pvs import StaticPVs, static_pv_provider
 
 

@@ -7,7 +7,7 @@ from confluent_kafka.cimpl import KafkaError
 from streaming_data_types import serialise_6s4t, serialise_ev44, serialise_pl72, serialise_pu00
 from streaming_data_types.run_start_pl72 import DetectorSpectrumMap
 
-from kafka_dae_diagnostics.data import Data, FrameMetaData
+from kafka_dae_diagnostics._kdaediag_rs import Data
 from kafka_dae_diagnostics.kafka.handlers import (
     NonEmptyMessage,
     extract_schema,
