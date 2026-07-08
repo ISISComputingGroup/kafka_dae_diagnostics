@@ -50,6 +50,8 @@ The sum of `GOODUAH_PD` may differ from `GOODUAH` if frames with an invalid peri
 
 The total number of non-vetoed neutron events seen during the current run.
 
+`EVENTS` and `TOTALEVENTS` are aliases of each other, and provide the same information.
+
 ### `MEVENTS`
 
 Millions of events seen during the current run. Equivalent to `EVENTS` divided by {math}`10^6`.
