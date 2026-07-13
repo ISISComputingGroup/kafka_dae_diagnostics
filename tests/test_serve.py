@@ -23,3 +23,22 @@ def test_serve():
             config=config,
             data=mock.ANY,
         )
+
+
+def test_serve_without_optional_params():
+    with patch("kafka_dae_diagnostics.serve.consume_from_kafka_forever") as consume:
+        config = DiagnosticsConfig(
+            pv_prefix="UNITTEST:",
+            runinfo_topic="unittest_runInfo",
+            events_topic="unittest_events",
+            callback_frequency_ms=1000,
+            kafka_events_consumer={},
+            kafka_runinfo_consumer={},
+            veto_names=None,
+        )
+        serve(config)
+
+        consume.assert_called_once_with(
+            config=config,
+            data=mock.ANY,
+        )
