@@ -49,18 +49,16 @@ class VetoDiagnostics:
         with self._lock:
             self._recent_veto_masks.append(veto)
 
-            for shift in range(NUM_VETOS):
-                if (veto & (1 << shift)) != 0:
-                    self._run_veto_counts[shift] += 1
-                    self._recent_veto_counts[shift] += 1
+            added_vetos = ((veto & (1 << np.arange(NUM_VETOS))) != 0).astype(np.int64)
+            self._run_veto_counts += added_vetos
+            self._recent_veto_counts += added_vetos
 
             while len(self._recent_veto_masks) > self.max_recent_frames:
                 # Decrement veto counters for frames which are no longer 'recent'
-                evicted_vetos = self._recent_veto_masks.popleft()
-
-                for shift in range(NUM_VETOS):
-                    if (evicted_vetos & (1 << shift)) != 0:
-                        self._recent_veto_counts[shift] -= 1
+                evicted_veto = self._recent_veto_masks.popleft()
+                self._recent_veto_counts -= (
+                    (evicted_veto & (1 << np.arange(NUM_VETOS))) != 0
+                ).astype(np.int64)
 
             self._num_frames += 1
 
