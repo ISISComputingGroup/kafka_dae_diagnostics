@@ -29,7 +29,9 @@ class DiagnosticsConfig(BaseModel):
     kafka_events_consumer: dict[str, str]
     """Kafka settings for ``event`` stream consumer."""
 
-    veto_names: Annotated[list[str], Field(min_length=NUM_VETOS, max_length=NUM_VETOS)]
+    veto_names: Annotated[list[str] | None, Field(min_length=NUM_VETOS, max_length=NUM_VETOS)] = (
+        None
+    )
     """Veto names, as a list of strings.
 
     The first item in this list has bitmask (1 << 0), the last item has bitmask (1 << 31).

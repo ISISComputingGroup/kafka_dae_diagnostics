@@ -4,6 +4,25 @@ This page describes the data held by each PV served by this IOC. See {py:class}`
 the internal data model used by this IOC.
 
 :::{dropdown} Run information
+
+### `RUNSTATE`
+
+The overall run state of the streaming system.
+
+The value of this PV may be one of: PROCESSING, SETUP, RUNNING, PAUSED, WAITING, VETOING.
+
+The logic used to decide the run state is:
+- If latest `runInfo` message is a run stop: **SETUP**
+- If latest `runInfo` message is a run start:
+  - If we have not received 'recent' frames on `_event` topic for this run: **PROCESSING**
+  - If percentage of vetoed frames in last {math}`N` received frames >=50%, **VETOING**, otherwise **RUNNING**
+
+The PAUSED and WAITING run states are not currently implemented.
+
+### `RUNSTATE_STR`
+
+This PV is identical to the `RUNSTATE` PV, but as a string rather than an enumeration data type.
+
 ### `START_TIME` / `STOP_TIME`
 
 The most recent run-start and run-stop timestamps.
