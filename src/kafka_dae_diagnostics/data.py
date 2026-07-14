@@ -1,7 +1,9 @@
 """Data being served by this IOC."""
 
 import dataclasses
+import enum
 import threading
+import time
 from collections.abc import Callable
 from dataclasses import field
 
@@ -9,6 +11,17 @@ import numpy as np
 import numpy.typing as npt
 
 from kafka_dae_diagnostics.veto_diagnostics import NUM_VETOS, VetoDiagnostics
+
+
+class RunState(enum.IntEnum):
+    """Enum describing the possible run-states."""
+
+    PROCESSING = 0
+    SETUP = 1
+    RUNNING = 2
+    PAUSED = 3
+    WAITING = 4
+    VETOING = 5
 
 
 @dataclasses.dataclass
@@ -28,6 +41,15 @@ class FrameMetaData:
 @dataclasses.dataclass
 class Data:
     """A mutable object describing the data being served by this IOC."""
+
+    stale_event_timeout_s: float = 5.0
+    """
+    The time interval (seconds) in which we call the system 'PROCESSING' if we have not received
+    new event messages.
+    """
+
+    vetoing_percentage: float = 50.0
+    """The minimum percentage at which the DAE is considered 'vetoing' rather than 'running'."""
 
     spectra: npt.NDArray[np.float64] = field(
         default_factory=lambda: np.zeros(shape=(1, 1, 1), dtype=np.float64)
@@ -81,6 +103,11 @@ class Data:
     """
     Timestamp in the most recently-processed ``ev44``, ``pu00`` or ``pl72`` message.
     Seconds since epoch.
+    """
+
+    most_recent_event_processing_timestamp: float = field(default_factory=time.time)
+    """
+    The computer timestamp at which the most recent event message was processed by this IOC.
     """
 
     start_time: float = 0.0
@@ -163,43 +190,11 @@ class Data:
     """Veto diagnostics."""
 
     veto_names_array: npt.NDArray[np.str_] = field(
-        default_factory=lambda: np.array(
-            [
-                "FIFO",
-                "SMP",
-                "TS2 Pulse",
-                "Wrong Pulse",
-                "Unused",
-                "ISIS slow",
-                "External 0",
-                "External 1",
-                "External 2",
-                "External 3",
-                "Fast Chopper 0",
-                "Fast Chopper 1",
-                "Fast Chopper 2",
-                "Fast Chopper 3",
-                "Reserved 0",
-                "Reserved 1",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-                "Unused",
-            ]
-        )
+        default_factory=lambda: np.array([f"veto_{n}" for n in range(NUM_VETOS)], dtype=np.str_)
     )
+    """
+    Veto names, as a numpy array of strings.
+    """
 
     @property
     def enabled_vetos_array(self) -> npt.NDArray[np.int32]:
@@ -262,3 +257,39 @@ class Data:
         if duration == 0:
             return 0
         return (self.total_events * 3600) / (duration * 1_000_000)
+
+    @property
+    def seconds_since_last_event_message(self) -> float:
+        """The number of seconds elapsed since the last event message was processed by this IOC."""
+        return max(time.time() - self.most_recent_event_processing_timestamp, 0.0)
+
+    @property
+    def run_state(self) -> RunState:
+        """The current run state.
+
+        - **SETUP**: the electronics is currently idle, not performing a run.
+        - **PROCESSING**: the electronics should be running, but we have not received
+            event messages from Kafka recently. This is a fault condition.
+        - **VETOING**: the electronics has sent us frames, but more than 50% of the recent
+            frames have been vetoed.
+        - **RUNNING**: the electronics has sent us frames, less than 50% of the recent
+            frames have been vetoed.
+        """
+        if self.stop_time > self.start_time:
+            # Most recent message is a run stop -> we're not running.
+            return RunState.SETUP
+        elif self.seconds_since_last_event_message > self.stale_event_timeout_s:
+            # We think we should be RUNNING, but are not receiving
+            # event messages, flag "PROCESSING" as this likely implies
+            # that pipeline is 'stuck' at some level.
+            return RunState.PROCESSING
+        elif np.any(
+            self.veto_diagnostics.get_recent_veto_percentages() >= self.vetoing_percentage,
+            where=self.enabled_vetos_array.astype(np.bool_),
+        ):
+            # In principle this could fail to detect 100% vetoing if
+            # e.g. veto1-4 veto 25% each (in a fully-non-overlapping way).
+            # That is a somewhat pathological case...
+            return RunState.VETOING
+        else:
+            return RunState.RUNNING

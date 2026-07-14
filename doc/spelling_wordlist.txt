@@ -1,7 +1,9 @@
 benchmark
 benchmarked
+bitmask
 config
 Dataclass
+enum
 ev
 Gbit
 histogram
