@@ -25,7 +25,11 @@ This PV is identical to the `RUNSTATE` PV, but as a string rather than an enumer
 
 ### `START_TIME` / `STOP_TIME`
 
-The most recent run-start and run-stop timestamps.
+The most recent run-start and run-stop timestamps (seconds since the UNIX epoch).
+
+### `STARTTIME` / `STOPTIME`
+
+The most recent run-start and run-stop times, formatted as strings.
 
 ### `RUNDURATION`
 

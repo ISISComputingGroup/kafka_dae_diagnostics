@@ -6,11 +6,15 @@ import threading
 import time
 from collections.abc import Callable
 from dataclasses import field
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import numpy.typing as npt
 
 from kafka_dae_diagnostics.veto_diagnostics import NUM_VETOS, VetoDiagnostics
+
+TIMEZONE = ZoneInfo("Europe/London")
 
 
 class RunState(enum.IntEnum):
@@ -293,3 +297,23 @@ class Data:
             return RunState.VETOING
         else:
             return RunState.RUNNING
+
+    @property
+    def start_time_str(self) -> str:
+        """The time of the most recent run-start message, formatted as a string."""
+        if self.start_time > 0:
+            return datetime.fromtimestamp(self.start_time, tz=TIMEZONE).strftime(
+                "%a %d-%b-%Y %H:%M:%S"
+            )
+        else:
+            return "N/A"
+
+    @property
+    def stop_time_str(self) -> str:
+        """The time of the most recent run-stop message, formatted as a string."""
+        if self.stop_time > 0:
+            return datetime.fromtimestamp(self.stop_time, tz=TIMEZONE).strftime(
+                "%a %d-%b-%Y %H:%M:%S"
+            )
+        else:
+            return "N/A"
