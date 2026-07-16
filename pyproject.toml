@@ -31,7 +31,7 @@ classifiers = [
 dependencies = [
   "confluent-kafka",
   "isis-streaming-data-types>=0.1.1",
-  "numpy>=2,<2.5",  # 2.5 type-hinting currently broken with docs build
+  "numpy>=2,<2.6",  # 2.5 type-hinting currently broken with docs build
   "p4p",
   "pydantic<3",
   "tzdata",
