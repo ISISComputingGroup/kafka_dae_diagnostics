@@ -45,7 +45,11 @@ def static_pv_provider(prefix: str, data: Data) -> StaticProvider:
     static_provider.add(f"{prefix}NUMTIMECHANNELS", static_pvs.num_time_channels)
 
     static_provider.add(f"{prefix}START_TIME", static_pvs.start_time)
+    static_provider.add(f"{prefix}STARTTIME", static_pvs.start_time_str)
+
     static_provider.add(f"{prefix}STOP_TIME", static_pvs.stop_time)
+    static_provider.add(f"{prefix}STOPTIME", static_pvs.stop_time_str)
+
     static_provider.add(f"{prefix}RUNDURATION", static_pvs.run_duration)
 
     static_provider.add(f"{prefix}PROCESSINGLAG", static_pvs.event_processing_lag)
@@ -248,11 +252,25 @@ class StaticPVs:
             },
         )
 
+        self.start_time_str = SharedPV(
+            nt=NTScalar("s", display=True, form=True),
+            initial={
+                "value": data.start_time_str,
+            },
+        )
+
         self.stop_time = SharedPV(
             nt=NTScalar(display=True, form=True),
             initial={
-                "value": data.start_time,
+                "value": data.stop_time,
                 "display.precision": 0,
+            },
+        )
+
+        self.stop_time_str = SharedPV(
+            nt=NTScalar("s", display=True, form=True),
+            initial={
+                "value": data.stop_time_str,
             },
         )
 
@@ -372,7 +390,9 @@ class StaticPVs:
         self.num_time_channels.post(data.num_time_channels, timestamp=now)
         self.count_rate.post(data.mev_per_hour, timestamp=now)
         self.start_time.post(data.start_time, timestamp=now)
+        self.start_time_str.post(data.start_time_str, timestamp=now)
         self.stop_time.post(data.stop_time, timestamp=now)
+        self.stop_time_str.post(data.stop_time_str, timestamp=now)
         self.run_duration.post(data.duration, timestamp=now)
         self.event_processing_lag.post(data.event_processing_lag, timestamp=now)
         self.seconds_since_last_event_message.post(

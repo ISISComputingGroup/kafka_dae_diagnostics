@@ -123,3 +123,25 @@ def test_run_state_running():
     )
 
     assert data.run_state == RunState.RUNNING
+
+
+def test_start_time_str():
+    data = Data(
+        start_time=0,
+    )
+
+    assert data.start_time_str == "N/A"
+
+    data.start_time = 10000
+    assert data.start_time_str.startswith("Thu 01-Jan-1970")
+
+
+def test_stop_time_str():
+    data = Data(
+        stop_time=0,
+    )
+
+    assert data.stop_time_str == "N/A"
+
+    data.stop_time = 10000
+    assert data.stop_time_str.startswith("Thu 01-Jan-1970")
