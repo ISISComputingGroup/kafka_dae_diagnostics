@@ -11,7 +11,7 @@ from kafka_dae_diagnostics.kafka.handlers import NonEmptyMessage, handle_ev44
 RNG = np.random.default_rng(seed=0)
 
 
-def generate_fake_events(  # noqa: PLR0913 PLR0917 (benchmark script only)
+def generate_fake_events(  # ruff:ignore[too-many-arguments, too-many-positional-arguments] (benchmark script only)
     msg_id: int,
     events_per_frame: int,
     tof_peak: float,

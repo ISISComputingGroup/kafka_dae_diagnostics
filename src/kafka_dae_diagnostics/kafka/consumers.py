@@ -60,7 +60,7 @@ def run_callbacks(data: Data) -> None:
         for callback_id, cb in data.callbacks.items():
             try:
                 cb()
-            except Exception as e:  # noqa: BLE001
+            except Exception as e:  # ruff:ignore[blind-except]
                 logger.warning(
                     "Callback '%s' failed, error: %s %s", callback_id, e.__class__.__name__, e
                 )

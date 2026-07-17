@@ -78,7 +78,7 @@ class SpectrumHandler(Handler):
 
         class ConnectionHandler:
             @staticmethod
-            def onLastDisconnect(*_: list[Any], **__: dict[str, Any]) -> None:  # noqa N802 p4p requires this name
+            def onLastDisconnect(*_: list[Any], **__: dict[str, Any]) -> None:  # ruff:ignore[invalid-function-name] N802 p4p requires this name
                 logger.info("Closing channel %s %s", name, peer)
                 with self._data.callbacks_lock:
                     del self._data.callbacks[callback_id]
