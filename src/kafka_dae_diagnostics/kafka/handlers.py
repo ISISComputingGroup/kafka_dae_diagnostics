@@ -160,6 +160,8 @@ def handle_pu00(data: Data, msg: NonEmptyMessage) -> None:
 
     data.raw_frames += 1
     data.raw_uah += proton_charge
+    data.current_period = period
+
     try:
         data.raw_frames_pd[period] += 1
         data.raw_uah_pd[period] += proton_charge

@@ -200,6 +200,11 @@ class Data:
     Veto names, as a numpy array of strings.
     """
 
+    current_period: int = 0
+    """
+    The zero-indexed period into which the most recent data was received.
+    """
+
     @property
     def enabled_vetos_array(self) -> npt.NDArray[np.int32]:
         """Array describing whether each of the 32 veto bits is currently enabled."""
