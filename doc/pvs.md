@@ -148,9 +148,25 @@ This is `num_periods * num_spectra * num_time_channels * 8 bytes`.
 
 These PVs provide the X points (the time-of-flight bin centres) for a time of flight spectrum. This array has length `NUMTIMECHANNELS`.
 
+### `SPEC:<period>:<spectrum>:XE`
+
+These PVs provide the X bin *edges* for a time of flight spectrum. This array has length `NUMTIMECHANNELS + 1`.
+
 ### `SPEC:<period>:<spectrum>:Y`
 
-These PVs provide the Y points (the number of counts in the relevant bin) for a time of flight spectrum. This array has length `NUMTIMECHANNELS`.
+These PVs provide the normalised Y data (the number of counts in the relevant bin, divided by bin width) for a time of
+flight spectrum. This array has length `NUMTIMECHANNELS`.
+
+### `SPEC:<period>:<spectrum>:YC`
+
+These PVs provide the raw Y data (the number of counts in the relevant bin) for a time of flight spectrum.
+This array has length `NUMTIMECHANNELS`.
+
+::::{important}
+`<period>` is {external+ibex_developers_manual:doc}`one-indexed in all user-facing PVs <specific_iocs/datastreaming/ADRs/007_periods>`
+for backwards compatibility, so the PV `SPEC:1:57:X` will return data that was streamed with `period=0` in Kafka.
+Asking for period zero, as in a PV like `SPEC:0:57:X`, will return data for the *current* period.
+::::
 :::
 
 ## Meta-diagnostics
