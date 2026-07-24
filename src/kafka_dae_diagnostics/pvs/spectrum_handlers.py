@@ -29,7 +29,7 @@ class SpectrumHandler(Handler):
         """
         self._data = data
         self._prefix = prefix
-        self._channel_regex = re.compile(rf"^{re.escape(prefix)}SPEC:(\d+):(\d+):([XY])$")
+        self._channel_regex = re.compile(rf"^{re.escape(prefix)}SPEC:(\d+):(\d+):(X|Y|XE|YC)$")
 
     def testChannel(self, name: str) -> bool | str:
         """Test whether a channel with the given name can be served by this handler.
@@ -41,7 +41,7 @@ class SpectrumHandler(Handler):
         match = self._channel_regex.fullmatch(name)
         return (
             match is not None
-            and int(match.group(1)) < self._data.num_periods
+            and int(match.group(1)) <= self._data.num_periods
             and int(match.group(2)) < self._data.num_spectra
         )
 
@@ -57,22 +57,42 @@ class SpectrumHandler(Handler):
 
         match = self._channel_regex.fullmatch(name)
         assert match is not None, "No match in makeChannel after there was a match in testChannel?"
-        period = int(match.group(1))
+        user_period = int(match.group(1))
         det = int(match.group(2))
         typ = match.group(3)
 
         callback_id = f"{name}#{uuid.uuid4()}"
 
         def extract_data(
-            typ: str = typ, period: int = period, det: int = det
+            typ: str = typ, user_period: int = user_period, det: int = det
         ) -> npt.NDArray[np.float64]:
+
+            # user_period starts from 1, with 0 corresponding to "current period".
+            # Internally, the histogram is zero-indexed.
+            if user_period == 0:
+                period = self._data.current_period
+            else:
+                period = user_period - 1
+
             match typ:
                 case "Y":
+                    # Counts in each histogram bin, divided by histogram
+                    # bin width. Units: counts/us
+                    return (
+                        self._data.spectra[period][det]
+                        / (self._data.bin_boundaries[1:] - self._data.bin_boundaries[:-1])
+                    ).astype(np.float64)
+                case "YC":
+                    # Raw counts in each histogram bin. Units: counts
                     return self._data.spectra[period][det]
                 case "X":
+                    # Bin-centres along the x (time-of-flight) dimension. Units: ns
                     return (
                         (self._data.bin_boundaries[1:] + self._data.bin_boundaries[:-1]) / 2
                     ).astype(np.float64)
+                case "XE":
+                    # Bin-edges along the x (time-of-flight) dimension. Units: ns
+                    return self._data.bin_boundaries.astype(np.float64)
                 case _:  # pragma: no cover (unreachable)
                     raise ValueError(f"Unknown channel type: {typ}")
 
