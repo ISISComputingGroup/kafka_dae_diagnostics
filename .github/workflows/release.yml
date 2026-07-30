@@ -26,7 +26,7 @@ jobs:
         name: wheels-windows-latest
         path: dist_windows/
     - name: Sign the dists with Sigstore
-      uses: sigstore/gh-action-sigstore-python@v3.4.0
+      uses: sigstore/gh-action-sigstore-python@v3.5.0
       with:
         inputs: >-
           ./dist_ubuntu/*.whl
