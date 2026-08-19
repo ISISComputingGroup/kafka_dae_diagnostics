@@ -11,6 +11,7 @@ from streaming_data_types import (
     deserialise_ev44,
     deserialise_pl72,
     deserialise_pu00,
+    deserialise_vc00,
 )
 from streaming_data_types.exceptions import ShortBufferException
 from streaming_data_types.utils import get_schema
@@ -309,3 +310,29 @@ def handle_6s4t(data: Data, msg: NonEmptyMessage) -> None:
         return
     logger.info("Run stop (run_name=%s)", run_stop_6s4t.run_name)
     data.stop_time = run_stop_6s4t.stop_time / 1000
+
+
+def handle_veto_config_messages(messages: list[Message], data: Data) -> None:
+    """Handle Kafka veto config messages.
+
+        Args:
+            messages: Messages received from Kafka veto config topic.
+            data: Data served by ``kafka_dae_diagnostics``.
+
+        """
+    logger.debug("Processing %s vetoConfig messages", len(messages))
+    for msg in messages:
+        if error := msg.error():
+            logger.warning("Kafka message error: %s", error.code())
+        elif value := msg.value():
+            handle_veto_config_msg(
+                data, NonEmptyMessage(value=value, partition=msg.partition())
+            )
+
+def handle_veto_config_msg(data: Data, msg: NonEmptyMessage) -> None:
+    schema = extract_schema(msg)
+    if schema == "vc00":
+        blob = deserialise_vc00(msg.value)
+        data.veto_names_array = np.asarray(blob.veto_names, dtype=np.str_)
+    else:
+        logger.error("Message received with non-vc00 schema(%s) msg:%s", schema, msg.value)

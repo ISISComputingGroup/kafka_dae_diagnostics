@@ -46,6 +46,11 @@ def make_event_consumer(config: DiagnosticsConfig) -> Consumer:
     )
     return event_consumer
 
+def make_vetoconfig_consumer(config :DiagnosticsConfig) -> Consumer:
+    vetoconfig_consumer = Consumer(config.kafka_vetoconfig_consumer)
+    vetoconfig_consumer.assign([TopicPartition(config.vetoconfig_topic, 0)])
+    return vetoconfig_consumer
+
 
 def run_callbacks(data: Data) -> None:
     """Run all callbacks with updated data.
@@ -76,6 +81,7 @@ def consume_from_kafka_forever(config: DiagnosticsConfig, data: Data) -> None:
     """
     runinfo_consumer = make_runinfo_consumer(config)
     event_consumer = make_event_consumer(config)
+    vetoconfig_consumer = make_vetoconfig_consumer(config)
     last_callback_time = 0
 
     while True:
@@ -94,6 +100,10 @@ def consume_from_kafka_forever(config: DiagnosticsConfig, data: Data) -> None:
                 time_ms,
                 time_ms / len(event_messages),
             )
+
+        veto_config_messages = vetoconfig_consumer.consume(num_messages=100, timeout=0.0)
+        if veto_config_messages:
+            handle_veto_config_messages(veto_config_messages, data=data)
 
         now = time.time()
         if (now - last_callback_time) * 1000 > config.callback_frequency_ms:

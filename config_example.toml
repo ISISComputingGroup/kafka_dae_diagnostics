@@ -11,6 +11,10 @@ runinfo_topic = "somemachine_runInfo"
 # (usually <instrument>_events)
 events_topic = "somemachine_events"
 
+# Kafka topic on which to listen for veto configuration updates
+# (usually <instrument>_vetoConfig)
+vetoconfig_topic = "somemachine_vetoConfig"
+
 # The minimum active percentage (for each individual veto), beyond which the
 # run state will be VETOING rather than RUNNING.
 min_vetoing_percentage = 50.0
@@ -18,44 +22,6 @@ min_vetoing_percentage = 50.0
 # When running, if we have not received messages on the _events stream within
 # this many seconds from now, the run state will be PROCESSING rather than RUNNING.
 stale_event_message_timeout_s = 5.0
-
-# Names of vetoes.
-# The first item in this list has bitmask (1 << 0), the last item has bitmask (1 << 31).
-# There must be exactly 32 entries in this list.
-veto_names = [
-    "FIFO",
-    "SMP",
-    "TS2 Pulse",
-    "Wrong Pulse",
-    "Unused",
-    "ISIS slow",
-    "External 0",
-    "External 1",
-    "External 2",
-    "External 3",
-    "Fast Chopper 0",
-    "Fast Chopper 1",
-    "Fast Chopper 2",
-    "Fast Chopper 3",
-    "Reserved 0",
-    "Reserved 1",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-]
 
 [kafka_runinfo_consumer]
 "bootstrap.servers" = "livedata.isis.cclrc.ac.uk:31092"
@@ -66,6 +32,14 @@ veto_names = [
 "max.partition.fetch.bytes" = "8388608"  # 8MB
 
 [kafka_events_consumer]
+"bootstrap.servers" = "livedata.isis.cclrc.ac.uk:31092"
+"group.id" = "kafka-dae-diagnostics"
+"auto.offset.reset" = "latest"
+"enable.auto.commit" = "false"
+"fetch.max.bytes" = "8388608"  # 8MB
+"max.partition.fetch.bytes" = "8388608"  # 8MB
+
+[kafka_vetoconfig_consumer]
 "bootstrap.servers" = "livedata.isis.cclrc.ac.uk:31092"
 "group.id" = "kafka-dae-diagnostics"
 "auto.offset.reset" = "latest"
