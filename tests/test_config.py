@@ -21,46 +21,16 @@ runinfo_topic = "somemachine_runInfo"
 # (usually <instrument>_events)
 events_topic = "somemachine_events"
 
-veto_names = [
-    "FIFO",
-    "SMP",
-    "TS2 Pulse",
-    "Wrong Pulse",
-    "Unused",
-    "ISIS slow",
-    "External 0",
-    "External 1",
-    "External 2",
-    "External 3",
-    "Fast Chopper 0",
-    "Fast Chopper 1",
-    "Fast Chopper 2",
-    "Fast Chopper 3",
-    "Reserved 0",
-    "Reserved 1",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-    "Unused",
-]
+vetoconfig_topic = "somemachine_vetoConfig"
 
 [kafka_runinfo_consumer]
 "bootstrap.servers" = "server:1234"
 
 [kafka_events_consumer]
 "bootstrap.servers" = "server:4321"
+
+[kafka_vetoconfig_consumer]
+"bootstrap.servers" = "server:4231"
 """
     )
 
@@ -69,9 +39,11 @@ veto_names = [
 
     assert config.runinfo_topic == "somemachine_runInfo"
     assert config.events_topic == "somemachine_events"
+    assert config.vetoconfig_topic == "somemachine_vetoConfig"
     assert config.callback_frequency_ms == 250
     assert config.kafka_events_consumer == {"bootstrap.servers": "server:4321"}
     assert config.kafka_runinfo_consumer == {"bootstrap.servers": "server:1234"}
+    assert config.kafka_vetoconfig_consumer == {"bootstrap.servers": "server:4231"}
 
 
 def test_invalid_config_loading():

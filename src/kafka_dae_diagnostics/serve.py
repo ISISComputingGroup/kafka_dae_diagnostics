@@ -6,7 +6,6 @@ while also serving ``data`` over EPICS.
 
 from typing import Any
 
-import numpy as np
 from p4p.server import DynamicProvider, Server
 
 from kafka_dae_diagnostics.config import DiagnosticsConfig

@@ -1,11 +1,8 @@
 """Utilities for reading Diagnostics IOC configuration from TOML."""
 
 import tomllib
-from typing import Annotated
 
-from pydantic import BaseModel, Field, PositiveFloat, ValidationError
-
-from kafka_dae_diagnostics.veto_diagnostics import NUM_VETOS
+from pydantic import BaseModel, PositiveFloat, ValidationError
 
 
 class DiagnosticsConfig(BaseModel):

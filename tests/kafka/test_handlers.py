@@ -4,7 +4,13 @@ from unittest.mock import MagicMock
 import pytest
 from confluent_kafka import Message
 from confluent_kafka.cimpl import KafkaError
-from streaming_data_types import serialise_6s4t, serialise_ev44, serialise_pl72, serialise_pu00
+from streaming_data_types import (
+    serialise_6s4t,
+    serialise_ev44,
+    serialise_pl72,
+    serialise_pu00,
+    serialise_vc00,
+)
 from streaming_data_types.run_start_pl72 import DetectorSpectrumMap
 
 from kafka_dae_diagnostics.data import Data, FrameMetaData
@@ -17,6 +23,8 @@ from kafka_dae_diagnostics.kafka.handlers import (
     handle_pl72,
     handle_pu00,
     handle_run_info_messages,
+    handle_veto_config_messages,
+    handle_veto_config_msg,
 )
 
 FRAME_METADATA = serialise_pu00(
@@ -257,6 +265,7 @@ def test_handle_invalid_msg_ignored():
     # Should not crash - messages ignored silently if unrecognised
     handle_event_topic_messages([msg], Data())
     handle_run_info_messages([msg], Data(), MagicMock())
+    handle_veto_config_messages([msg], Data())
 
 
 def test_handle_invalid_ev44():
@@ -272,3 +281,30 @@ def test_handle_invalid_6s4t():
 def test_handle_invalid_pl72():
     data = Data()
     handle_pl72(data, NonEmptyMessage(b"\1\2\3\4" + b"pl72", partition=1), MagicMock())
+
+
+def test_handle_invalid_vc00():
+    data = Data()
+    handle_veto_config_msg(data, NonEmptyMessage(b"\1\2\3\4" + b"vc00", partition=1))
+
+
+def test_handle_vc00():
+    final_expected_names = [str(i).encode() for i in range(32)]
+    msg1 = make_message(
+        serialise_vc00(
+            vetoes=0xFFFF,
+            veto_names=[str(i).encode() for i in range(1, 33)],
+            timestamp_ns=1787582841041147625,
+        )
+    )
+    msg2 = make_message(
+        serialise_vc00(
+            vetoes=0x0, veto_names=final_expected_names, timestamp_ns=1787582841041147626
+        )
+    )
+    msg3 = error_message()
+    msg4 = make_message(None)
+
+    data = Data()
+    handle_veto_config_messages([msg1, msg2, msg3, msg4], data)
+    assert data.veto_names_array.tolist() == [i.decode() for i in final_expected_names]

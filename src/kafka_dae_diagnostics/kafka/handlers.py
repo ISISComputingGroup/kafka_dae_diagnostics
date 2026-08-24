@@ -315,24 +315,28 @@ def handle_6s4t(data: Data, msg: NonEmptyMessage) -> None:
 def handle_veto_config_messages(messages: list[Message], data: Data) -> None:
     """Handle Kafka veto config messages.
 
-        Args:
-            messages: Messages received from Kafka veto config topic.
-            data: Data served by ``kafka_dae_diagnostics``.
+    Args:
+        messages: Messages received from Kafka veto config topic.
+        data: Data served by ``kafka_dae_diagnostics``.
 
-        """
+    """
     logger.debug("Processing %s vetoConfig messages", len(messages))
     for msg in messages:
         if error := msg.error():
             logger.warning("Kafka message error: %s", error.code())
         elif value := msg.value():
-            handle_veto_config_msg(
-                data, NonEmptyMessage(value=value, partition=msg.partition())
-            )
+            handle_veto_config_msg(data, NonEmptyMessage(value=value, partition=msg.partition()))
+
 
 def handle_veto_config_msg(data: Data, msg: NonEmptyMessage) -> None:
+    """Handle a single veto configuration message."""
     schema = extract_schema(msg)
     if schema == "vc00":
-        blob = deserialise_vc00(msg.value)
+        try:
+            blob = deserialise_vc00(msg.value)
+        except Exception:
+            logger.exception("Failed deserialising vc00")
+            return
         data.veto_names_array = np.asarray(blob.veto_names, dtype=np.str_)
     else:
         logger.error("Message received with non-vc00 schema(%s) msg:%s", schema, msg.value)

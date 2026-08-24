@@ -10,9 +10,9 @@ from kafka_dae_diagnostics.kafka.consumers import (
     consume_from_kafka_forever,
     make_event_consumer,
     make_runinfo_consumer,
+    make_vetoconfig_consumer,
     run_callbacks,
 )
-from kafka_dae_diagnostics.veto_diagnostics import NUM_VETOS
 
 
 def test_make_runinfo_consumer():
@@ -25,10 +25,11 @@ def test_make_runinfo_consumer():
                 runinfo_topic=topic,
                 kafka_runinfo_consumer={},
                 kafka_events_consumer={},
+                kafka_vetoconfig_consumer={},
                 pv_prefix="",
                 events_topic="",
                 callback_frequency_ms=1000,
-                veto_names=[f"v{n}" for n in range(NUM_VETOS)],
+                vetoconfig_topic="",
             )
         )
 
@@ -44,11 +45,33 @@ def test_make_event_consumer():
             DiagnosticsConfig(
                 runinfo_topic="",
                 events_topic=topic,
+                vetoconfig_topic="",
                 kafka_runinfo_consumer={},
                 kafka_events_consumer={},
+                kafka_vetoconfig_consumer={},
                 pv_prefix="",
                 callback_frequency_ms=1000,
-                veto_names=[f"v{n}" for n in range(NUM_VETOS)],
+            )
+        )
+
+        mock_consumer.return_value.assign.assert_called_once()
+
+
+def test_make_vetoconfig_consumer():
+    topic = "someRandomTopic"
+
+    with patch("kafka_dae_diagnostics.kafka.consumers.Consumer") as mock_consumer:
+        mock_consumer.return_value.get_watermark_offsets.return_value = (2345, 5432)
+        make_vetoconfig_consumer(
+            DiagnosticsConfig(
+                runinfo_topic="",
+                events_topic=topic,
+                vetoconfig_topic="",
+                kafka_runinfo_consumer={},
+                kafka_events_consumer={},
+                kafka_vetoconfig_consumer={},
+                pv_prefix="",
+                callback_frequency_ms=1000,
             )
         )
 
@@ -79,16 +102,26 @@ def test_consume_from_kafka_forever():
         ) as make_runinfo_consumer,
         patch("kafka_dae_diagnostics.kafka.consumers.make_event_consumer") as make_event_consumer,
         patch(
+            "kafka_dae_diagnostics.kafka.consumers.make_vetoconfig_consumer"
+        ) as make_vetoconfig_consumer,
+        patch(
             "kafka_dae_diagnostics.kafka.consumers.handle_run_info_messages"
         ) as handle_run_info_messages,
         patch(
             "kafka_dae_diagnostics.kafka.consumers.handle_event_topic_messages"
         ) as handle_event_messages,
+        patch(
+            "kafka_dae_diagnostics.kafka.consumers.handle_veto_config_messages"
+        ) as handle_veto_config_messages,
         patch("kafka_dae_diagnostics.kafka.consumers.run_callbacks") as run_callbacks,
         patch("kafka_dae_diagnostics.kafka.consumers.time.sleep") as sleep,
     ):
         make_runinfo_consumer.return_value.consume.side_effect = [[b"some_runinfo_message"], []]
         make_event_consumer.return_value.consume.side_effect = [[b"some_event_message"], []]
+        make_vetoconfig_consumer.return_value.consume.side_effect = [
+            [b"some_vetoconfig_message"],
+            [],
+        ]
 
         # Slightly ugly way to force the infinite loop to break when it has
         # nothing more to process.
@@ -97,11 +130,12 @@ def test_consume_from_kafka_forever():
         config = DiagnosticsConfig(
             runinfo_topic="runInfo",
             events_topic="events",
+            vetoconfig_topic="vetoConfig",
             kafka_runinfo_consumer={},
             kafka_events_consumer={},
+            kafka_vetoconfig_consumer={},
             pv_prefix="",
             callback_frequency_ms=1000,
-            veto_names=[f"v{n}" for n in range(NUM_VETOS)],
         )
 
         with pytest.raises(TimeoutError, match="Waiting for new events"):
@@ -111,4 +145,7 @@ def test_consume_from_kafka_forever():
             [b"some_runinfo_message"], data=mock.ANY, event_consumer=mock.ANY
         )
         handle_event_messages.assert_called_once_with([b"some_event_message"], data=mock.ANY)
+        handle_veto_config_messages.assert_called_once_with(
+            [b"some_vetoconfig_message"], data=mock.ANY
+        )
         run_callbacks.assert_called()

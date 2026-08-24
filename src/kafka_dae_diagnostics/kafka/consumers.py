@@ -10,7 +10,7 @@ from kafka_dae_diagnostics.data import Data
 from kafka_dae_diagnostics.kafka.handlers import (
     handle_event_topic_messages,
     handle_run_info_messages,
-    handle_veto_config_messages
+    handle_veto_config_messages,
 )
 
 logger = logging.getLogger(__name__)
@@ -47,17 +47,18 @@ def make_event_consumer(config: DiagnosticsConfig) -> Consumer:
     )
     return event_consumer
 
-def make_vetoconfig_consumer(config :DiagnosticsConfig) -> Consumer:
+
+def make_vetoconfig_consumer(config: DiagnosticsConfig) -> Consumer:
     """Make a veto config consumer.
-    
+
     This will assign to the topic just before the high watermark so we always
     have a value (assuming there are some in the topic) for veto configuration.
     subsequent updates will just overwrite these.
     """
     vetoconfig_consumer = Consumer(config.kafka_vetoconfig_consumer)
     low, high = vetoconfig_consumer.get_watermark_offsets(
-            TopicPartition(config.vetoconfig_topic, 0), cached=False
-        )
+        TopicPartition(config.vetoconfig_topic, 0), cached=False
+    )
     # assign to just before the last message on the topic so we always have values for veto names
     start_offset = max(high - 1, low)
     vetoconfig_consumer.assign([TopicPartition(config.vetoconfig_topic, 0, start_offset)])
