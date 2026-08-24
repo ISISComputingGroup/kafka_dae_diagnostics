@@ -10,6 +10,7 @@ from kafka_dae_diagnostics.data import Data
 from kafka_dae_diagnostics.kafka.handlers import (
     handle_event_topic_messages,
     handle_run_info_messages,
+    handle_veto_config_messages
 )
 
 logger = logging.getLogger(__name__)
