@@ -14,6 +14,7 @@ from kafka_dae_diagnostics.data import Data
 from kafka_dae_diagnostics.kafka.consumers import consume_from_kafka_forever
 from kafka_dae_diagnostics.pvs.spectrum_handlers import SpectrumHandler
 from kafka_dae_diagnostics.pvs.static_pvs import static_pv_provider
+from kafka_dae_diagnostics.save_restore import load_from_file
 
 
 def serve(
@@ -28,12 +29,13 @@ def serve(
     configuration_dict: dict[str, Any] = {
         "vetoing_percentage": config.min_vetoing_percentage,
         "stale_event_timeout_s": config.stale_event_message_timeout_s,
-    }
+    } | load_from_file(state_file=config.state_file_path)
 
     if config.veto_names:
         configuration_dict["veto_names_array"] = np.array(config.veto_names, dtype=np.str_)
 
     data = Data(**configuration_dict)
+
     spectrum_handler = SpectrumHandler(prefix=config.pv_prefix, data=data)
     providers = [
         DynamicProvider("spectra", handler=spectrum_handler),

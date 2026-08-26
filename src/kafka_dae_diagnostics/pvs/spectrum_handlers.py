@@ -77,7 +77,7 @@ class SpectrumHandler(Handler):
             match typ:
                 case "Y":
                     # Counts in each histogram bin, divided by histogram
-                    # bin width. Units: counts/us
+                    # bin width. Units: counts/ns
                     return (
                         self._data.spectra[period][det]
                         / (self._data.bin_boundaries[1:] - self._data.bin_boundaries[:-1])
@@ -86,13 +86,13 @@ class SpectrumHandler(Handler):
                     # Raw counts in each histogram bin. Units: counts
                     return self._data.spectra[period][det]
                 case "X":
-                    # Bin-centres along the x (time-of-flight) dimension. Units: ns
+                    # Bin-centres along the x (time-of-flight) dimension. Units: us
                     return (
                         (self._data.bin_boundaries[1:] + self._data.bin_boundaries[:-1]) / 2
-                    ).astype(np.float64)
+                    ).astype(np.float64) / 1000.0
                 case "XE":
-                    # Bin-edges along the x (time-of-flight) dimension. Units: ns
-                    return self._data.bin_boundaries.astype(np.float64)
+                    # Bin-edges along the x (time-of-flight) dimension. Units: us
+                    return self._data.bin_boundaries.astype(np.float64) / 1000.0
                 case _:  # pragma: no cover (unreachable)
                     raise ValueError(f"Unknown channel type: {typ}")
 

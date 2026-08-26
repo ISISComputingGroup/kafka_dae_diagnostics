@@ -1,5 +1,6 @@
 """Utilities for reading Diagnostics IOC configuration from TOML."""
 
+import pathlib
 import tomllib
 from typing import Annotated
 
@@ -47,6 +48,16 @@ class DiagnosticsConfig(BaseModel):
     stale_event_message_timeout_s: float = 5.0
     """When running, if we have not received messages on the _events stream within
     this many seconds from now, the run state will be PROCESSING rather than RUNNING.
+    """
+
+    autosave_frequency_s: float = 60.0
+    """
+    Save user-specified parameters to autosave ('state') file at this frequency in seconds.
+    """
+
+    state_file_path: pathlib.Path = pathlib.Path("state.json")
+    """
+    Path to an autosave ('state') file.
     """
 
 
