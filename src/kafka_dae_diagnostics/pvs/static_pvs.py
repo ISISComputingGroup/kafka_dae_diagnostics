@@ -1,12 +1,16 @@
 """Static PVs."""
 
+import logging
 import time
 
+from p4p._p4p import ServerOperation
 from p4p.nt import NTEnum, NTScalar
 from p4p.server import StaticProvider
 from p4p.server.thread import SharedPV
 
 from kafka_dae_diagnostics.data import Data, RunState
+
+logger = logging.getLogger(__name__)
 
 
 def static_pv_provider(prefix: str, data: Data) -> StaticProvider:
@@ -44,6 +48,10 @@ def static_pv_provider(prefix: str, data: Data) -> StaticProvider:
     static_provider.add(f"{prefix}NUMSPECTRA", static_pvs.num_spectra)
     static_provider.add(f"{prefix}NUMTIMECHANNELS", static_pvs.num_time_channels)
 
+    static_provider.add(f"{prefix}SPEC:BINNING_START", static_pvs.binning_start_us)
+    static_provider.add(f"{prefix}SPEC:BINNING_END", static_pvs.binning_end_us)
+    static_provider.add(f"{prefix}SPEC:NUM_BINS", static_pvs.binning_num_points)
+
     static_provider.add(f"{prefix}START_TIME", static_pvs.start_time)
     static_provider.add(f"{prefix}STARTTIME", static_pvs.start_time_str)
 
@@ -73,7 +81,7 @@ def static_pv_provider(prefix: str, data: Data) -> StaticProvider:
 class StaticPVs:
     """Hold static PV definitions."""
 
-    def __init__(self, data: "Data") -> None:
+    def __init__(self, data: "Data") -> None:  # ruff:ignore[too-many-statements]
         """Hold static PV definitions."""
         self._last_update = time.time()
 
@@ -225,6 +233,68 @@ class StaticPVs:
                 "display.precision": 0,
             },
         )
+
+        self.binning_start_us = SharedPV(
+            nt=NTScalar(display=True, form=True),
+            initial={
+                "value": data.binning_start_us,
+                "display.precision": 3,
+                "display.units": "us",
+            },
+        )
+
+        @self.binning_start_us.put
+        def binning_start_us_put(pv: SharedPV, op: ServerOperation) -> None:  # pragma: no cover
+            value = op.value()
+            try:
+                data.binning_start_us = value
+                logger.info("Changed binning start to %s us", value)
+                pv.post(value)
+                op.done()
+            except Exception as e:
+                logger.exception("Failed to change binning start to %s us", value)
+                op.done(error=f"Failed to change binning start to {value} us: {e}")
+
+        self.binning_end_us = SharedPV(
+            nt=NTScalar(display=True, form=True),
+            initial={
+                "value": data.binning_end_us,
+                "display.units": "us",
+                "display.precision": 3,
+            },
+        )
+
+        @self.binning_end_us.put
+        def binning_end_us_put(pv: SharedPV, op: ServerOperation) -> None:  # pragma: no cover
+            value = op.value()
+            try:
+                data.binning_end_us = value
+                logger.info("Changed binning end to %s us", value)
+                pv.post(value)
+                op.done()
+            except Exception as e:
+                logger.exception("Failed to change binning end to %s us", value)
+                op.done(error=f"Failed to change binning end to {value} us: {e}")
+
+        self.binning_num_points = SharedPV(
+            nt=NTScalar(display=True, form=True),
+            initial={
+                "value": data.binning_num_points,
+                "display.precision": 0,
+            },
+        )
+
+        @self.binning_num_points.put
+        def binning_num_points_put(pv: SharedPV, op: ServerOperation) -> None:  # pragma: no cover
+            value = op.value()
+            try:
+                data.binning_num_points = int(value)
+                logger.info("Changed binning num points to %s", value)
+                pv.post(value)
+                op.done()
+            except Exception as e:
+                logger.exception("Failed to change binning num points to %s", value)
+                op.done(error=f"Failed to change binning num points to {value}: {e}")
 
         self.count_rate = SharedPV(
             nt=NTScalar(display=True, form=True),
@@ -388,6 +458,11 @@ class StaticPVs:
         self.num_periods.post(data.num_periods, timestamp=now)
         self.num_spectra.post(data.num_spectra, timestamp=now)
         self.num_time_channels.post(data.num_time_channels, timestamp=now)
+
+        self.binning_start_us.post(data.binning_start_us, timestamp=now)
+        self.binning_end_us.post(data.binning_end_us, timestamp=now)
+        self.binning_num_points.post(data.binning_num_points, timestamp=now)
+
         self.count_rate.post(data.mev_per_hour, timestamp=now)
         self.start_time.post(data.start_time, timestamp=now)
         self.start_time_str.post(data.start_time_str, timestamp=now)

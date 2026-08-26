@@ -73,7 +73,41 @@ class Data:
         default_factory=lambda: np.linspace(0, 100_000_000, num=2, dtype=np.int32)
     )
     """
-    Time-bin boundaries (ns).
+    Active time-bin boundaries for the current run (ns).
+    """
+
+    binning_start_ns: int = 0
+    """
+    Binning start (nanoseconds), takes effect on next run start.
+    """
+
+    @property
+    def binning_start_us(self) -> float:
+        """Binning start (microseconds), takes effect on next run start."""
+        return self.binning_start_ns / 1000.0
+
+    @binning_start_us.setter
+    def binning_start_us(self, value: float) -> None:
+        self.binning_start_ns = round(value * 1000.0)
+
+    binning_end_ns: int = 100_000_000
+    """
+    Binning end (nanoseconds), takes effect on next run start.
+    """
+
+    @property
+    def binning_end_us(self) -> float:
+        """Binning end (microseconds), takes effect on next run start."""
+        return self.binning_end_ns / 1000.0
+
+    @binning_end_us.setter
+    def binning_end_us(self, value: float) -> None:
+        self.binning_end_ns = round(value * 1000.0)
+
+    binning_num_points: int = 500
+    """
+    Number of time-bins to generate between `binning_start_ns` and `binning_end_ns`.
+    Takes effect on next run start.
     """
 
     callbacks_lock: threading.RLock = field(default_factory=threading.RLock)
