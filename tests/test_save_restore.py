@@ -19,9 +19,9 @@ def test_save_load_data(tmp_path: Path) -> None:
 
     loaded = load_from_file(state_file)
     assert loaded == {
-        "binning_start_ns": 123,
-        "binning_end_ns": 456,
-        "binning_num_points": 789,
+        "linear_tcb_start_ns": 123,
+        "linear_tcb_end_ns": 456,
+        "linear_tcb_num": 789,
     }
 
 
