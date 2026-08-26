@@ -148,16 +148,16 @@ def test_stop_time_str():
 
 
 def test_binning_start():
-    data = Data(binning_start_ns=200_000)
-    assert data.binning_start_us == 200
-    data.binning_start_us = 400
-    assert data.binning_start_us == 400
-    assert data.binning_start_ns == 400_000
+    data = Data(linear_tcb_start_ns=200_000)
+    assert data.linear_tcb_start_us == 200
+    data.linear_tcb_start_us = 400
+    assert data.linear_tcb_start_us == 400
+    assert data.linear_tcb_start_ns == 400_000
 
 
 def test_binning_end():
-    data = Data(binning_end_ns=200_000)
-    assert data.binning_end_us == 200
-    data.binning_end_us = 400
-    assert data.binning_end_us == 400
-    assert data.binning_end_ns == 400_000
+    data = Data(linear_tcb_end_ns=200_000)
+    assert data.linear_tcb_end_us == 200
+    data.linear_tcb_end_us = 400
+    assert data.linear_tcb_end_us == 400
+    assert data.linear_tcb_end_ns == 400_000

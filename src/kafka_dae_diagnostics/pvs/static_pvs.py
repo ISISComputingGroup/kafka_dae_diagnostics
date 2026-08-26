@@ -48,9 +48,9 @@ def static_pv_provider(prefix: str, data: Data) -> StaticProvider:
     static_provider.add(f"{prefix}NUMSPECTRA", static_pvs.num_spectra)
     static_provider.add(f"{prefix}NUMTIMECHANNELS", static_pvs.num_time_channels)
 
-    static_provider.add(f"{prefix}SPEC:BINNING_START", static_pvs.binning_start_us)
-    static_provider.add(f"{prefix}SPEC:BINNING_END", static_pvs.binning_end_us)
-    static_provider.add(f"{prefix}SPEC:NUM_BINS", static_pvs.binning_num_points)
+    static_provider.add(f"{prefix}TCB:LINEAR:START", static_pvs.linear_tcb_start)
+    static_provider.add(f"{prefix}TCB:LINEAR:END", static_pvs.linear_tcb_end)
+    static_provider.add(f"{prefix}TCB:LINEAR:NUM", static_pvs.linear_tcb_num)
 
     static_provider.add(f"{prefix}START_TIME", static_pvs.start_time)
     static_provider.add(f"{prefix}STARTTIME", static_pvs.start_time_str)
@@ -234,20 +234,20 @@ class StaticPVs:
             },
         )
 
-        self.binning_start_us = SharedPV(
+        self.linear_tcb_start = SharedPV(
             nt=NTScalar(display=True, form=True),
             initial={
-                "value": data.binning_start_us,
+                "value": data.linear_tcb_start_us,
                 "display.precision": 3,
                 "display.units": "us",
             },
         )
 
-        @self.binning_start_us.put
-        def binning_start_us_put(pv: SharedPV, op: ServerOperation) -> None:  # pragma: no cover
+        @self.linear_tcb_start.put
+        def linear_tcb_start_put(pv: SharedPV, op: ServerOperation) -> None:  # pragma: no cover
             value = op.value()
             try:
-                data.binning_start_us = value
+                data.linear_tcb_start_us = value
                 logger.info("Changed binning start to %s us", value)
                 pv.post(value)
                 op.done()
@@ -255,20 +255,20 @@ class StaticPVs:
                 logger.exception("Failed to change binning start to %s us", value)
                 op.done(error=f"Failed to change binning start to {value} us: {e}")
 
-        self.binning_end_us = SharedPV(
+        self.linear_tcb_end = SharedPV(
             nt=NTScalar(display=True, form=True),
             initial={
-                "value": data.binning_end_us,
+                "value": data.linear_tcb_end_us,
                 "display.units": "us",
                 "display.precision": 3,
             },
         )
 
-        @self.binning_end_us.put
-        def binning_end_us_put(pv: SharedPV, op: ServerOperation) -> None:  # pragma: no cover
+        @self.linear_tcb_end.put
+        def linear_tcb_end_put(pv: SharedPV, op: ServerOperation) -> None:  # pragma: no cover
             value = op.value()
             try:
-                data.binning_end_us = value
+                data.linear_tcb_end_us = value
                 logger.info("Changed binning end to %s us", value)
                 pv.post(value)
                 op.done()
@@ -276,19 +276,19 @@ class StaticPVs:
                 logger.exception("Failed to change binning end to %s us", value)
                 op.done(error=f"Failed to change binning end to {value} us: {e}")
 
-        self.binning_num_points = SharedPV(
+        self.linear_tcb_num = SharedPV(
             nt=NTScalar(display=True, form=True),
             initial={
-                "value": data.binning_num_points,
+                "value": data.linear_tcb_num,
                 "display.precision": 0,
             },
         )
 
-        @self.binning_num_points.put
-        def binning_num_points_put(pv: SharedPV, op: ServerOperation) -> None:  # pragma: no cover
+        @self.linear_tcb_num.put
+        def linear_tcb_num_put(pv: SharedPV, op: ServerOperation) -> None:  # pragma: no cover
             value = op.value()
             try:
-                data.binning_num_points = int(value)
+                data.linear_tcb_num = int(value)
                 logger.info("Changed binning num points to %s", value)
                 pv.post(value)
                 op.done()
@@ -459,9 +459,9 @@ class StaticPVs:
         self.num_spectra.post(data.num_spectra, timestamp=now)
         self.num_time_channels.post(data.num_time_channels, timestamp=now)
 
-        self.binning_start_us.post(data.binning_start_us, timestamp=now)
-        self.binning_end_us.post(data.binning_end_us, timestamp=now)
-        self.binning_num_points.post(data.binning_num_points, timestamp=now)
+        self.linear_tcb_start.post(data.linear_tcb_start_us, timestamp=now)
+        self.linear_tcb_end.post(data.linear_tcb_end_us, timestamp=now)
+        self.linear_tcb_num.post(data.linear_tcb_num, timestamp=now)
 
         self.count_rate.post(data.mev_per_hour, timestamp=now)
         self.start_time.post(data.start_time, timestamp=now)

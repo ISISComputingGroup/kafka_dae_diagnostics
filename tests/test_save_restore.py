@@ -11,9 +11,9 @@ def test_save_load_data(tmp_path: Path) -> None:
     state_file = tmp_path / "state.json"
 
     data = Data(
-        binning_start_ns=123,
-        binning_end_ns=456,
-        binning_num_points=789,
+        linear_tcb_start_ns=123,
+        linear_tcb_end_ns=456,
+        linear_tcb_num=789,
     )
     save_to_file(data, state_file)
 
@@ -31,7 +31,7 @@ def test_save_data_exception(tmp_path: Path, caplog: pytest.LogCaptureFixture) -
     with caplog.at_level(logging.WARNING, logger="kafka_dae_diagnostics"):
         save_to_file(
             Data(
-                binning_start_ns=object(),  # pyright: ignore - intentionally wrong type, unserializable
+                linear_tcb_start_ns=object(),  # pyright: ignore - intentionally wrong type, unserializable
             ),
             state_file,
         )

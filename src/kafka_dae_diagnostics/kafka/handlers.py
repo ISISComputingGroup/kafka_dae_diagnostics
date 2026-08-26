@@ -258,10 +258,10 @@ def handle_pl72(data: Data, msg: NonEmptyMessage, event_consumer: Consumer) -> N
     )
     periods = 1  # TODO
     detectors = n_spectra
-    time_channels = data.binning_num_points
+    time_channels = data.linear_tcb_num
 
     data.bin_boundaries = np.linspace(
-        data.binning_start_ns, data.binning_end_ns, time_channels + 1, dtype=np.int32
+        data.linear_tcb_start_ns, data.linear_tcb_end_ns, time_channels + 1, dtype=np.int32
     )
 
     # Only reallocate if shape has changed - otherwise zero existing array.

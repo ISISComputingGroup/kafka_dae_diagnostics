@@ -9,9 +9,9 @@ from kafka_dae_diagnostics.data import Data
 
 logger = logging.getLogger(__name__)
 
-BINNING_START_NS_KEY = "binning_start_ns"
-BINNING_END_NS_KEY = "binning_end_ns"
-BINNING_NUM_POINTS_KEY = "binning_num_points"
+LINEAR_TCB_START_NS_KEY = "linear_tcb_start_ns"
+LINEAR_TCB_END_NS_KEY = "linear_tcb_end_ns"
+LINEAR_TCB_NUM_KEY = "linear_tcb_num"
 
 
 def save_to_file(data: Data, state_file: Path) -> None:
@@ -20,9 +20,9 @@ def save_to_file(data: Data, state_file: Path) -> None:
         with state_file.open("w", encoding="utf-8") as f:
             json.dump(
                 {
-                    BINNING_START_NS_KEY: data.binning_start_ns,
-                    BINNING_END_NS_KEY: data.binning_end_ns,
-                    BINNING_NUM_POINTS_KEY: data.binning_num_points,
+                    LINEAR_TCB_START_NS_KEY: data.linear_tcb_start_ns,
+                    LINEAR_TCB_END_NS_KEY: data.linear_tcb_end_ns,
+                    LINEAR_TCB_NUM_KEY: data.linear_tcb_num,
                 },
                 f,
                 indent=2,
