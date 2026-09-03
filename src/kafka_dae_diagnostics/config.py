@@ -1,11 +1,8 @@
 """Utilities for reading Diagnostics IOC configuration from TOML."""
 
 import tomllib
-from typing import Annotated
 
-from pydantic import BaseModel, Field, PositiveFloat, ValidationError
-
-from kafka_dae_diagnostics.veto_diagnostics import NUM_VETOS
+from pydantic import BaseModel, PositiveFloat, ValidationError
 
 
 class DiagnosticsConfig(BaseModel):
@@ -23,20 +20,17 @@ class DiagnosticsConfig(BaseModel):
     events_topic: str
     """Kafka topic on which to listen for ``event`` messages."""
 
+    vetoconfig_topic: str
+    """Kafka topic on which to listen for ``vetoConfig`` messages."""
+
     kafka_runinfo_consumer: dict[str, str]
     """Kafka settings for ``runInfo`` stream consumer."""
 
     kafka_events_consumer: dict[str, str]
     """Kafka settings for ``event`` stream consumer."""
 
-    veto_names: Annotated[list[str] | None, Field(min_length=NUM_VETOS, max_length=NUM_VETOS)] = (
-        None
-    )
-    """Veto names, as a list of strings.
-
-    The first item in this list has bitmask (1 << 0), the last item has bitmask (1 << 31).
-    There must be exactly 32 entries in this list.
-    """
+    kafka_vetoconfig_consumer: dict[str, str]
+    """Kafka settings for ``vetoConfig`` stream consumer."""
 
     min_vetoing_percentage: float = 50.0
     """
