@@ -1,0 +1,242 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2. Rust extension module &mdash; kafka-dae-diagnostics  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-codeautolink.css?v=b2176991" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=e0a9cbc7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API" href="../_api.html" />
+    <link rel="prev" title="1. EPICS Server structure" href="001_server_structure.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            kafka-dae-diagnostics
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Developer Information</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../pvs.html">PVs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../local_development.html">Local development</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../architectural_decision_records.html">Architectural Decision Records</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="001_server_structure.html">1. EPICS Server structure</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">2. Rust extension module</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">kafka-dae-diagnostics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../architectural_decision_records.html">Architectural Decision Records</a></li>
+      <li class="breadcrumb-item active">2. Rust extension module</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/kafka_dae_diagnostics/blob/main/doc/architectural_decision_records/002_python_rust.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="rust-extension-module">
+<h1>2. Rust extension module<a class="headerlink" href="#rust-extension-module" title="Link to this heading"></a></h1>
+<section id="status">
+<h2>Status<a class="headerlink" href="#status" title="Link to this heading"></a></h2>
+<p>Current</p>
+</section>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading"></a></h2>
+<p>This module will need to deliver a range of DAE diagnostics information, including
+time-of-flight spectra for each period.</p>
+<p>Binning incoming events into spectra as they arrive can be performance-sensitive, dependent
+on event rate and numbers of periods/spectra/time channels.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The updates will not actually be <em>sent</em> to EPICS PVs unless a subscriber is attached; see
+<a class="reference internal" href="001_server_structure.html"><span class="doc">1. EPICS Server structure</span></a>. However, a spectrum array needs to be held and regularly updated
+in memory in this process, to allow for fast reads at the point when a client reads a spectrum.</p>
+</div>
+<p>Options considered are:</p>
+<ul class="simple">
+<li><p>Implement histogramming in Python (with <a class="reference external" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy</span></code></a>)</p>
+<ul>
+<li><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.searchsorted.html#numpy.searchsorted" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.searchsorted</span></code></a> on each event to find the appropriate bin.</p></li>
+</ul>
+</li>
+<li><p>Implement histogramming in native extension (with <code class="docutils literal notranslate"><span class="pre">PyO3</span></code>)</p>
+<ul>
+<li><p>Based on <a class="reference external" href="https://github.com/mantidproject/mantid/blob/0d4de52da17df6d055e285902e87ebc53d2de7f6/Framework/DataObjects/src/EventList.cpp#L2575">a similar algorithm in Mantid</a></p></li>
+</ul>
+</li>
+</ul>
+<p>Both approaches were benchmarked on time taken to histogram the following test data (with a reasonably
+representative set of parameters):</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(50000\)</span> frames, each containing <span class="math notranslate nohighlight">\(10000\)</span> events</p></li>
+<li><p>Detector IDs randomly distributed between <span class="math notranslate nohighlight">\(0\)</span> and <span class="math notranslate nohighlight">\(50000\)</span></p></li>
+<li><p>Time-of-flights following Gaussian distribution around <span class="math notranslate nohighlight">\(10000000\)</span> μs with <span class="math notranslate nohighlight">\(σ = 2000000\)</span> μs</p></li>
+<li><p>Binning into <span class="math notranslate nohighlight">\(1000\)</span> evenly-spaced bins between <span class="math notranslate nohighlight">\(5000000\)</span> and <span class="math notranslate nohighlight">\(15000000\)</span> ns</p></li>
+</ul>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Implementation</p></th>
+<th class="head"><p>Time (s)</p></th>
+<th class="head"><p>Throughput (<code class="docutils literal notranslate"><span class="pre">Gbit/s</span></code>)</p></th>
+<th class="head"><p>Throughput (<code class="docutils literal notranslate"><span class="pre">Mevents/s</span></code>)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code></p></td>
+<td><p>85.7</p></td>
+<td><p>2.8</p></td>
+<td><p>5.8</p></td>
+</tr>
+<tr class="row-odd"><td><p>native (PyO3)</p></td>
+<td><p>5.8</p></td>
+<td><p>41.7</p></td>
+<td><p>85.5</p></td>
+</tr>
+</tbody>
+</table>
+<p>For an estimated representative set of parameters for HRPD-X:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(4000\)</span> frames (i.e. 100 seconds at 40Hz), each containing <span class="math notranslate nohighlight">\(26000\)</span> events</p></li>
+<li><p>Detector IDs randomly distributed between <span class="math notranslate nohighlight">\(0\)</span> and <span class="math notranslate nohighlight">\(16000\)</span></p></li>
+<li><p>Time-of-flights following Gaussian distribution around <span class="math notranslate nohighlight">\(10000000\)</span> μs with <span class="math notranslate nohighlight">\(σ = 2000000\)</span> μs</p></li>
+<li><p>Binning into <span class="math notranslate nohighlight">\(8000\)</span> evenly-spaced bins between <span class="math notranslate nohighlight">\(5000000\)</span> and <span class="math notranslate nohighlight">\(15000000\)</span> ns</p></li>
+</ul>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Implementation</p></th>
+<th class="head"><p>Time (s)</p></th>
+<th class="head"><p>Throughput (<code class="docutils literal notranslate"><span class="pre">Gbit/s</span></code>)</p></th>
+<th class="head"><p>Throughput (<code class="docutils literal notranslate"><span class="pre">Mevents/s</span></code>)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code></p></td>
+<td><p>19.4</p></td>
+<td><p>2.6</p></td>
+<td><p>5.3</p></td>
+</tr>
+<tr class="row-odd"><td><p>native (PyO3)</p></td>
+<td><p>1.5</p></td>
+<td><p>33.1</p></td>
+<td><p>67.6</p></td>
+</tr>
+</tbody>
+</table>
+<p>An analysis of count rates across all <em>existing</em> instruments was done for MNeuData; many existing
+ISIS instruments <abbr title="99th percentile of runs recorded in journal">regularly</abbr> have count rates
+between 1-5 MEvents/s, with higher peak count rates within a run and in exceptional setups.</p>
+<p>Discussion with DSG suggests that their side of the streaming setup (for example UDP to Kafka) has maximum
+throughput of around 8 Gbit/s <em>per WLSF module</em> - though this strongly depends on hardware specifications.
+Instruments will have <em>many</em> WLSF modules (for example, HRPD-X is expected to have 80 modules).
+HRPD-X is expected to have multiple monitors counting at ~100s kHz, and a detector flux around 3x higher than
+HRPD due to WLSF detector efficiency upgrades.</p>
+</section>
+<section id="decision">
+<h2>Decision<a class="headerlink" href="#decision" title="Link to this heading"></a></h2>
+<p>Implement histogramming using a native PyO3 extension.</p>
+<p>Although this makes this project slightly more complicated to develop and deploy, the performance gains
+seem to be large enough in this case to justify the moderate increase in complexity.</p>
+</section>
+<section id="consequences">
+<h2>Consequences<a class="headerlink" href="#consequences" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>This module will be primarily Python, with a Rust native extension library used to implement
+performance-sensitive operations</p></li>
+<li><p>The code will be slightly more difficult to build than a pure-python library.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">maturin</span></code> + <code class="docutils literal notranslate"><span class="pre">PyO3</span></code> make this relatively easy, but it is still <em>more</em> difficult than pure-python.</p></li>
+</ul>
+</li>
+<li><p>Developers will need some awareness of Rust to modify the native extension.</p></li>
+<li><p>Histogramming spectra will use fewer system resources compared to a <a class="reference external" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy</span></code></a> implementation. This aligns
+with ISIS computing sustainability/energy reduction goals.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="001_server_structure.html" class="btn btn-neutral float-left" title="1. EPICS Server structure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../_api.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

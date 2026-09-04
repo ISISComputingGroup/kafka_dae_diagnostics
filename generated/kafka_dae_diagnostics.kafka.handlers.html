@@ -1,0 +1,339 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kafka_dae_diagnostics.kafka.handlers &mdash; kafka-dae-diagnostics  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-codeautolink.css?v=b2176991" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=e0a9cbc7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="kafka_dae_diagnostics.pvs" href="kafka_dae_diagnostics.pvs.html" />
+    <link rel="prev" title="kafka_dae_diagnostics.kafka.consumers" href="kafka_dae_diagnostics.kafka.consumers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            kafka-dae-diagnostics
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Developer Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pvs.html">PVs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../local_development.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decision_records.html">Architectural Decision Records</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../_api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="kafka_dae_diagnostics.html"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="kafka_dae_diagnostics.config.html"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kafka_dae_diagnostics.data.html"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.data</span></code></a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="kafka_dae_diagnostics.kafka.html"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.kafka</span></code></a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="kafka_dae_diagnostics.kafka.consumers.html"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.kafka.consumers</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.kafka.handlers</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="kafka_dae_diagnostics.pvs.html"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.pvs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kafka_dae_diagnostics.serve.html"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.serve</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kafka_dae_diagnostics.veto_diagnostics.html"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.veto_diagnostics</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">kafka-dae-diagnostics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../_api.html">API</a></li>
+          <li class="breadcrumb-item"><a href="kafka_dae_diagnostics.html"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics</span></code></a></li>
+          <li class="breadcrumb-item"><a href="kafka_dae_diagnostics.kafka.html"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.kafka</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.kafka.handlers</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/kafka_dae_diagnostics/blob/main/doc/generated/kafka_dae_diagnostics.kafka.handlers.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-kafka_dae_diagnostics.kafka.handlers">
+<span id="kafka-dae-diagnostics-kafka-handlers"></span><h1><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.kafka.handlers</span></code><a class="headerlink" href="#module-kafka_dae_diagnostics.kafka.handlers" title="Link to this heading"></a></h1>
+<p>Utilities for reacting to Kafka messages.</p>
+<p class="rubric">Members</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage" title="kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NonEmptyMessage</span></code></a></p></td>
+<td><p>Dataclass holding a valid message (a non-error message with non-empty value) from Kafka.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.extract_schema" title="kafka_dae_diagnostics.kafka.handlers.extract_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_schema</span></code></a></p></td>
+<td><p>Get the schema ID from a Kafka message.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.handle_6s4t" title="kafka_dae_diagnostics.kafka.handlers.handle_6s4t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_6s4t</span></code></a></p></td>
+<td><p>Handle a 6s4t (run stop) message from Kafka.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.handle_ev44" title="kafka_dae_diagnostics.kafka.handlers.handle_ev44"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_ev44</span></code></a></p></td>
+<td><p>Handle an ev44 (event-data) message from Kafka.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.handle_event_topic_messages" title="kafka_dae_diagnostics.kafka.handlers.handle_event_topic_messages"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_event_topic_messages</span></code></a></p></td>
+<td><p>Handle Kafka event messages.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.handle_event_topic_msg" title="kafka_dae_diagnostics.kafka.handlers.handle_event_topic_msg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_event_topic_msg</span></code></a></p></td>
+<td><p>Handle an arbitrary message from Kafka event topic.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.handle_pl72" title="kafka_dae_diagnostics.kafka.handlers.handle_pl72"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_pl72</span></code></a></p></td>
+<td><p>Handle a pl72 (run start) message from Kafka.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.handle_pu00" title="kafka_dae_diagnostics.kafka.handlers.handle_pu00"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_pu00</span></code></a></p></td>
+<td><p>Handle a <code class="docutils literal notranslate"><span class="pre">pu00</span></code> (frame metadata) message from Kafka.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.handle_run_info_messages" title="kafka_dae_diagnostics.kafka.handlers.handle_run_info_messages"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_run_info_messages</span></code></a></p></td>
+<td><p>Handle Kafka run info messages.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.handle_runinfo_msg" title="kafka_dae_diagnostics.kafka.handlers.handle_runinfo_msg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_runinfo_msg</span></code></a></p></td>
+<td><p>Handle an arbitrary message from Kafka runInfo topic.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.handle_veto_config_messages" title="kafka_dae_diagnostics.kafka.handlers.handle_veto_config_messages"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_veto_config_messages</span></code></a></p></td>
+<td><p>Handle Kafka veto config messages.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.handle_veto_config_msg" title="kafka_dae_diagnostics.kafka.handlers.handle_veto_config_msg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_veto_config_msg</span></code></a></p></td>
+<td><p>Handle a single veto configuration message.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">kafka_dae_diagnostics.kafka.handlers.</span></span><span class="sig-name descname"><span class="pre">NonEmptyMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">partition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/kafka_dae_diagnostics/kafka/handlers.html#NonEmptyMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Dataclass holding a valid message (a non-error message with non-empty value) from Kafka.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage.partition">
+<span class="sig-name descname"><span class="pre">partition</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage.partition" title="Link to this definition"></a></dt>
+<dd><p>The partition ID on which this message was received.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage.value">
+<span class="sig-name descname"><span class="pre">value</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage.value" title="Link to this definition"></a></dt>
+<dd><p>The content bytes of this message.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.kafka.handlers.extract_schema">
+<span class="sig-prename descclassname"><span class="pre">kafka_dae_diagnostics.kafka.handlers.</span></span><span class="sig-name descname"><span class="pre">extract_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage" title="kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage"><span class="pre">NonEmptyMessage</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/kafka_dae_diagnostics/kafka/handlers.html#extract_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kafka_dae_diagnostics.kafka.handlers.extract_schema" title="Link to this definition"></a></dt>
+<dd><p>Get the schema ID from a Kafka message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Schema ID, or None if the Kafka message had no payload or the payload was too short.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.kafka.handlers.handle_6s4t">
+<span class="sig-prename descclassname"><span class="pre">kafka_dae_diagnostics.kafka.handlers.</span></span><span class="sig-name descname"><span class="pre">handle_6s4t</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="kafka_dae_diagnostics.data.html#kafka_dae_diagnostics.data.Data" title="kafka_dae_diagnostics.data.Data"><span class="pre">Data</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage" title="kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage"><span class="pre">NonEmptyMessage</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/kafka_dae_diagnostics/kafka/handlers.html#handle_6s4t"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kafka_dae_diagnostics.kafka.handlers.handle_6s4t" title="Link to this definition"></a></dt>
+<dd><p>Handle a 6s4t (run stop) message from Kafka.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.kafka.handlers.handle_ev44">
+<span class="sig-prename descclassname"><span class="pre">kafka_dae_diagnostics.kafka.handlers.</span></span><span class="sig-name descname"><span class="pre">handle_ev44</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="kafka_dae_diagnostics.data.html#kafka_dae_diagnostics.data.Data" title="kafka_dae_diagnostics.data.Data"><span class="pre">Data</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage" title="kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage"><span class="pre">NonEmptyMessage</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/kafka_dae_diagnostics/kafka/handlers.html#handle_ev44"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kafka_dae_diagnostics.kafka.handlers.handle_ev44" title="Link to this definition"></a></dt>
+<dd><p>Handle an ev44 (event-data) message from Kafka.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – Reference to data being served.</p></li>
+<li><p><strong>msg</strong> – Message received from Kafka.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.kafka.handlers.handle_event_topic_messages">
+<span class="sig-prename descclassname"><span class="pre">kafka_dae_diagnostics.kafka.handlers.</span></span><span class="sig-name descname"><span class="pre">handle_event_topic_messages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_messages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html#confluent_kafka.Message" title="(in confluent-kafka v2.15.0)"><span class="pre">Message</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="kafka_dae_diagnostics.data.html#kafka_dae_diagnostics.data.Data" title="kafka_dae_diagnostics.data.Data"><span class="pre">Data</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/kafka_dae_diagnostics/kafka/handlers.html#handle_event_topic_messages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kafka_dae_diagnostics.kafka.handlers.handle_event_topic_messages" title="Link to this definition"></a></dt>
+<dd><p>Handle Kafka event messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_messages</strong> – Messages received from Kafka event topic.</p></li>
+<li><p><strong>data</strong> – Data served by <code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.kafka.handlers.handle_event_topic_msg">
+<span class="sig-prename descclassname"><span class="pre">kafka_dae_diagnostics.kafka.handlers.</span></span><span class="sig-name descname"><span class="pre">handle_event_topic_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="kafka_dae_diagnostics.data.html#kafka_dae_diagnostics.data.Data" title="kafka_dae_diagnostics.data.Data"><span class="pre">Data</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage" title="kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage"><span class="pre">NonEmptyMessage</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/kafka_dae_diagnostics/kafka/handlers.html#handle_event_topic_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kafka_dae_diagnostics.kafka.handlers.handle_event_topic_msg" title="Link to this definition"></a></dt>
+<dd><p>Handle an arbitrary message from Kafka event topic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – Reference to data being served.</p></li>
+<li><p><strong>msg</strong> – Message bytes received from Kafka.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.kafka.handlers.handle_pl72">
+<span class="sig-prename descclassname"><span class="pre">kafka_dae_diagnostics.kafka.handlers.</span></span><span class="sig-name descname"><span class="pre">handle_pl72</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="kafka_dae_diagnostics.data.html#kafka_dae_diagnostics.data.Data" title="kafka_dae_diagnostics.data.Data"><span class="pre">Data</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage" title="kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage"><span class="pre">NonEmptyMessage</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_consumer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Consumer</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/kafka_dae_diagnostics/kafka/handlers.html#handle_pl72"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kafka_dae_diagnostics.kafka.handlers.handle_pl72" title="Link to this definition"></a></dt>
+<dd><p>Handle a pl72 (run start) message from Kafka.</p>
+<p>This zeroes the spectra array (reallocating if the size changed),
+and configures the event consumer to re-read all events since run
+start (in case run start timestamp was in the past).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – Reference to data being served.</p></li>
+<li><p><strong>msg</strong> – Message bytes received from Kafka.</p></li>
+<li><p><strong>event_consumer</strong> – Kafka event topic consumer.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.kafka.handlers.handle_pu00">
+<span class="sig-prename descclassname"><span class="pre">kafka_dae_diagnostics.kafka.handlers.</span></span><span class="sig-name descname"><span class="pre">handle_pu00</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="kafka_dae_diagnostics.data.html#kafka_dae_diagnostics.data.Data" title="kafka_dae_diagnostics.data.Data"><span class="pre">Data</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage" title="kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage"><span class="pre">NonEmptyMessage</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/kafka_dae_diagnostics/kafka/handlers.html#handle_pu00"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kafka_dae_diagnostics.kafka.handlers.handle_pu00" title="Link to this definition"></a></dt>
+<dd><p>Handle a <code class="docutils literal notranslate"><span class="pre">pu00</span></code> (frame metadata) message from Kafka.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – Reference to data being served.</p></li>
+<li><p><strong>msg</strong> – Message bytes received from Kafka.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.kafka.handlers.handle_run_info_messages">
+<span class="sig-prename descclassname"><span class="pre">kafka_dae_diagnostics.kafka.handlers.</span></span><span class="sig-name descname"><span class="pre">handle_run_info_messages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_info_messages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html#confluent_kafka.Message" title="(in confluent-kafka v2.15.0)"><span class="pre">Message</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="kafka_dae_diagnostics.data.html#kafka_dae_diagnostics.data.Data" title="kafka_dae_diagnostics.data.Data"><span class="pre">Data</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_consumer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Consumer</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/kafka_dae_diagnostics/kafka/handlers.html#handle_run_info_messages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kafka_dae_diagnostics.kafka.handlers.handle_run_info_messages" title="Link to this definition"></a></dt>
+<dd><p>Handle Kafka run info messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>run_info_messages</strong> – Messages received from Kafka runInfo topic.</p></li>
+<li><p><strong>data</strong> – Data served by <code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics</span></code>.</p></li>
+<li><p><strong>event_consumer</strong> – Consumer for event Kafka topic.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.kafka.handlers.handle_runinfo_msg">
+<span class="sig-prename descclassname"><span class="pre">kafka_dae_diagnostics.kafka.handlers.</span></span><span class="sig-name descname"><span class="pre">handle_runinfo_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="kafka_dae_diagnostics.data.html#kafka_dae_diagnostics.data.Data" title="kafka_dae_diagnostics.data.Data"><span class="pre">Data</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage" title="kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage"><span class="pre">NonEmptyMessage</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_consumer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Consumer</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/kafka_dae_diagnostics/kafka/handlers.html#handle_runinfo_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kafka_dae_diagnostics.kafka.handlers.handle_runinfo_msg" title="Link to this definition"></a></dt>
+<dd><p>Handle an arbitrary message from Kafka runInfo topic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – Reference to data being served.</p></li>
+<li><p><strong>msg</strong> – Message bytes received from Kafka.</p></li>
+<li><p><strong>event_consumer</strong> – Kafka event topic consumer.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.kafka.handlers.handle_veto_config_messages">
+<span class="sig-prename descclassname"><span class="pre">kafka_dae_diagnostics.kafka.handlers.</span></span><span class="sig-name descname"><span class="pre">handle_veto_config_messages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html#confluent_kafka.Message" title="(in confluent-kafka v2.15.0)"><span class="pre">Message</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="kafka_dae_diagnostics.data.html#kafka_dae_diagnostics.data.Data" title="kafka_dae_diagnostics.data.Data"><span class="pre">Data</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/kafka_dae_diagnostics/kafka/handlers.html#handle_veto_config_messages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kafka_dae_diagnostics.kafka.handlers.handle_veto_config_messages" title="Link to this definition"></a></dt>
+<dd><p>Handle Kafka veto config messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>messages</strong> – Messages received from Kafka veto config topic.</p></li>
+<li><p><strong>data</strong> – Data served by <code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.kafka.handlers.handle_veto_config_msg">
+<span class="sig-prename descclassname"><span class="pre">kafka_dae_diagnostics.kafka.handlers.</span></span><span class="sig-name descname"><span class="pre">handle_veto_config_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="kafka_dae_diagnostics.data.html#kafka_dae_diagnostics.data.Data" title="kafka_dae_diagnostics.data.Data"><span class="pre">Data</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage" title="kafka_dae_diagnostics.kafka.handlers.NonEmptyMessage"><span class="pre">NonEmptyMessage</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/kafka_dae_diagnostics/kafka/handlers.html#handle_veto_config_msg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kafka_dae_diagnostics.kafka.handlers.handle_veto_config_msg" title="Link to this definition"></a></dt>
+<dd><p>Handle a single veto configuration message.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="kafka_dae_diagnostics.kafka.consumers.html" class="btn btn-neutral float-left" title="kafka_dae_diagnostics.kafka.consumers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="kafka_dae_diagnostics.pvs.html" class="btn btn-neutral float-right" title="kafka_dae_diagnostics.pvs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

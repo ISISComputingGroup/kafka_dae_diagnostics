@@ -1,0 +1,190 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1. EPICS Server structure &mdash; kafka-dae-diagnostics  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-codeautolink.css?v=b2176991" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=e0a9cbc7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="2. Rust extension module" href="002_python_rust.html" />
+    <link rel="prev" title="Architectural Decision Records" href="../architectural_decision_records.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            kafka-dae-diagnostics
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Developer Information</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../pvs.html">PVs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../local_development.html">Local development</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../architectural_decision_records.html">Architectural Decision Records</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">1. EPICS Server structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="002_python_rust.html">2. Rust extension module</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">kafka-dae-diagnostics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../architectural_decision_records.html">Architectural Decision Records</a></li>
+      <li class="breadcrumb-item active">1. EPICS Server structure</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/kafka_dae_diagnostics/blob/main/doc/architectural_decision_records/001_server_structure.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="epics-server-structure">
+<h1>1. EPICS Server structure<a class="headerlink" href="#epics-server-structure" title="Link to this heading"></a></h1>
+<section id="status">
+<h2>Status<a class="headerlink" href="#status" title="Link to this heading"></a></h2>
+<p>Current</p>
+</section>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading"></a></h2>
+<p>This module aims to deliver “DAE Diagnostics”, in the forms of:</p>
+<ul class="simple">
+<li><p>Spectra plots</p></li>
+<li><p>Information about vetoes</p></li>
+<li><p>Event-rate information</p></li>
+<li><p>“Detector diagnostics”</p></li>
+</ul>
+<p>Of these, the most demanding case is serving spectra plots; there can be large numbers of spectra
+corresponding to different detectors and periods, and each spectrum has the potential to
+update at a high rate as new neutron events are histogrammed into the spectrum.</p>
+<p>Use cases for DAE spectra include:</p>
+<ul class="simple">
+<li><p>A user visually monitoring a spectrum from a GUI. This means it must be possible for a client to
+monitor a spectrum that it is interested in.</p></li>
+<li><p>Scripted clients, which will retrieve spectra programmatically, for example:</p>
+<ul>
+<li><p><a class="reference external" href="https://isiscomputinggroup.github.io/ibex_bluesky_core/generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSpectra" title="(in ibex_bluesky_core)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae.DaeSpectra</span></code></a></p></li>
+<li><p><a class="reference external" href="https://isiscomputinggroup.github.io/genie/genie_python.html#genie.get_spectrum" title="(in genie_python v0.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genie.get_spectrum</span></code></a></p></li>
+</ul>
+</li>
+</ul>
+<p>Several approaches to serving spectra were considered:</p>
+<section id="static-pvs-fastcs">
+<h3>Static PVs (<a class="reference external" href="https://diamondlightsource.github.io/fastcs/main/_api/fastcs.html#module-fastcs" title="(in fastcs main)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fastcs</span></code></a>)<a class="headerlink" href="#static-pvs-fastcs" title="Link to this heading"></a></h3>
+<p>In this approach, this service would statically create PVs for each spectrum/period combination, and
+update them as new neutron events arrive. <a class="reference external" href="https://diamondlightsource.github.io/fastcs/main/_api/fastcs.html#module-fastcs" title="(in fastcs main)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fastcs</span></code></a> can serve arrays over both CA and PVA
+simultaneously.</p>
+<p>This approach is simple, but very wasteful performance-wise: all spectra would be being updated
+constantly, even if no client was interested. The performance of this approach is not viable, even
+for modest numbers of spectra.</p>
+</section>
+<section id="ca-server-pcaspy">
+<h3>CA Server (<a class="reference external" href="https://pcaspy.readthedocs.io/en/latest/api.html#module-pcaspy" title="(in pcaspy v0.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pcaspy</span></code></a>)<a class="headerlink" href="#ca-server-pcaspy" title="Link to this heading"></a></h3>
+<p>PCAS &amp; pcaspy are deprecated, and there is not presently a route to “bridge” a PCAS/pcaspy server to
+PVA. Support for PVA is considered a requirement, so this option is discarded.</p>
+</section>
+<section id="pva-server-p4p">
+<h3>PVA server (<a class="reference external" href="https://epics-base.github.io/p4p/values.html#module-p4p" title="(in P4P v4.3.0a1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">p4p</span></code></a>)<a class="headerlink" href="#pva-server-p4p" title="Link to this heading"></a></h3>
+<p>This approach uses the <a class="reference external" href="https://epics-base.github.io/p4p/server.html#p4p.server.DynamicProvider" title="(in P4P v4.3.0a1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">p4p.server.DynamicProvider</span></code></a> to dynamically serve PVA PVs to subscribed
+clients. It is conceptually similar to the <code class="docutils literal notranslate"><span class="pre">pcaspy</span></code> approach above, but would <strong>only</strong> support PVA.</p>
+</section>
+</section>
+<section id="decision">
+<h2>Decision<a class="headerlink" href="#decision" title="Link to this heading"></a></h2>
+<p>Spectra will be served via <a class="reference external" href="https://epics-base.github.io/p4p/values.html#module-p4p" title="(in P4P v4.3.0a1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">p4p</span></code></a> using <a class="reference external" href="https://epics-base.github.io/p4p/server.html#p4p.server.DynamicProvider" title="(in P4P v4.3.0a1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">p4p.server.DynamicProvider</span></code></a>.</p>
+</section>
+<section id="consequences">
+<h2>Consequences<a class="headerlink" href="#consequences" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Spectra will <em>only</em> be available over PVA. No CA support will be available.</p>
+<ul>
+<li><p>The existing <a class="reference external" href="https://isiscomputinggroup.github.io/ibex_developers_manual/Client.html" title="(in IBEX Developer's Manual)"><span class="xref std std-doc">Eclipse-based IBEX client</span></a> can support
+PVA in OPIs.</p></li>
+<li><p><a class="reference external" href="https://isiscomputinggroup.github.io/ibex_bluesky_core/generated/ibex_bluesky_core.html#module-ibex_bluesky_core" title="(in ibex_bluesky_core)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a> and <a class="reference external" href="https://isiscomputinggroup.github.io/genie/genie_python.html#module-genie" title="(in genie_python v0.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genie</span></code></a> clients already have support for PVA but will need updates
+to use it to acquire spectra.</p></li>
+</ul>
+</li>
+<li><p>Spectra will be served by a <a class="reference external" href="https://epics-base.github.io/p4p/values.html#module-p4p" title="(in P4P v4.3.0a1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">p4p</span></code></a> server.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../architectural_decision_records.html" class="btn btn-neutral float-left" title="Architectural Decision Records" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="002_python_rust.html" class="btn btn-neutral float-right" title="2. Rust extension module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

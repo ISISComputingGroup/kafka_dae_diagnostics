@@ -1,0 +1,24 @@
+
+
+``kafka_dae_diagnostics.serve``
+===============================
+        
+
+.. automodule:: kafka_dae_diagnostics.serve
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        serve
+    
+    

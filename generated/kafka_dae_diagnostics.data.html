@@ -1,0 +1,465 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kafka_dae_diagnostics.data &mdash; kafka-dae-diagnostics  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-codeautolink.css?v=b2176991" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=e0a9cbc7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="kafka_dae_diagnostics.kafka" href="kafka_dae_diagnostics.kafka.html" />
+    <link rel="prev" title="kafka_dae_diagnostics.config" href="kafka_dae_diagnostics.config.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            kafka-dae-diagnostics
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Developer Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pvs.html">PVs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../local_development.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decision_records.html">Architectural Decision Records</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../_api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="kafka_dae_diagnostics.html"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="kafka_dae_diagnostics.config.html"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.config</span></code></a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kafka_dae_diagnostics.kafka.html"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.kafka</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kafka_dae_diagnostics.pvs.html"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.pvs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kafka_dae_diagnostics.serve.html"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.serve</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kafka_dae_diagnostics.veto_diagnostics.html"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.veto_diagnostics</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">kafka-dae-diagnostics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../_api.html">API</a></li>
+          <li class="breadcrumb-item"><a href="kafka_dae_diagnostics.html"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.data</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/kafka_dae_diagnostics/blob/main/doc/generated/kafka_dae_diagnostics.data.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-kafka_dae_diagnostics.data">
+<span id="kafka-dae-diagnostics-data"></span><h1><code class="docutils literal notranslate"><span class="pre">kafka_dae_diagnostics.data</span></code><a class="headerlink" href="#module-kafka_dae_diagnostics.data" title="Link to this heading"></a></h1>
+<p>Data being served by this IOC.</p>
+<p class="rubric">Members</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#kafka_dae_diagnostics.data.Data" title="kafka_dae_diagnostics.data.Data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Data</span></code></a></p></td>
+<td><p>A mutable object describing the data being served by this IOC.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#kafka_dae_diagnostics.data.FrameMetaData" title="kafka_dae_diagnostics.data.FrameMetaData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FrameMetaData</span></code></a></p></td>
+<td><p>Metadata associated with a set of neutron events.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#kafka_dae_diagnostics.data.RunState" title="kafka_dae_diagnostics.data.RunState"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunState</span></code></a></p></td>
+<td><p>Enum describing the possible run-states.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">kafka_dae_diagnostics.data.</span></span><span class="sig-name descname"><span class="pre">Data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">stale_event_timeout_s:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">5.0,</span> <span class="pre">vetoing_percentage:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">50.0,</span> <span class="pre">spectra:</span> <span class="pre">~numpy.ndarray[tuple[~typing.Any,</span> <span class="pre">...],</span> <span class="pre">~numpy.dtype[~numpy.float64]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">callbacks:</span> <span class="pre">dict[str,</span> <span class="pre">~collections.abc.Callable[[],</span> <span class="pre">None]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">bin_boundaries:</span> <span class="pre">~numpy.ndarray[tuple[~typing.Any,</span> <span class="pre">...],</span> <span class="pre">~numpy.dtype[~numpy.int32]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">callbacks_lock:</span> <span class="pre">~threading.RLock</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">total_events:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">total_event_messages:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">total_event_megabytes:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0,</span> <span class="pre">largest_kafka_timestamp:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0,</span> <span class="pre">most_recent_kafka_timestamp:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0,</span> <span class="pre">most_recent_event_processing_timestamp:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">start_time:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0,</span> <span class="pre">stop_time:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0,</span> <span class="pre">event_processing_lag:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0,</span> <span class="pre">frame_metadata:</span> <span class="pre">dict[int</span> <span class="pre">|</span> <span class="pre">None,</span> <span class="pre">~kafka_dae_diagnostics.data.FrameMetaData]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">raw_frames_pd:</span> <span class="pre">~numpy.ndarray[tuple[~typing.Any,</span> <span class="pre">...],</span> <span class="pre">~numpy.dtype[~numpy.int64]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">good_frames_pd:</span> <span class="pre">~numpy.ndarray[tuple[~typing.Any,</span> <span class="pre">...],</span> <span class="pre">~numpy.dtype[~numpy.int64]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">raw_frames:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">good_frames:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">raw_uah_pd:</span> <span class="pre">~numpy.ndarray[tuple[~typing.Any,</span> <span class="pre">...],</span> <span class="pre">~numpy.dtype[~numpy.float64]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">good_uah_pd:</span> <span class="pre">~numpy.ndarray[tuple[~typing.Any,</span> <span class="pre">...],</span> <span class="pre">~numpy.dtype[~numpy.float64]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">raw_uah:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0,</span> <span class="pre">good_uah:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0,</span> <span class="pre">veto_mask:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">65535,</span> <span class="pre">veto_diagnostics:</span> <span class="pre">~kafka_dae_diagnostics.veto_diagnostics.VetoDiagnostics</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">veto_names_array:</span> <span class="pre">~numpy.ndarray[tuple[~typing.Any,</span> <span class="pre">...],</span> <span class="pre">~numpy.dtype[~numpy.str_]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">current_period:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/kafka_dae_diagnostics/data.html#Data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kafka_dae_diagnostics.data.Data" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>A mutable object describing the data being served by this IOC.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.average_data_rate">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">average_data_rate</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.average_data_rate" title="Link to this definition"></a></dt>
+<dd><p>Average data rate of this run in MiB/s.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.bin_boundaries">
+<span class="sig-name descname"><span class="pre">bin_boundaries</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">int32</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.bin_boundaries" title="Link to this definition"></a></dt>
+<dd><p>Time-bin boundaries (ns).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.callbacks">
+<span class="sig-name descname"><span class="pre">callbacks</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.callbacks" title="Link to this definition"></a></dt>
+<dd><p>A list of callbacks to notify when data is updated.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.callbacks_lock">
+<span class="sig-name descname"><span class="pre">callbacks_lock</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.RLock" title="(in Python v3.14)"><span class="pre">RLock</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.callbacks_lock" title="Link to this definition"></a></dt>
+<dd><p>Lock-object, must be taken when <code class="docutils literal notranslate"><span class="pre">spectrum_updaters</span></code> is iterated/mutated.
+:meta private:</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.count_rate">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">count_rate</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.count_rate" title="Link to this definition"></a></dt>
+<dd><p>Average count rate during this run in MEv/h.</p>
+<p>Includes good counts only.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.current_period">
+<span class="sig-name descname"><span class="pre">current_period</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.current_period" title="Link to this definition"></a></dt>
+<dd><p>The zero-indexed period into which the most recent data was received.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.duration">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">duration</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.duration" title="Link to this definition"></a></dt>
+<dd><p>Run duration in seconds.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.enabled_vetos_array">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">enabled_vetos_array</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">int32</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.enabled_vetos_array" title="Link to this definition"></a></dt>
+<dd><p>Array describing whether each of the 32 veto bits is currently enabled.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.event_processing_lag">
+<span class="sig-name descname"><span class="pre">event_processing_lag</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.event_processing_lag" title="Link to this definition"></a></dt>
+<dd><p>Estimated time difference between an event being recorded in
+electronics and processed in KDAEDIAG IOC.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.frame_metadata">
+<span class="sig-name descname"><span class="pre">frame_metadata</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#kafka_dae_diagnostics.data.FrameMetaData" title="kafka_dae_diagnostics.data.FrameMetaData"><span class="pre">FrameMetaData</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.frame_metadata" title="Link to this definition"></a></dt>
+<dd><p>Metadata for the current frame, keyed by Kafka partition ID.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.good_frames">
+<span class="sig-name descname"><span class="pre">good_frames</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.good_frames" title="Link to this definition"></a></dt>
+<dd><p>Number of good (non-vetoed) frames seen in the current run.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.good_frames_pd">
+<span class="sig-name descname"><span class="pre">good_frames_pd</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">int64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.good_frames_pd" title="Link to this definition"></a></dt>
+<dd><p>Array of good frames collected in each period.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.good_uah">
+<span class="sig-name descname"><span class="pre">good_uah</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.good_uah" title="Link to this definition"></a></dt>
+<dd><p>Good uAh collected in the current run.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.good_uah_pd">
+<span class="sig-name descname"><span class="pre">good_uah_pd</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.good_uah_pd" title="Link to this definition"></a></dt>
+<dd><p>Array of good uAh collected in each period.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.histogram_megabytes">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">histogram_megabytes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.histogram_megabytes" title="Link to this definition"></a></dt>
+<dd><p>Size of histogram array in MiB.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.largest_kafka_timestamp">
+<span class="sig-name descname"><span class="pre">largest_kafka_timestamp</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.largest_kafka_timestamp" title="Link to this definition"></a></dt>
+<dd><p>Largest timestamp seen in an <code class="docutils literal notranslate"><span class="pre">ev44</span></code>, <code class="docutils literal notranslate"><span class="pre">pu00</span></code> or <code class="docutils literal notranslate"><span class="pre">pl72</span></code> message since
+the beginning of this run. Seconds since epoch.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.mev">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">mev</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.mev" title="Link to this definition"></a></dt>
+<dd><p>Number of counts (in millions of events).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.mev_per_hour">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">mev_per_hour</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.mev_per_hour" title="Link to this definition"></a></dt>
+<dd><p>Number of counts per hour (in millions of events).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.most_recent_event_processing_timestamp">
+<span class="sig-name descname"><span class="pre">most_recent_event_processing_timestamp</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.most_recent_event_processing_timestamp" title="Link to this definition"></a></dt>
+<dd><p>The computer timestamp at which the most recent event message was processed by this IOC.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.most_recent_kafka_timestamp">
+<span class="sig-name descname"><span class="pre">most_recent_kafka_timestamp</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.most_recent_kafka_timestamp" title="Link to this definition"></a></dt>
+<dd><p>Timestamp in the most recently-processed <code class="docutils literal notranslate"><span class="pre">ev44</span></code>, <code class="docutils literal notranslate"><span class="pre">pu00</span></code> or <code class="docutils literal notranslate"><span class="pre">pl72</span></code> message.
+Seconds since epoch.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.num_periods">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">num_periods</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.num_periods" title="Link to this definition"></a></dt>
+<dd><p>Number of periods in histogram.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.num_spectra">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">num_spectra</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.num_spectra" title="Link to this definition"></a></dt>
+<dd><p>Number of spectra in histogram.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.num_time_channels">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">num_time_channels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.num_time_channels" title="Link to this definition"></a></dt>
+<dd><p>Number of time channels in histogram.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.raw_frames">
+<span class="sig-name descname"><span class="pre">raw_frames</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.raw_frames" title="Link to this definition"></a></dt>
+<dd><p>Number of raw frames seen in the current run.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.raw_frames_pd">
+<span class="sig-name descname"><span class="pre">raw_frames_pd</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">int64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.raw_frames_pd" title="Link to this definition"></a></dt>
+<dd><p>Array of raw frames collected in each period.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.raw_uah">
+<span class="sig-name descname"><span class="pre">raw_uah</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.raw_uah" title="Link to this definition"></a></dt>
+<dd><p>Raw uAh collected in the current run (including vetoed frames).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.raw_uah_pd">
+<span class="sig-name descname"><span class="pre">raw_uah_pd</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.raw_uah_pd" title="Link to this definition"></a></dt>
+<dd><p>Array of raw uAh collected in each period.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.run_state">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">run_state</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#kafka_dae_diagnostics.data.RunState" title="kafka_dae_diagnostics.data.RunState"><span class="pre">RunState</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.run_state" title="Link to this definition"></a></dt>
+<dd><p>The current run state.</p>
+<ul class="simple">
+<li><p><strong>SETUP</strong>: the electronics is currently idle, not performing a run.</p></li>
+<li><dl class="simple">
+<dt><strong>PROCESSING</strong>: the electronics should be running, but we have not received</dt><dd><p>event messages from Kafka recently. This is a fault condition.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>VETOING</strong>: the electronics has sent us frames, but more than 50% of the recent</dt><dd><p>frames have been vetoed.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>RUNNING</strong>: the electronics has sent us frames, less than 50% of the recent</dt><dd><p>frames have been vetoed.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.seconds_since_last_event_message">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">seconds_since_last_event_message</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.seconds_since_last_event_message" title="Link to this definition"></a></dt>
+<dd><p>The number of seconds elapsed since the last event message was processed by this IOC.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.spectra">
+<span class="sig-name descname"><span class="pre">spectra</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.spectra" title="Link to this definition"></a></dt>
+<dd><p>An array describing counts since last run start.</p>
+<p>Has shape <code class="docutils literal notranslate"><span class="pre">(n_periods,</span> <span class="pre">n_detectors,</span> <span class="pre">n_timechannels)</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.stale_event_timeout_s">
+<span class="sig-name descname"><span class="pre">stale_event_timeout_s</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5.0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.stale_event_timeout_s" title="Link to this definition"></a></dt>
+<dd><p>The time interval (seconds) in which we call the system ‘PROCESSING’ if we have not received
+new event messages.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.start_time">
+<span class="sig-name descname"><span class="pre">start_time</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.start_time" title="Link to this definition"></a></dt>
+<dd><p>Timestamp of the most recent <code class="docutils literal notranslate"><span class="pre">pl72</span></code> run-start message.
+Seconds since epoch.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.start_time_str">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">start_time_str</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.start_time_str" title="Link to this definition"></a></dt>
+<dd><p>The time of the most recent run-start message, formatted as a string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.stop_time">
+<span class="sig-name descname"><span class="pre">stop_time</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.stop_time" title="Link to this definition"></a></dt>
+<dd><p>Timestamp of the most recent 6s4t run-stop message.
+Seconds since epoch.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.stop_time_str">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">stop_time_str</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.stop_time_str" title="Link to this definition"></a></dt>
+<dd><p>The time of the most recent run-stop message, formatted as a string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.total_event_megabytes">
+<span class="sig-name descname"><span class="pre">total_event_megabytes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.total_event_megabytes" title="Link to this definition"></a></dt>
+<dd><p>Megabytes of event messages processed in this run.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.total_event_messages">
+<span class="sig-name descname"><span class="pre">total_event_messages</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.total_event_messages" title="Link to this definition"></a></dt>
+<dd><p>Total number of ev44 event messages in this run.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.total_events">
+<span class="sig-name descname"><span class="pre">total_events</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.total_events" title="Link to this definition"></a></dt>
+<dd><p>Total number of non-vetoed neutron events in this run.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.veto_diagnostics">
+<span class="sig-name descname"><span class="pre">veto_diagnostics</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="kafka_dae_diagnostics.veto_diagnostics.html#kafka_dae_diagnostics.veto_diagnostics.VetoDiagnostics" title="kafka_dae_diagnostics.veto_diagnostics.VetoDiagnostics"><span class="pre">VetoDiagnostics</span></a></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.veto_diagnostics" title="Link to this definition"></a></dt>
+<dd><p>Veto diagnostics.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.veto_mask">
+<span class="sig-name descname"><span class="pre">veto_mask</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">65535</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.veto_mask" title="Link to this definition"></a></dt>
+<dd><p>Integer mask of enabled vetoes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.veto_names_array">
+<span class="sig-name descname"><span class="pre">veto_names_array</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.str_" title="(in NumPy v2.5)"><span class="pre">str_</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.veto_names_array" title="Link to this definition"></a></dt>
+<dd><p>Veto names, as a numpy array of strings.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.Data.vetoing_percentage">
+<span class="sig-name descname"><span class="pre">vetoing_percentage</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50.0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.Data.vetoing_percentage" title="Link to this definition"></a></dt>
+<dd><p>The minimum percentage at which the DAE is considered ‘vetoing’ rather than ‘running’.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.FrameMetaData">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">kafka_dae_diagnostics.data.</span></span><span class="sig-name descname"><span class="pre">FrameMetaData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vetoes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proton_charge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/kafka_dae_diagnostics/data.html#FrameMetaData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kafka_dae_diagnostics.data.FrameMetaData" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Metadata associated with a set of neutron events.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.FrameMetaData.period">
+<span class="sig-name descname"><span class="pre">period</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.FrameMetaData.period" title="Link to this definition"></a></dt>
+<dd><p>Period into which this data was collected</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.FrameMetaData.proton_charge">
+<span class="sig-name descname"><span class="pre">proton_charge</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.FrameMetaData.proton_charge" title="Link to this definition"></a></dt>
+<dd><p>Proton charge, in uAh per frame</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.FrameMetaData.vetoes">
+<span class="sig-name descname"><span class="pre">vetoes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#kafka_dae_diagnostics.data.FrameMetaData.vetoes" title="Link to this definition"></a></dt>
+<dd><p>Integer mask of active vetoes in this frame.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="kafka_dae_diagnostics.data.RunState">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">kafka_dae_diagnostics.data.</span></span><span class="sig-name descname"><span class="pre">RunState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/kafka_dae_diagnostics/data.html#RunState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kafka_dae_diagnostics.data.RunState" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></a></p>
+<p>Enum describing the possible run-states.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="kafka_dae_diagnostics.config.html" class="btn btn-neutral float-left" title="kafka_dae_diagnostics.config" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="kafka_dae_diagnostics.kafka.html" class="btn btn-neutral float-right" title="kafka_dae_diagnostics.kafka" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
