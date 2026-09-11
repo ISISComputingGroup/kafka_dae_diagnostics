@@ -1,0 +1,26 @@
+
+
+``kafka_dae_diagnostics.pvs.static_pvs``
+========================================
+        
+        
+
+.. automodule:: kafka_dae_diagnostics.pvs.static_pvs
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        StaticPVs
+        static_pv_provider
+    
+    
