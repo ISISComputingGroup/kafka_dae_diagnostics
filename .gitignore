@@ -167,3 +167,6 @@ src/kafka_dae_diagnostics/version.py
 
 config.toml
 *.pdb
+
+state.json
+uv.lock
