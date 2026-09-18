@@ -1,0 +1,59 @@
+{
+  "_api": [],
+  "architectural_decision_records": [],
+  "architectural_decision_records\\001_server_structure": [],
+  "architectural_decision_records\\002_python_rust": [],
+  "generated\\kafka_dae_diagnostics": [],
+  "generated\\kafka_dae_diagnostics.config": [],
+  "generated\\kafka_dae_diagnostics.data": [],
+  "generated\\kafka_dae_diagnostics.kafka": [],
+  "generated\\kafka_dae_diagnostics.kafka.consumers": [],
+  "generated\\kafka_dae_diagnostics.kafka.handlers": [],
+  "generated\\kafka_dae_diagnostics.pvs": [],
+  "generated\\kafka_dae_diagnostics.pvs.spectrum_handlers": [],
+  "generated\\kafka_dae_diagnostics.pvs.static_pvs": [],
+  "generated\\kafka_dae_diagnostics.serve": [],
+  "generated\\kafka_dae_diagnostics.veto_diagnostics": [],
+  "index": [],
+  "local_development": [
+    {
+      "source": "uv pip install -e .[dev]\n",
+      "names": [],
+      "example": {
+        "document": "local_development",
+        "ref_id": "local-development",
+        "headings": [
+          "Local development"
+        ]
+      },
+      "doc_lineno": 9
+    },
+    {
+      "source": "set EPICS_PVAS_INTF_ADDR_LIST=127.0.0.1\nset EPICS_PVAS_BEACON_ADDR_LIST=127.255.255.255\nset PVXS_LOG=*=ERR\n",
+      "names": [],
+      "example": {
+        "document": "local_development",
+        "ref_id": "running-locally",
+        "headings": [
+          "Local development",
+          "Running locally"
+        ]
+      },
+      "doc_lineno": 29
+    },
+    {
+      "source": "kdaediag --config config.toml --log-level DEBUG\n",
+      "names": [],
+      "example": {
+        "document": "local_development",
+        "ref_id": "running-locally",
+        "headings": [
+          "Local development",
+          "Running locally"
+        ]
+      },
+      "doc_lineno": 36
+    }
+  ],
+  "pvs": []
+}
