@@ -1,0 +1,32 @@
+
+
+``kafka_dae_diagnostics.kafka.consumers``
+=========================================
+        
+        
+        
+        
+        
+
+.. automodule:: kafka_dae_diagnostics.kafka.consumers
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        consume_from_kafka_forever
+        make_event_consumer
+        make_runinfo_consumer
+        make_vetoconfig_consumer
+        run_callbacks
+    
+    

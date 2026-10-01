@@ -1,0 +1,28 @@
+
+
+``kafka_dae_diagnostics.data``
+==============================
+        
+        
+        
+
+.. automodule:: kafka_dae_diagnostics.data
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        Data
+        FrameMetaData
+        RunState
+    
+    

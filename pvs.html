@@ -1,0 +1,266 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PVs &mdash; kafka-dae-diagnostics  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-codeautolink.css?v=b2176991" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=e0a9cbc7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Local development" href="local_development.html" />
+    <link rel="prev" title="Kafka DAE Diagnostics" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            kafka-dae-diagnostics
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Developer Information</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">PVs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="local_development.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architectural_decision_records.html">Architectural Decision Records</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="_api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">kafka-dae-diagnostics</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">PVs</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/kafka_dae_diagnostics/blob/main/doc/pvs.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="pvs">
+<h1>PVs<a class="headerlink" href="#pvs" title="Link to this heading"></a></h1>
+<p>This page describes the data held by each PV served by this IOC. See <a class="reference internal" href="generated/kafka_dae_diagnostics.data.html#kafka_dae_diagnostics.data.Data" title="kafka_dae_diagnostics.data.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">Data</span></code></a> for
+the internal data model used by this IOC.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Run information</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="rubric" id="runstate"><code class="docutils literal notranslate"><span class="pre">RUNSTATE</span></code></p>
+<p class="sd-card-text">The overall run state of the streaming system.</p>
+<p class="sd-card-text">The value of this PV may be one of: PROCESSING, SETUP, RUNNING, PAUSED, WAITING, VETOING.</p>
+<p class="sd-card-text">The logic used to decide the run state is:</p>
+<ul class="simple">
+<li><p class="sd-card-text">If latest <code class="docutils literal notranslate"><span class="pre">runInfo</span></code> message is a run stop: <strong>SETUP</strong></p></li>
+<li><p class="sd-card-text">If latest <code class="docutils literal notranslate"><span class="pre">runInfo</span></code> message is a run start:</p>
+<ul>
+<li><p class="sd-card-text">If we have not received ‘recent’ frames on <code class="docutils literal notranslate"><span class="pre">_event</span></code> topic for this run: <strong>PROCESSING</strong></p></li>
+<li><p class="sd-card-text">If percentage of vetoed frames in last <span class="math notranslate nohighlight">\(N\)</span> received frames &gt;=50%, <strong>VETOING</strong>, otherwise <strong>RUNNING</strong></p></li>
+</ul>
+</li>
+</ul>
+<p class="sd-card-text">The PAUSED and WAITING run states are not currently implemented.</p>
+<p class="rubric" id="runstate-str"><code class="docutils literal notranslate"><span class="pre">RUNSTATE_STR</span></code></p>
+<p class="sd-card-text">This PV is identical to the <code class="docutils literal notranslate"><span class="pre">RUNSTATE</span></code> PV, but as a string rather than an enumeration data type.</p>
+<p class="rubric" id="start-time-stop-time"><code class="docutils literal notranslate"><span class="pre">START_TIME</span></code> / <code class="docutils literal notranslate"><span class="pre">STOP_TIME</span></code></p>
+<p class="sd-card-text">The most recent run-start and run-stop timestamps (seconds since the UNIX epoch).</p>
+<p class="rubric" id="starttime-stoptime"><code class="docutils literal notranslate"><span class="pre">STARTTIME</span></code> / <code class="docutils literal notranslate"><span class="pre">STOPTIME</span></code></p>
+<p class="sd-card-text">The most recent run-start and run-stop times, formatted as strings.</p>
+<p class="rubric" id="runduration"><code class="docutils literal notranslate"><span class="pre">RUNDURATION</span></code></p>
+<p class="sd-card-text">Duration, in seconds, of the current or most recent run.</p>
+</div>
+</details><details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Frame readbacks</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="rubric" id="goodframes-rawframes"><code class="docutils literal notranslate"><span class="pre">GOODFRAMES</span></code> / <code class="docutils literal notranslate"><span class="pre">RAWFRAMES</span></code></p>
+<p class="sd-card-text">Number of ISIS frames in the current run.</p>
+<p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">GOODFRAMES</span></code> counts only non-vetoed frames, <code class="docutils literal notranslate"><span class="pre">RAWFRAMES</span></code> counts both vetoed and non-vetoed frames.</p>
+<p class="rubric" id="goodframes-pd-rawframes-pd"><code class="docutils literal notranslate"><span class="pre">GOODFRAMES_PD</span></code> / <code class="docutils literal notranslate"><span class="pre">RAWFRAMES_PD</span></code></p>
+<p class="sd-card-text">Array of good/raw ISIS frames in the current run, keyed by period number. The array has length <code class="docutils literal notranslate"><span class="pre">NUMPERIODS</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p class="sd-card-text">The sum of this array may differ from <code class="docutils literal notranslate"><span class="pre">GOODFRAMES</span></code> if frames with an invalid period number are received. Those frames will be included in <code class="docutils literal notranslate"><span class="pre">GOODFRAMES</span></code>, but will not appear in <code class="docutils literal notranslate"><span class="pre">GOODFRAMES_PD</span></code>.</p>
+</div>
+</div>
+</details><div class="docutils">
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">μAh readbacks</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="rubric" id="gooduah-rawuah"><code class="docutils literal notranslate"><span class="pre">GOODUAH</span></code> / <code class="docutils literal notranslate"><span class="pre">RAWUAH</span></code></p>
+<p class="sd-card-text">Accumulated micro-amp-hours in the current run.</p>
+<p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">GOODUAH</span></code> counts only micro-amp-hours for the non-vetoed frames, <code class="docutils literal notranslate"><span class="pre">RAWUAH</span></code> counts both vetoed and non-vetoed frames.</p>
+<p class="rubric" id="gooduah-pd-rawuah-pd"><code class="docutils literal notranslate"><span class="pre">GOODUAH_PD</span></code> / <code class="docutils literal notranslate"><span class="pre">RAWUAH_PD</span></code></p>
+<p class="sd-card-text">Array of good/raw micro-amp-hours in the current run, keyed by period number. The array has length <code class="docutils literal notranslate"><span class="pre">NUMPERIODS</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p class="sd-card-text">The sum of <code class="docutils literal notranslate"><span class="pre">GOODUAH_PD</span></code> may differ from <code class="docutils literal notranslate"><span class="pre">GOODUAH</span></code> if frames with an invalid period number are received. Those frames will be included in <code class="docutils literal notranslate"><span class="pre">GOODUAH</span></code>, but will not appear in <code class="docutils literal notranslate"><span class="pre">GOODUAH_PD</span></code>.</p>
+</div>
+</div>
+</details></div>
+<div class="docutils">
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Neutron event statistics</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="rubric" id="events-totalevents"><code class="docutils literal notranslate"><span class="pre">EVENTS</span></code> / <code class="docutils literal notranslate"><span class="pre">TOTALEVENTS</span></code></p>
+<p class="sd-card-text">The total number of non-vetoed neutron events seen during the current run.</p>
+<p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">EVENTS</span></code> and <code class="docutils literal notranslate"><span class="pre">TOTALEVENTS</span></code> are aliases of each other, and provide the same information.</p>
+<p class="rubric" id="mevents"><code class="docutils literal notranslate"><span class="pre">MEVENTS</span></code></p>
+<p class="sd-card-text">Millions of events seen during the current run. Equivalent to <code class="docutils literal notranslate"><span class="pre">EVENTS</span></code> divided by <span class="math notranslate nohighlight">\(10^6\)</span>.</p>
+<p class="rubric" id="countrate"><code class="docutils literal notranslate"><span class="pre">COUNTRATE</span></code></p>
+<p class="sd-card-text">The average count rate of the current run, in millions of events per hour.</p>
+<p class="sd-card-text">This only includes <em>good</em> events.</p>
+</div>
+</details></div>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Vetos</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="rubric" id="veto-recent-percent"><code class="docutils literal notranslate"><span class="pre">VETO:RECENT:PERCENT</span></code></p>
+<p class="sd-card-text">The percentage of frames which were vetoed, within the most recently processed 100 frames in this run
+(configurable via <a class="reference internal" href="generated/kafka_dae_diagnostics.veto_diagnostics.html#kafka_dae_diagnostics.veto_diagnostics.VetoDiagnostics.max_recent_frames" title="kafka_dae_diagnostics.veto_diagnostics.VetoDiagnostics.max_recent_frames"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_recent_frames</span></code></a>).</p>
+<p class="sd-card-text">This PV is an array of length 32, where element <code class="docutils literal notranslate"><span class="pre">N</span></code> corresponds to a veto mask of <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">&lt;&lt;</span> <span class="pre">N</span></code>.</p>
+<p class="rubric" id="veto-recent-count"><code class="docutils literal notranslate"><span class="pre">VETO:RECENT:COUNT</span></code></p>
+<p class="sd-card-text">The number of frames which were vetoed, within the most recently processed 100 frames in this run
+(configurable via <a class="reference internal" href="generated/kafka_dae_diagnostics.veto_diagnostics.html#kafka_dae_diagnostics.veto_diagnostics.VetoDiagnostics.max_recent_frames" title="kafka_dae_diagnostics.veto_diagnostics.VetoDiagnostics.max_recent_frames"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_recent_frames</span></code></a>).</p>
+<p class="sd-card-text">This PV is an array of length 32, where element <code class="docutils literal notranslate"><span class="pre">N</span></code> corresponds to a veto mask of <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">&lt;&lt;</span> <span class="pre">N</span></code>.</p>
+<p class="rubric" id="veto-run-percent"><code class="docutils literal notranslate"><span class="pre">VETO:RUN:PERCENT</span></code></p>
+<p class="sd-card-text">The percentage of frames which were vetoed, within the current run.</p>
+<p class="sd-card-text">This PV is an array of length 32, where element <code class="docutils literal notranslate"><span class="pre">N</span></code> corresponds to a veto mask of <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">&lt;&lt;</span> <span class="pre">N</span></code>.</p>
+<p class="rubric" id="veto-run-count"><code class="docutils literal notranslate"><span class="pre">VETO:RUN:COUNT</span></code></p>
+<p class="sd-card-text">The number of frames which were vetoed, within the current run.</p>
+<p class="sd-card-text">This PV is an array of length 32, where element <code class="docutils literal notranslate"><span class="pre">N</span></code> corresponds to a veto mask of <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">&lt;&lt;</span> <span class="pre">N</span></code>.</p>
+<p class="rubric" id="veto-enabled"><code class="docutils literal notranslate"><span class="pre">VETO:ENABLED</span></code></p>
+<p class="sd-card-text">This PV is an array of length 32, where element <code class="docutils literal notranslate"><span class="pre">N</span></code> corresponds to a veto mask of <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">&lt;&lt;</span> <span class="pre">N</span></code>. The value will be
+<code class="docutils literal notranslate"><span class="pre">1</span></code> if the veto is enabled (either soft or hard), or <code class="docutils literal notranslate"><span class="pre">0</span></code> if the veto is disabled.</p>
+<p class="rubric" id="veto-names"><code class="docutils literal notranslate"><span class="pre">VETO:NAMES</span></code></p>
+<p class="sd-card-text">This PV is an array of length 32, where element <code class="docutils literal notranslate"><span class="pre">N</span></code> corresponds to a veto mask of <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">&lt;&lt;</span> <span class="pre">N</span></code>. The values are the
+user-friendly string names of each veto, for example <code class="docutils literal notranslate"><span class="pre">External</span> <span class="pre">veto</span> <span class="pre">0</span></code>.</p>
+</div>
+</details><details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Diagnostic histograms (spectra)</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="rubric" id="numperiods"><code class="docutils literal notranslate"><span class="pre">NUMPERIODS</span></code></p>
+<p class="sd-card-text">Number of periods configured in the current run. Valid period numbers are strictly less than this number.</p>
+<p class="rubric" id="numspectra"><code class="docutils literal notranslate"><span class="pre">NUMSPECTRA</span></code></p>
+<p class="sd-card-text">Number of spectra configured for the diagnostic histogram of the current run.</p>
+<p class="rubric" id="numtimechannels"><code class="docutils literal notranslate"><span class="pre">NUMTIMECHANNELS</span></code></p>
+<p class="sd-card-text">Number of time channels configured for the diagnostic histogram of the current run.</p>
+<p class="rubric" id="histmemory"><code class="docutils literal notranslate"><span class="pre">HISTMEMORY</span></code></p>
+<p class="sd-card-text">Memory used by diagnostic histograms, in <code class="docutils literal notranslate"><span class="pre">MiB</span></code>.</p>
+<p class="sd-card-text">This is <code class="docutils literal notranslate"><span class="pre">num_periods</span> <span class="pre">*</span> <span class="pre">num_spectra</span> <span class="pre">*</span> <span class="pre">num_time_channels</span> <span class="pre">*</span> <span class="pre">8</span> <span class="pre">bytes</span></code>.</p>
+<p class="rubric" id="spec-period-spectrum-x"><code class="docutils literal notranslate"><span class="pre">SPEC:&lt;period&gt;:&lt;spectrum&gt;:X</span></code></p>
+<p class="sd-card-text">These PVs provide the X points (the time-of-flight bin centres) for a time of flight spectrum. This array has length <code class="docutils literal notranslate"><span class="pre">NUMTIMECHANNELS</span></code>.</p>
+<p class="rubric" id="spec-period-spectrum-xe"><code class="docutils literal notranslate"><span class="pre">SPEC:&lt;period&gt;:&lt;spectrum&gt;:XE</span></code></p>
+<p class="sd-card-text">These PVs provide the X bin <em>edges</em> for a time of flight spectrum. This array has length <code class="docutils literal notranslate"><span class="pre">NUMTIMECHANNELS</span> <span class="pre">+</span> <span class="pre">1</span></code>.</p>
+<p class="rubric" id="spec-period-spectrum-y"><code class="docutils literal notranslate"><span class="pre">SPEC:&lt;period&gt;:&lt;spectrum&gt;:Y</span></code></p>
+<p class="sd-card-text">These PVs provide the normalised Y data (the number of counts in the relevant bin, divided by bin width) for a time of
+flight spectrum. This array has length <code class="docutils literal notranslate"><span class="pre">NUMTIMECHANNELS</span></code>.</p>
+<p class="rubric" id="spec-period-spectrum-yc"><code class="docutils literal notranslate"><span class="pre">SPEC:&lt;period&gt;:&lt;spectrum&gt;:YC</span></code></p>
+<p class="sd-card-text">These PVs provide the raw Y data (the number of counts in the relevant bin) for a time of flight spectrum.
+This array has length <code class="docutils literal notranslate"><span class="pre">NUMTIMECHANNELS</span></code>.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">&lt;period&gt;</span></code> is <a class="reference external" href="https://isiscomputinggroup.github.io/ibex_developers_manual/specific_iocs/datastreaming/ADRs/007_periods.html" title="(in IBEX Developer's Manual)"><span class="xref std std-doc">one-indexed in all user-facing PVs</span></a>
+for backwards compatibility, so the PV <code class="docutils literal notranslate"><span class="pre">SPEC:1:57:X</span></code> will return data that was streamed with <code class="docutils literal notranslate"><span class="pre">period=0</span></code> in Kafka.
+Asking for period zero, as in a PV like <code class="docutils literal notranslate"><span class="pre">SPEC:0:57:X</span></code>, will return data for the <em>current</em> period.</p>
+</div>
+</div>
+</details><div class="docutils">
+<p class="rubric" id="meta-diagnostics">Meta-diagnostics</p>
+<p>These readbacks provide feedback on the performance of the streaming system itself.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Streaming data rate statistics</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="rubric" id="eventmessages"><code class="docutils literal notranslate"><span class="pre">EVENTMESSAGES</span></code></p>
+<p class="sd-card-text">The number of event messages (e.g. <code class="docutils literal notranslate"><span class="pre">ev44</span></code> schema) processed during the current run. This includes vetoed messages.</p>
+<p class="rubric" id="eventmodefilemb"><code class="docutils literal notranslate"><span class="pre">EVENTMODEFILEMB</span></code></p>
+<p class="sd-card-text">Mebibytes of event messages (e.g. <code class="docutils literal notranslate"><span class="pre">ev44</span></code> schema) processed during the current run. This includes vetoed messages.</p>
+<p class="rubric" id="eventmodedatarate"><code class="docutils literal notranslate"><span class="pre">EVENTMODEDATARATE</span></code></p>
+<p class="sd-card-text">The average data rate of event messages in the current run in <code class="docutils literal notranslate"><span class="pre">MiB/s</span></code>. This includes vetoed messages.</p>
+</div>
+</details></div>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Processing latencies</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="rubric" id="processinglag"><code class="docutils literal notranslate"><span class="pre">PROCESSINGLAG</span></code></p>
+<p class="sd-card-text">Estimated time difference, in seconds, between an event being emitted by the streaming hardware and being processed by the diagnostics IOC. This assumes that the clock in the streaming PC is reasonably well synchronised with the GPS clock used by the streaming hardware.</p>
+<p class="rubric" id="diagnosticslag"><code class="docutils literal notranslate"><span class="pre">DIAGNOSTICSLAG</span></code></p>
+<p class="sd-card-text">The amount of time taken, in seconds, between diagnostic PV updates. After an event message is processed by the diagnostics IOC, the corresponding update will not be published to PVs until this interval next expires.</p>
+</div>
+</details></section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Kafka DAE Diagnostics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="local_development.html" class="btn btn-neutral float-right" title="Local development" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

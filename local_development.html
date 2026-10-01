@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+
+<html class="writer-html5" data-content_root="./" lang="en">
+<head>
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Local development — kafka-dae-diagnostics  documentation</title>
+<link href="_static/pygments.css?v=b86133f3" rel="stylesheet" type="text/css"/>
+<link href="_static/css/theme.css?v=9edc463e" rel="stylesheet" type="text/css"/>
+<link href="_static/sphinx-codeautolink.css?v=b2176991" rel="stylesheet" type="text/css"/>
+<link href="_static/sphinx-design.min.css?v=95c83b7e" rel="stylesheet" type="text/css"/>
+<link href="_static/css/custom.css?v=e0a9cbc7" rel="stylesheet" type="text/css"/>
+<script src="_static/jquery.js?v=5d32c60e"></script>
+<script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+<script src="_static/documentation_options.js?v=5929fcd5"></script>
+<script src="_static/doctools.js?v=fd6eb6e6"></script>
+<script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+<script src="_static/design-tabs.js?v=f930bc37"></script>
+<script src="_static/js/theme.js"></script>
+<link href="genindex.html" rel="index" title="Index"/>
+<link href="search.html" rel="search" title="Search"/>
+<link href="architectural_decision_records.html" rel="next" title="Architectural Decision Records"/>
+<link href="pvs.html" rel="prev" title="PVs"/>
+</head>
+<body class="wy-body-for-nav">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search" style="background: #343131">
+<a class="icon icon-home" href="index.html">
+            kafka-dae-diagnostics
+          </a>
+<div role="search">
+<form action="search.html" class="wy-form" id="rtd-search-form" method="get">
+<input aria-label="Search docs" name="q" placeholder="Search docs" type="text"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+</div>
+</div><div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<p class="caption" role="heading"><span class="caption-text">Developer Information</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="pvs.html">PVs</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architectural_decision_records.html">Architectural Decision Records</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="_api.html">API</a></li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift"><nav aria-label="Mobile navigation menu" class="wy-nav-top" style="background: #343131">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="index.html">kafka-dae-diagnostics</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content">
+<div aria-label="Page navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a aria-label="Home" class="icon icon-home" href="index.html"></a></li>
+<li class="breadcrumb-item active">Local development</li>
+<li class="wy-breadcrumbs-aside">
+<a class="fa fa-github" href="https://github.com/ISISComputingGroup/kafka_dae_diagnostics/blob/main/doc/local_development.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<section class="tex2jax_ignore mathjax_ignore" id="local-development">
+<h1>Local development<a class="headerlink" href="#local-development" title="Link to this heading"></a></h1>
+<p>This project <a class="reference internal" href="architectural_decision_records/002_python_rust.html"><span class="doc">is a Python project with a Rust extension module</span></a>. It uses the
+<a class="reference external" href="https://pyo3.rs/">PyO3 Rust/Python bindings</a> and <a class="reference external" href="https://www.maturin.rs/index.html">Maturin build system</a>.</p>
+<p>To develop, you will need a Rust toolchain installed. The project can then be installed like any usual python
+project; run the following command in a <code class="docutils literal notranslate"><span class="pre">venv</span></code> managed by <code class="docutils literal notranslate"><span class="pre">uv</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span><span class="p">[</span><span class="n">dev</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>You can also use <code class="docutils literal notranslate"><span class="pre">maturin</span></code> directly once installed:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>maturin<span class="w"> </span>develop<span class="w">  </span><span class="c1"># debug build</span>
+maturin<span class="w"> </span>develop<span class="w"> </span>--release<span class="w">  </span><span class="c1"># release build</span>
+</pre></div>
+</div>
+<p>Note that when changing rust code, one of the above commands will need to be run after each change to the source code;
+python-only changes do not require this. The maturin build runs <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">build</span></code> under-the-hood, so <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">build</span></code> does
+not need to be invoked separately.</p>
+<section id="running-locally">
+<h2>Running locally<a class="headerlink" href="#running-locally" title="Link to this heading"></a></h2>
+<p>In a virtual environment, set the following environment variables:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span> <span class="n">EPICS_PVAS_INTF_ADDR_LIST</span><span class="o">=</span><span class="mf">127.0.0.1</span>
+<span class="nb">set</span> <span class="n">EPICS_PVAS_BEACON_ADDR_LIST</span><span class="o">=</span><span class="mf">127.255.255.255</span>
+<span class="nb">set</span> <span class="n">PVXS_LOG</span><span class="o">=*=</span><span class="n">ERR</span>
+</pre></div>
+</div>
+<p>Then run using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kdaediag</span> <span class="o">--</span><span class="n">config</span> <span class="n">config</span><span class="o">.</span><span class="n">toml</span> <span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">level</span> <span class="n">DEBUG</span>
+</pre></div>
+</div>
+<p>An example <code class="docutils literal notranslate"><span class="pre">config.toml</span></code> is provided in the repository; this will need to be modified for your machine.
+The <code class="docutils literal notranslate"><span class="pre">config.toml</span></code> specifies the PV prefix for all PVs created by this IOC and the Kafka topic names to read from.</p>
+<p>To generate fake event streams for testing, use <a class="reference external" href="https://github.com/isisComputingGroup/saluki"><code class="docutils literal notranslate"><span class="pre">saluki</span> <span class="pre">howl</span></code></a>.</p>
+</section>
+<section id="benchmarking">
+<h2>Benchmarking<a class="headerlink" href="#benchmarking" title="Link to this heading"></a></h2>
+<p>Benchmarks are stored in the <code class="docutils literal notranslate"><span class="pre">benchmarks</span></code> folder. Ensure you are using a release build when benchmarking.</p>
+</section>
+</section>
+</div>
+</div>
+<footer><div aria-label="Footer" class="rst-footer-buttons" role="navigation">
+<a accesskey="p" class="btn btn-neutral float-left" href="pvs.html" rel="prev" title="PVs"><span aria-hidden="true" class="fa fa-arrow-circle-left"></span> Previous</a>
+<a accesskey="n" class="btn btn-neutral float-right" href="architectural_decision_records.html" rel="next" title="Architectural Decision Records">Next <span aria-hidden="true" class="fa fa-arrow-circle-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<p>© Copyright .</p>
+</div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+</div>
+</div>
+</section>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+</body>
+</html>
