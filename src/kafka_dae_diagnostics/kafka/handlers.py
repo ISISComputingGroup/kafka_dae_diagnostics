@@ -103,7 +103,7 @@ def handle_ev44(data: Data, msg: NonEmptyMessage) -> None:
 
     if metadata is None:
         logger.warning(
-            "Dropping event message as no corresponding metadata on partition %d", msg.partition
+            "Dropping event message as no corresponding metadata on partition %s", msg.partition
         )
         return
 
@@ -144,7 +144,7 @@ def handle_pu00(data: Data, msg: NonEmptyMessage) -> None:
     try:
         pu00 = deserialise_pu00(msg.value)
     except Exception:
-        logger.exception("Failed deserialising ev44")
+        logger.exception("Failed deserialising pu00")
         return
 
     period = pu00.period_number
@@ -180,9 +180,9 @@ def handle_pu00(data: Data, msg: NonEmptyMessage) -> None:
         except IndexError:
             logger.warning("Frame metadata with invalid period %s", period)
 
-    pu00_timestamp_ns = pu00.timestamp_ns / 1_000_000_000
-    data.largest_kafka_timestamp = max(data.largest_kafka_timestamp, pu00_timestamp_ns)
-    data.most_recent_kafka_timestamp = pu00_timestamp_ns
+    pu00_timestamp_s = pu00.timestamp_ns / 1_000_000_000
+    data.largest_kafka_timestamp = max(data.largest_kafka_timestamp, pu00_timestamp_s)
+    data.most_recent_kafka_timestamp = pu00_timestamp_s
 
 
 def handle_run_info_messages(
@@ -239,7 +239,7 @@ def handle_pl72(data: Data, msg: NonEmptyMessage, event_consumer: Consumer) -> N
     try:
         pl72 = deserialise_pl72(msg.value)
     except Exception:
-        logger.exception("Failed deserialising pl72: %s")
+        logger.exception("Failed deserialising pl72")
         return
 
     det_spec_map = pl72.detector_spectrum_map
@@ -338,5 +338,6 @@ def handle_veto_config_msg(data: Data, msg: NonEmptyMessage) -> None:
             logger.exception("Failed deserialising vc00")
             return
         data.veto_names_array = np.asarray(blob.veto_names, dtype=np.str_)
+        data.veto_mask = blob.vetoes
     else:
         logger.error("Message received with non-vc00 schema(%s) msg:%s", schema, msg.value)

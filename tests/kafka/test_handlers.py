@@ -292,14 +292,14 @@ def test_handle_vc00():
     final_expected_names = [str(i).encode() for i in range(32)]
     msg1 = make_message(
         serialise_vc00(
-            vetoes=0xFFFF,
+            vetoes=0x1234,
             veto_names=[str(i).encode() for i in range(1, 33)],
             timestamp_ns=1787582841041147625,
         )
     )
     msg2 = make_message(
         serialise_vc00(
-            vetoes=0x0, veto_names=final_expected_names, timestamp_ns=1787582841041147626
+            vetoes=0x4321, veto_names=final_expected_names, timestamp_ns=1787582841041147626
         )
     )
     msg3 = error_message()
@@ -308,3 +308,4 @@ def test_handle_vc00():
     data = Data()
     handle_veto_config_messages([msg1, msg2, msg3, msg4], data)
     assert data.veto_names_array.tolist() == [i.decode() for i in final_expected_names]
+    assert data.veto_mask == 0x4321
