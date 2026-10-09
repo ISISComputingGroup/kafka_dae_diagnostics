@@ -98,7 +98,7 @@ class SpectrumHandler(Handler):
                     return "cnt /us"
                 case "X.EGU":
                     # X Units: us
-                    return "us"                    
+                    return "us"
                 case _:  # pragma: no cover (unreachable)
                     raise ValueError(f"Unknown channel type: {typ}")
 
