@@ -29,7 +29,7 @@ class SpectrumHandler(Handler):
         """
         self._data = data
         self._prefix = prefix
-        self._channel_regex = re.compile(rf"^{re.escape(prefix)}SPEC:(\d+):(\d+):(X|Y|XE|YC)$")
+        self._channel_regex = re.compile(rf"^{re.escape(prefix)}SPEC:(\d+):(\d+):(X\.EGU|Y\.EGU|X|Y|XE|YC)$")
 
     def testChannel(self, name: str) -> bool | str:
         """Test whether a channel with the given name can be served by this handler.
@@ -65,7 +65,7 @@ class SpectrumHandler(Handler):
 
         def extract_data(
             typ: str = typ, user_period: int = user_period, det: int = det
-        ) -> npt.NDArray[np.float64]:
+        ) -> npt.NDArray[np.float64] | str:
 
             # user_period starts from 1, with 0 corresponding to "current period".
             # Internally, the histogram is zero-indexed.
@@ -93,6 +93,12 @@ class SpectrumHandler(Handler):
                 case "XE":
                     # Bin-edges along the x (time-of-flight) dimension. Units: ns
                     return self._data.bin_boundaries.astype(np.float64)
+                case "Y.EGU":
+                    # Y Units: counts/us
+                    return "cnt /us"
+                case "X.EGU":
+                    # X Units: us
+                    return "us"                    
                 case _:  # pragma: no cover (unreachable)
                     raise ValueError(f"Unknown channel type: {typ}")
 
@@ -104,7 +110,7 @@ class SpectrumHandler(Handler):
                     del self._data.callbacks[callback_id]
 
         pv = SharedPV(
-            nt=NTScalar("ad"),
+            nt=NTScalar("s") if typ.endswith(".EGU") else NTScalar("ad"),
             initial=extract_data(),
             handler=ConnectionHandler(),
         )
