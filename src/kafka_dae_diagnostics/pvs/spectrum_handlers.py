@@ -29,7 +29,9 @@ class SpectrumHandler(Handler):
         """
         self._data = data
         self._prefix = prefix
-        self._channel_regex = re.compile(rf"^{re.escape(prefix)}SPEC:(\d+):(\d+):(X\.EGU|Y\.EGU|X|Y|XE|YC)$")
+        self._channel_regex = re.compile(
+            rf"^{re.escape(prefix)}SPEC:(\d+):(\d+):(X\.EGU|Y\.EGU|X|Y|XE|YC)$"
+        )
 
     def testChannel(self, name: str) -> bool | str:
         """Test whether a channel with the given name can be served by this handler.
