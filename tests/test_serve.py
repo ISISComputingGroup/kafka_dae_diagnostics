@@ -16,6 +16,8 @@ def test_serve():
             kafka_runinfo_consumer={},
             kafka_vetoconfig_consumer={},
             vetoconfig_topic="unittest_vetoConfig",
+            min_vetoing_percentage=12.3,
+            stale_event_message_timeout_s=4.321,
         )
         serve(config)
 
