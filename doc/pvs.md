@@ -144,6 +144,21 @@ Memory used by diagnostic histograms, in `MiB`.
 
 This is `num_periods * num_spectra * num_time_channels * 8 bytes`.
 
+### `TCB:LINEAR:START`
+
+User-configurable start time, in microseconds, for linear time channel boundaries. This will be the position of the
+first bin _edge_.
+
+### `TCB:LINEAR:END`
+
+User-configurable end time, in microseconds, for linear time channel boundaries. This will be the position of the
+last bin _edge_.
+
+### `TCB:LINEAR:NUM`
+
+User-configurable number of bins for linear time channel boundaries. This is the total number of bins; the number of
+edges will be this value plus one.
+
 ### `SPEC:<period>:<spectrum>:X`
 
 These PVs provide the X points (the time-of-flight bin centres) for a time of flight spectrum. This array has length `NUMTIMECHANNELS`.

@@ -14,6 +14,7 @@ For information on running this IOC locally, see {ref}`running_locally`.
 
 pvs
 local_development
+statefile
 architectural_decision_records
 ```
 

@@ -12,6 +12,7 @@ from kafka_dae_diagnostics.kafka.handlers import (
     handle_run_info_messages,
     handle_veto_config_messages,
 )
+from kafka_dae_diagnostics.save_restore import save_to_file
 
 logger = logging.getLogger(__name__)
 
@@ -96,6 +97,7 @@ def consume_from_kafka_forever(config: DiagnosticsConfig, data: Data) -> None:
     event_consumer = make_event_consumer(config)
     vetoconfig_consumer = make_vetoconfig_consumer(config)
     last_callback_time = 0
+    last_autosave_time = 0
 
     while True:
         run_info_messages = runinfo_consumer.consume(num_messages=100, timeout=0.0)
@@ -122,6 +124,10 @@ def consume_from_kafka_forever(config: DiagnosticsConfig, data: Data) -> None:
         if (now - last_callback_time) * 1000 > config.callback_frequency_ms:
             run_callbacks(data)
             last_callback_time = now
+
+        if (now - last_autosave_time) > config.autosave_frequency_s:
+            save_to_file(data, config.state_file_path)
+            last_autosave_time = now
 
         if len(event_messages) == 0:
             time.sleep(0.01)
