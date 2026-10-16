@@ -33,7 +33,14 @@ def test_spectrum_handler_test_channel(handler: SpectrumHandler):
 
 @pytest.mark.parametrize(
     "pvname",
-    ["UNITTEST:SPEC:0:0:X", "UNITTEST:SPEC:0:0:Y", "UNITTEST:SPEC:1:0:XE", "UNITTEST:SPEC:1:0:YC"],
+    [
+        "UNITTEST:SPEC:0:0:X.EGU",
+        "UNITTEST:SPEC:0:0:X",
+        "UNITTEST:SPEC:0:0:Y.EGU",
+        "UNITTEST:SPEC:0:0:Y",
+        "UNITTEST:SPEC:1:0:XE",
+        "UNITTEST:SPEC:1:0:YC",
+    ],
 )
 def test_spectrum_handler_make_channel(handler: SpectrumHandler, pvname: str, data: Data):
     assert len(data.callbacks) == 0

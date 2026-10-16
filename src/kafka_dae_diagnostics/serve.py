@@ -6,7 +6,6 @@ while also serving ``data`` over EPICS.
 
 from typing import Any
 
-import numpy as np
 from p4p.server import DynamicProvider, Server
 
 from kafka_dae_diagnostics.config import DiagnosticsConfig
@@ -30,9 +29,6 @@ def serve(
         "vetoing_percentage": config.min_vetoing_percentage,
         "stale_event_timeout_s": config.stale_event_message_timeout_s,
     } | load_from_file(state_file=config.state_file_path)
-
-    if config.veto_names:
-        configuration_dict["veto_names_array"] = np.array(config.veto_names, dtype=np.str_)
 
     data = Data(**configuration_dict)
 

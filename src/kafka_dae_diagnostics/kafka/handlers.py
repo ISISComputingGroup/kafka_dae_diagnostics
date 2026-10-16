@@ -11,6 +11,7 @@ from streaming_data_types import (
     deserialise_ev44,
     deserialise_pl72,
     deserialise_pu00,
+    deserialise_vc00,
 )
 from streaming_data_types.exceptions import ShortBufferException
 from streaming_data_types.utils import get_schema
@@ -102,7 +103,7 @@ def handle_ev44(data: Data, msg: NonEmptyMessage) -> None:
 
     if metadata is None:
         logger.warning(
-            "Dropping event message as no corresponding metadata on partition %d", msg.partition
+            "Dropping event message as no corresponding metadata on partition %s", msg.partition
         )
         return
 
@@ -143,7 +144,7 @@ def handle_pu00(data: Data, msg: NonEmptyMessage) -> None:
     try:
         pu00 = deserialise_pu00(msg.value)
     except Exception:
-        logger.exception("Failed deserialising ev44")
+        logger.exception("Failed deserialising pu00")
         return
 
     period = pu00.period_number
@@ -179,9 +180,9 @@ def handle_pu00(data: Data, msg: NonEmptyMessage) -> None:
         except IndexError:
             logger.warning("Frame metadata with invalid period %s", period)
 
-    pu00_timestamp_ns = pu00.timestamp_ns / 1_000_000_000
-    data.largest_kafka_timestamp = max(data.largest_kafka_timestamp, pu00_timestamp_ns)
-    data.most_recent_kafka_timestamp = pu00_timestamp_ns
+    pu00_timestamp_s = pu00.timestamp_ns / 1_000_000_000
+    data.largest_kafka_timestamp = max(data.largest_kafka_timestamp, pu00_timestamp_s)
+    data.most_recent_kafka_timestamp = pu00_timestamp_s
 
 
 def handle_run_info_messages(
@@ -238,7 +239,7 @@ def handle_pl72(data: Data, msg: NonEmptyMessage, event_consumer: Consumer) -> N
     try:
         pl72 = deserialise_pl72(msg.value)
     except Exception:
-        logger.exception("Failed deserialising pl72: %s")
+        logger.exception("Failed deserialising pl72")
         return
 
     det_spec_map = pl72.detector_spectrum_map
@@ -311,3 +312,34 @@ def handle_6s4t(data: Data, msg: NonEmptyMessage) -> None:
         return
     logger.info("Run stop (run_name=%s)", run_stop_6s4t.run_name)
     data.stop_time = run_stop_6s4t.stop_time / 1000
+
+
+def handle_veto_config_messages(messages: list[Message], data: Data) -> None:
+    """Handle Kafka veto config messages.
+
+    Args:
+        messages: Messages received from Kafka veto config topic.
+        data: Data served by ``kafka_dae_diagnostics``.
+
+    """
+    logger.debug("Processing %s vetoConfig messages", len(messages))
+    for msg in messages:
+        if error := msg.error():
+            logger.warning("Kafka message error: %s", error.code())
+        elif value := msg.value():
+            handle_veto_config_msg(data, NonEmptyMessage(value=value, partition=msg.partition()))
+
+
+def handle_veto_config_msg(data: Data, msg: NonEmptyMessage) -> None:
+    """Handle a single veto configuration message."""
+    schema = extract_schema(msg)
+    if schema == "vc00":
+        try:
+            blob = deserialise_vc00(msg.value)
+        except Exception:
+            logger.exception("Failed deserialising vc00")
+            return
+        data.veto_names_array = np.asarray(blob.veto_names, dtype=np.str_)
+        data.veto_mask = blob.vetoes
+    else:
+        logger.error("Message received with non-vc00 schema(%s) msg:%s", schema, msg.value)
