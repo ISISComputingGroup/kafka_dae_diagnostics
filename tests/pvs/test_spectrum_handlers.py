@@ -40,6 +40,8 @@ def test_spectrum_handler_test_channel(handler: SpectrumHandler):
         "UNITTEST:SPEC:0:0:Y",
         "UNITTEST:SPEC:1:0:XE",
         "UNITTEST:SPEC:1:0:YC",
+        "UNITTEST:SPEC:9999999:9999999:Y",
+        "UNITTEST:SPEC:9999999:9999999:YC",
     ],
 )
 def test_spectrum_handler_make_channel(handler: SpectrumHandler, pvname: str, data: Data):

@@ -40,12 +40,7 @@ class SpectrumHandler(Handler):
             name: Channel name.
 
         """
-        match = self._channel_regex.fullmatch(name)
-        return (
-            match is not None
-            and int(match.group(1)) <= self._data.num_periods
-            and int(match.group(2)) < self._data.num_spectra
-        )
+        return self._channel_regex.fullmatch(name) is not None
 
     def makeChannel(self, name: str, peer: str) -> SharedPV:
         """Make a channel for the PV with the given name.
@@ -65,7 +60,7 @@ class SpectrumHandler(Handler):
 
         callback_id = f"{name}#{uuid.uuid4()}"
 
-        def extract_data(
+        def extract_data(  # ruff: ignore[too-many-return-statements]
             typ: str = typ, user_period: int = user_period, det: int = det
         ) -> npt.NDArray[np.float64] | str:
 
@@ -80,13 +75,23 @@ class SpectrumHandler(Handler):
                 case "Y":
                     # Counts in each histogram bin, divided by histogram
                     # bin width. Units: counts/us
-                    return (
-                        self._data.spectra[period][det]
-                        / (self._data.bin_boundaries[1:] - self._data.bin_boundaries[:-1])
-                    ).astype(np.float64)
+                    try:
+                        return (
+                            self._data.spectra[period, det]
+                            / (self._data.bin_boundaries[1:] - self._data.bin_boundaries[:-1])
+                        ).astype(np.float64)
+                    except IndexError:
+                        return np.zeros(
+                            shape=(len(self._data.bin_boundaries) - 1,), dtype=np.float64
+                        )
                 case "YC":
                     # Raw counts in each histogram bin. Units: counts
-                    return self._data.spectra[period][det]
+                    try:
+                        return self._data.spectra[period, det]
+                    except IndexError:
+                        return np.zeros(
+                            shape=(len(self._data.bin_boundaries) - 1,), dtype=np.float64
+                        )
                 case "X":
                     # Bin-centres along the x (time-of-flight) dimension. Units: ns
                     return (
