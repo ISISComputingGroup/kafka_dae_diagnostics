@@ -125,6 +125,24 @@ def test_run_state_running():
     assert data.run_state == RunState.RUNNING
 
 
+def test_run_state_paused():
+    data = Data()
+    data.veto_diagnostics.add_veto(1 << 6)
+    assert data.run_state == RunState.PAUSED
+    data.veto_diagnostics.add_veto(0)
+    data.veto_diagnostics.add_veto(0)
+    assert data.run_state == RunState.RUNNING
+
+
+def test_run_state_waiting():
+    data = Data()
+    data.veto_diagnostics.add_veto(1 << 5)
+    assert data.run_state == RunState.WAITING
+    data.veto_diagnostics.add_veto(0)
+    data.veto_diagnostics.add_veto(0)
+    assert data.run_state == RunState.RUNNING
+
+
 def test_start_time_str():
     data = Data(
         start_time=0,

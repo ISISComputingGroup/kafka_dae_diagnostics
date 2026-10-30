@@ -43,6 +43,16 @@ class DiagnosticsConfig(BaseModel):
     this many seconds from now, the run state will be PROCESSING rather than RUNNING.
     """
 
+    runcontrol_veto_bit_index: int = 5
+    """
+    Veto bit index for run control.
+    """
+
+    pause_veto_bit_index: int = 6
+    """
+    Veto bit index for pause.
+    """
+
 
 def load_config(config_path: str) -> DiagnosticsConfig:
     """Validate and load a config file at the specified path."""
