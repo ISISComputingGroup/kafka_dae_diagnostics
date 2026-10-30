@@ -205,6 +205,16 @@ class Data:
     The zero-indexed period into which the most recent data was received.
     """
 
+    runcontrol_veto_bit_index: int = 5
+    """
+    Veto bit index for run control.
+    """
+
+    pause_veto_bit_index: int = 6
+    """
+    Veto bit index for pause.
+    """
+
     @property
     def enabled_vetos_array(self) -> npt.NDArray[np.int32]:
         """Array describing whether each of the 32 veto bits is currently enabled."""
@@ -292,16 +302,19 @@ class Data:
             # event messages, flag "PROCESSING" as this likely implies
             # that pipeline is 'stuck' at some level.
             return RunState.PROCESSING
-        elif np.any(
-            self.veto_diagnostics.get_recent_veto_percentages() >= self.vetoing_percentage,
-            where=self.enabled_vetos_array.astype(np.bool_),
-        ):
-            # In principle this could fail to detect 100% vetoing if
-            # e.g. veto1-4 veto 25% each (in a fully-non-overlapping way).
-            # That is a somewhat pathological case...
-            return RunState.VETOING
         else:
-            return RunState.RUNNING
+            active_vetoes = np.logical_and(
+                self.enabled_vetos_array.astype(np.bool_),
+                self.veto_diagnostics.get_recent_veto_percentages() >= self.vetoing_percentage,
+            )
+            if active_vetoes[self.pause_veto_bit_index]:
+                return RunState.PAUSED
+            elif active_vetoes[self.runcontrol_veto_bit_index]:
+                return RunState.WAITING
+            elif active_vetoes.any():
+                return RunState.VETOING
+            else:
+                return RunState.RUNNING
 
     @property
     def start_time_str(self) -> str:
