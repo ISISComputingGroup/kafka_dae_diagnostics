@@ -23,6 +23,11 @@ min_vetoing_percentage = 50.0
 # this many seconds from now, the run state will be PROCESSING rather than RUNNING.
 stale_event_message_timeout_s = 5.0
 
+# Veto bit indexes for "paused" and "runcontrol". These are used to detect
+# the "PAUSED" and "WAITING" run states.
+runcontrol_veto_bit_index = 5
+pause_veto_bit_index = 6
+
 [kafka_runinfo_consumer]
 "bootstrap.servers" = "livedata.isis.cclrc.ac.uk:31092"
 "group.id" = "kafka-dae-diagnostics"

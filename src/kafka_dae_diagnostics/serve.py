@@ -27,6 +27,8 @@ def serve(
     configuration_dict: dict[str, Any] = {
         "vetoing_percentage": config.min_vetoing_percentage,
         "stale_event_timeout_s": config.stale_event_message_timeout_s,
+        "pause_veto_bit_index": config.pause_veto_bit_index,
+        "runcontrol_veto_bit_index": config.runcontrol_veto_bit_index,
     }
 
     data = Data(**configuration_dict)
