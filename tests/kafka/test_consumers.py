@@ -1,3 +1,5 @@
+import time
+from types import SimpleNamespace
 from unittest import mock
 from unittest.mock import MagicMock, patch
 
@@ -96,6 +98,7 @@ def test_run_callbacks():
 
 def test_consume_from_kafka_forever():
     data = Data()
+    mock_sleep = MagicMock(spec=time.sleep)
     with (
         patch(
             "kafka_dae_diagnostics.kafka.consumers.make_runinfo_consumer"
@@ -114,7 +117,10 @@ def test_consume_from_kafka_forever():
             "kafka_dae_diagnostics.kafka.consumers.handle_veto_config_messages"
         ) as handle_veto_config_messages,
         patch("kafka_dae_diagnostics.kafka.consumers.run_callbacks") as run_callbacks,
-        patch("kafka_dae_diagnostics.kafka.consumers.time.sleep") as sleep,
+        patch(
+            "kafka_dae_diagnostics.kafka.consumers.time",
+            SimpleNamespace(time=time.time, sleep=mock_sleep),
+        ),
     ):
         make_runinfo_consumer.return_value.consume.side_effect = [[b"some_runinfo_message"], []]
         make_event_consumer.return_value.consume.side_effect = [[b"some_event_message"], []]
@@ -125,7 +131,7 @@ def test_consume_from_kafka_forever():
 
         # Slightly ugly way to force the infinite loop to break when it has
         # nothing more to process.
-        sleep.side_effect = TimeoutError("Waiting for new events")
+        mock_sleep.side_effect = TimeoutError("Waiting for new events")
 
         config = DiagnosticsConfig(
             runinfo_topic="runInfo",
