@@ -215,6 +215,11 @@ class Data:
     Veto bit index for pause.
     """
 
+    last_run_aborted: bool = False
+    """
+    Whether the last run-stop issued an abort.
+    """
+
     @property
     def enabled_vetos_array(self) -> npt.NDArray[np.int32]:
         """Array describing whether each of the 32 veto bits is currently enabled."""
@@ -294,7 +299,7 @@ class Data:
         - **RUNNING**: the electronics has sent us frames, less than 50% of the recent
             frames have been vetoed.
         """
-        if self.stop_time > self.start_time:
+        if not self.last_run_aborted and self.stop_time > self.start_time:
             # Most recent message is a run stop -> we're not running.
             return RunState.SETUP
         elif self.seconds_since_last_event_message > self.stale_event_timeout_s:

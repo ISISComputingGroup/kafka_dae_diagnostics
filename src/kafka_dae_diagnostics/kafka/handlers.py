@@ -310,6 +310,7 @@ def handle_6s4t(data: Data, msg: NonEmptyMessage) -> None:
         return
     logger.info("Run stop (run_name=%s)", run_stop_6s4t.run_name)
     data.stop_time = run_stop_6s4t.stop_time / 1000
+    data.last_run_aborted = run_stop_6s4t.abort
 
 
 def handle_veto_config_messages(messages: list[Message], data: Data) -> None:
