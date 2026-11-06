@@ -183,6 +183,7 @@ def handle_pu00(data: Data, msg: NonEmptyMessage) -> None:
     pu00_timestamp_s = pu00.timestamp_ns / 1_000_000_000
     data.largest_kafka_timestamp = max(data.largest_kafka_timestamp, pu00_timestamp_s)
     data.most_recent_kafka_timestamp = pu00_timestamp_s
+    data.event_processing_lag = max(time.time() - pu00_timestamp_s, 0)
 
 
 def handle_run_info_messages(
