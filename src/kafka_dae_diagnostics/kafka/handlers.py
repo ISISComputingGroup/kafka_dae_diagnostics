@@ -258,10 +258,15 @@ def handle_pl72(data: Data, msg: NonEmptyMessage, event_consumer: Consumer) -> N
         n_spectra,
     )
     periods = 1  # TODO
-    detectors = n_spectra
-    time_channels = 1000  # TODO
+    detectors = max(n_spectra, 1)  # Must have at least one spectrum
 
-    data.bin_boundaries = np.linspace(0, 20_000_000, time_channels + 1, dtype=np.int32)  # TODO
+    start = data.linear_tcb_start_ns
+    stop = data.linear_tcb_end_ns
+    time_channels = max(data.linear_tcb_num, 1)  # Must have at least one time channel
+
+    data.bin_boundaries = np.linspace(
+        min(start, stop), max(start, stop), time_channels + 1, dtype=np.int32
+    )
 
     # Only reallocate if shape has changed - otherwise zero existing array.
     if data.spectra.shape == (periods, detectors, time_channels):

@@ -79,7 +79,7 @@ class SpectrumHandler(Handler):
                         return (
                             self._data.spectra[period, det]
                             / (self._data.bin_boundaries[1:] - self._data.bin_boundaries[:-1])
-                        ).astype(np.float64)
+                        ).astype(np.float64) * 1000.0
                     except IndexError:
                         return np.zeros(
                             shape=(len(self._data.bin_boundaries) - 1,), dtype=np.float64
@@ -93,13 +93,13 @@ class SpectrumHandler(Handler):
                             shape=(len(self._data.bin_boundaries) - 1,), dtype=np.float64
                         )
                 case "X":
-                    # Bin-centres along the x (time-of-flight) dimension. Units: ns
+                    # Bin-centres along the x (time-of-flight) dimension. Units: us
                     return (
                         (self._data.bin_boundaries[1:] + self._data.bin_boundaries[:-1]) / 2
-                    ).astype(np.float64)
+                    ).astype(np.float64) / 1000.0
                 case "XE":
-                    # Bin-edges along the x (time-of-flight) dimension. Units: ns
-                    return self._data.bin_boundaries.astype(np.float64)
+                    # Bin-edges along the x (time-of-flight) dimension. Units: us
+                    return self._data.bin_boundaries.astype(np.float64) / 1000.0
                 case "Y.EGU":
                     # Y Units: counts/us
                     return "cnt /us"

@@ -13,6 +13,7 @@ from kafka_dae_diagnostics.data import Data
 from kafka_dae_diagnostics.kafka.consumers import consume_from_kafka_forever
 from kafka_dae_diagnostics.pvs.spectrum_handlers import SpectrumHandler
 from kafka_dae_diagnostics.pvs.static_pvs import static_pv_provider
+from kafka_dae_diagnostics.save_restore import load_from_file
 
 
 def serve(
@@ -29,9 +30,10 @@ def serve(
         "stale_event_timeout_s": config.stale_event_message_timeout_s,
         "pause_veto_bit_index": config.pause_veto_bit_index,
         "runcontrol_veto_bit_index": config.runcontrol_veto_bit_index,
-    }
+    } | load_from_file(state_file=config.state_file_path)
 
     data = Data(**configuration_dict)
+
     spectrum_handler = SpectrumHandler(prefix=config.pv_prefix, data=data)
     providers = [
         DynamicProvider("spectra", handler=spectrum_handler),
