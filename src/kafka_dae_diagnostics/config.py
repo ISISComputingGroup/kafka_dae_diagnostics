@@ -52,6 +52,7 @@ class DiagnosticsConfig(BaseModel):
     state_file_path: pathlib.Path = pathlib.Path("state.json")
     """
     Path to an autosave ('state') file.
+    """
 
     runcontrol_veto_bit_index: int = 5
     """
