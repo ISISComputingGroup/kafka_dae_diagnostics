@@ -246,6 +246,10 @@ class StaticPVs:
         @self.linear_tcb_start.put
         def linear_tcb_start_put(pv: SharedPV, op: ServerOperation) -> None:  # pragma: no cover
             value = op.value()
+            if value < 0:
+                msg = f"Failed to change linear TCB end to {value}; must be nonnegative"
+                logger.error(msg)
+                op.done(error=msg)
             try:
                 data.linear_tcb_start_us = value
                 logger.info("Changed binning start to %s us", value)
@@ -267,6 +271,10 @@ class StaticPVs:
         @self.linear_tcb_end.put
         def linear_tcb_end_put(pv: SharedPV, op: ServerOperation) -> None:  # pragma: no cover
             value = op.value()
+            if value < 0:
+                msg = f"Failed to change linear TCB end to {value}; must be nonnegative"
+                logger.error(msg)
+                op.done(error=msg)
             try:
                 data.linear_tcb_end_us = value
                 logger.info("Changed binning end to %s us", value)
@@ -287,6 +295,10 @@ class StaticPVs:
         @self.linear_tcb_num.put
         def linear_tcb_num_put(pv: SharedPV, op: ServerOperation) -> None:  # pragma: no cover
             value = op.value()
+            if value <= 0:
+                msg = f"Failed to change number of bins to {value}; must be strictly positive"
+                logger.error(msg)
+                op.done(error=msg)
             try:
                 data.linear_tcb_num = int(value)
                 logger.info("Changed binning num points to %s", value)
