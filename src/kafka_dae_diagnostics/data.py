@@ -215,9 +215,9 @@ class Data:
     Veto bit index for pause.
     """
 
-    last_run_aborted: bool = False
+    running: bool = False
     """
-    Whether the last run-stop issued an abort.
+    True if a run start has been sent most recently, False if no messages or run stop has been sent.
     """
 
     @property
@@ -299,7 +299,7 @@ class Data:
         - **RUNNING**: the electronics has sent us frames, less than 50% of the recent
             frames have been vetoed.
         """
-        if not self.last_run_aborted and self.stop_time > self.start_time:
+        if not self.running:
             # Most recent message is a run stop -> we're not running.
             return RunState.SETUP
         elif self.seconds_since_last_event_message > self.stale_event_timeout_s:

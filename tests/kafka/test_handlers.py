@@ -224,6 +224,7 @@ def test_handle_runinfo_msg():
 
     assert data.start_time == 1234
     assert data.stop_time == 1234
+    assert not data.running
 
 
 @pytest.mark.parametrize("run_start", [RUN_START, RUN_START_NO_SPECMAP])
@@ -248,12 +249,14 @@ def test_handle_pl72(run_start: bytes):
     assert data.largest_kafka_timestamp == 1234
     assert data.most_recent_kafka_timestamp == 1234
     assert data.start_time == 1234
+    assert data.running
 
 
 def test_handle_6s4t():
     data = Data(stop_time=54321)
     handle_6s4t(data, NonEmptyMessage(RUN_STOP, partition=1))
     assert data.stop_time == 1234
+    assert not data.running
 
 
 def test_handle_invalid_msg_ignored():

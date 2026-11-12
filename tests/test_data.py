@@ -83,8 +83,7 @@ def test_count_rate():
 
 def test_run_state_setup():
     data = Data(
-        start_time=0,
-        stop_time=1,
+        running=False,
     )
     assert data.run_state == RunState.SETUP
 
@@ -92,8 +91,7 @@ def test_run_state_setup():
 @patch("kafka_dae_diagnostics.data.Data.seconds_since_last_event_message", 1000)
 def test_run_state_processing():
     data = Data(
-        start_time=2,
-        stop_time=1,
+        running=True,
     )
 
     assert data.run_state == RunState.PROCESSING
@@ -105,8 +103,7 @@ def test_run_state_processing():
 )
 def test_run_state_vetoing():
     data = Data(
-        start_time=2,
-        stop_time=1,
+        running=True,
     )
 
     assert data.run_state == RunState.VETOING
@@ -117,16 +114,13 @@ def test_run_state_vetoing():
     lambda *_, **__: np.array([40.0] + [0.0] * 31),
 )
 def test_run_state_running():
-    data = Data(
-        start_time=2,
-        stop_time=1,
-    )
+    data = Data(running=True)
 
     assert data.run_state == RunState.RUNNING
 
 
 def test_run_state_paused():
-    data = Data()
+    data = Data(running=True)
     data.veto_diagnostics.add_veto(1 << 6)
     assert data.run_state == RunState.PAUSED
     data.veto_diagnostics.add_veto(0)
@@ -135,7 +129,7 @@ def test_run_state_paused():
 
 
 def test_run_state_waiting():
-    data = Data()
+    data = Data(running=True)
     data.veto_diagnostics.add_veto(1 << 5)
     assert data.run_state == RunState.WAITING
     data.veto_diagnostics.add_veto(0)
