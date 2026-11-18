@@ -159,6 +159,20 @@ last bin _edge_.
 User-configurable number of bins for linear time channel boundaries. This is the total number of bins; the number of
 edges will be this value plus one.
 
+### `SPECDATA`
+
+This is an `NDArray` PV which holds the full periods/spectra/time-channels array. The PV is not automatically updated,
+as the underlying array may potentially be large: it must be explicitly processed by writing `1` to the `SPECDATA.PROC`
+PV to update.
+
+The PVA `NTNDArray` convention is to list the fastest-changing dimension first, so the array dimensions at the PVA layer
+will be represented like:
+```
+dimension[0].size int32_t = 100  # num time channels
+dimension[1].size int32_t = 1000 # num spectra
+dimension[2].size int32_t = 1 # num periods
+```
+
 ### `SPEC:<period>:<spectrum>:X`
 
 These PVs provide the X points (the time-of-flight bin centres) for a time of flight spectrum. This array has length `NUMTIMECHANNELS`.
