@@ -4,7 +4,7 @@ import logging
 import time
 
 from p4p._p4p import ServerOperation
-from p4p.nt import NTEnum, NTScalar
+from p4p.nt import NTEnum, NTNDArray, NTScalar
 from p4p.server import StaticProvider
 from p4p.server.thread import SharedPV
 
@@ -72,6 +72,9 @@ def static_pv_provider(prefix: str, data: Data) -> StaticProvider:
     static_provider.add(f"{prefix}VETO:RUN:COUNT", static_pvs.run_veto_count)
     static_provider.add(f"{prefix}VETO:ENABLED", static_pvs.enabled_vetos_array)
     static_provider.add(f"{prefix}VETO:NAMES", static_pvs.veto_names_array)
+
+    static_provider.add(f"{prefix}SPECDATA", static_pvs.specdata)
+    static_provider.add(f"{prefix}SPECDATA.PROC", static_pvs.specdata_proc)
 
     data.callbacks["static-callbacks"] = lambda: static_pvs.update_all(data)
 
@@ -438,6 +441,34 @@ class StaticPVs:
                 "value": data.veto_names_array,
             },
         )
+
+        self.specdata = SharedPV(
+            nt=NTNDArray(),
+            initial=data.spectra,
+            attrib={
+                "ColorMode": 0,
+            },
+        )
+
+        self.specdata_proc = SharedPV(
+            nt=NTScalar(display=True, form=True),
+            initial={
+                "value": 0,
+                "display.precision": 0,
+            },
+        )
+
+        @self.specdata_proc.put
+        def specdata_proc_put(pv: SharedPV, op: ServerOperation) -> None:  # pragma: no cover
+            pv.post(1)
+            try:
+                logger.info("Updating SPECDATA PV")
+                self.specdata.post(data.spectra, attrib={"ColorMode": 0}, timestamp=time.time())
+                pv.post(0)
+                op.done()
+            except Exception as e:
+                logger.exception("Failed to update SPECDATA PV")
+                op.done(error=f"Failed to update SPECDATA PV: {e}")
 
     def update_all(self, data: Data) -> None:
         """Update all PVs with new data.

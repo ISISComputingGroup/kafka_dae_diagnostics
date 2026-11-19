@@ -61,7 +61,7 @@ class Data:
     """
     An array describing counts since last run start.
 
-    Has shape ``(n_periods, n_detectors, n_timechannels)``.
+    Has shape ``(n_periods, n_spectra, n_timechannels)``.
     """
 
     callbacks: dict[str, Callable[[], None]] = field(default_factory=dict)
